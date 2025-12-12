@@ -1,6 +1,6 @@
 // === المتغيرات الأساسية ===
 let savedSemesters = []; // مصفوفة لتخزين الترمات السابقة
-let courses = [];        // مصفوفة الكورسات الحالية (التي تعمل عليها الآن)
+let courses = [];        // مصفوفة الكورسات الحالية
 
 const gradePoints = {
     'A+': 4.0, 'A': 3.7, 'A-': 3.4, 'B+': 3.2, 'B': 3.0, 'B-': 2.8,
@@ -9,38 +9,42 @@ const gradePoints = {
 
 // === عناصر HTML ===
 const addCourseBtn = document.getElementById('add-course-btn');
-const subjectInput = document.getElementById('subject'); // تأكد أن لديك id="subject" في الـ HTML
-// إذا لم يكن لديك id، استخدم document.querySelector('input[type="text"]')
+const subjectInput = document.getElementById('subject') || document.querySelector('input[type="text"]');
 const gradeSelect = document.getElementById('grade');
-const creditsSelect = document.getElementById('credits'); // أو document.getElementById('hours') حسب كودك
+const creditsSelect = document.getElementById('credits'); // تأكد أن الـ ID في الـ HTML هو credits
 const coursesList = document.getElementById('courses-list');
 const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === 1. إضافة كورس جديد ===
+// === 1. إضافة كورس جديد (يدوي) ===
 addCourseBtn.addEventListener('click', () => {
-    // محاولة للحصول على المدخلات بأكثر من طريقة لتجنب الأخطاء
-    const subjectInp = document.querySelector('input[type="text"]');
-    const subject = subjectInp.value.trim();
-    
-    // الحصول على الدرجة والساعات (تأكد من الـ IDs في ملف HTML)
-    // سأفترض هنا أنك تستخدم selects، لو الكود مختلف عدل الـ selectors
-    const gradeVal = document.querySelector('select:nth-of-type(1)').value; 
-    const creditVal = parseFloat(document.querySelector('select:nth-of-type(2)').value);
+    // 1. التحقق من الحد الأقصى (6 مواد)
+    if (courses.length >= 6) {
+        alert("عفواً! الحد الأقصى هو 6 مواد فقط في الترم الواحد.");
+        return;
+    }
 
+    const subject = subjectInput.value.trim();
+    const gradeVal = gradeSelect.value;
+    const creditVal = parseFloat(creditsSelect.value);
+
+    // 2. التحقق من اسم المادة
     if (subject === "") {
         alert("Please enter a subject name!");
         return;
     }
 
+    // 3. الإضافة للمصفوفة
     courses.push({ subject: subject, grade: gradeVal, credits: creditVal });
     
+    // 4. تحديث الشاشة
     renderCourses();
     calculateGPA();
     
-    subjectInp.value = '';
-    subjectInp.focus();
+    // 5. تنظيف الخانة
+    subjectInput.value = '';
+    subjectInput.focus();
 });
 
 // === 2. رسم الكورسات الحالية ===
@@ -48,20 +52,21 @@ function renderCourses() {
     coursesList.innerHTML = ''; 
     courses.forEach((course, index) => {
         const row = document.createElement('div');
-        row.className = 'course-row'; // تأكد أن كلاس التنسيق موجود في CSS
-        // تنسيق مبسط للصف
+        row.className = 'course-row'; 
+        
         row.innerHTML = `
             <div style="flex:1;">${course.subject}</div>
             <div style="flex:1;">${course.grade}</div>
             <div style="flex:1;">${course.credits}</div>
             <div style="flex:0.5;">
-                <button onclick="deleteCourse(${index})" style="background:red; color:white; border:none; padding:5px; cursor:pointer;">X</button>
+                <button onclick="deleteCourse(${index})" style="background:red; color:white; border:none; padding:5px; cursor:pointer; border-radius:4px;">X</button>
             </div>
         `;
         coursesList.appendChild(row);
     });
 }
 
+// دالة حذف كورس واحد من الجدول الحالي
 function deleteCourse(index) {
     courses.splice(index, 1);
     renderCourses();
@@ -73,14 +78,14 @@ function calculateGPA() {
     let totalPoints = 0;
     let totalHours = 0;
 
-    // أولاً: حساب المواد الموجودة حالياً في الجدول (الغير محفوظة بعد)
+    // أولاً: حساب المواد الحالية (الجدول)
     courses.forEach(course => {
         const points = gradePoints[course.grade] || 0;
         totalPoints += points * course.credits;
         totalHours += course.credits;
     });
 
-    // ثانياً: حساب الترمات المحفوظة (فقط التي عليها علامة صح)
+    // ثانياً: حساب الترمات المحفوظة (المفعلة فقط)
     savedSemesters.forEach(sem => {
         if (sem.isChecked) {
             totalPoints += sem.totalPoints;
@@ -96,26 +101,26 @@ function calculateGPA() {
     }
 }
 
-// === 4. إضافة 6 مواد (Semester Button) ===
+// === 4. زر إضافة 6 مواد (Semester Button) ===
 function addSemester() {
-    const subjectInp = document.querySelector('input[type="text"]');
-    const addBtn = document.getElementById('add-course-btn'); // أو الزرار اللي بيضيف
+    // حماية: لا يمكن إضافة ترم كامل إذا كان هناك مواد بالفعل
+    if (courses.length > 0) {
+        alert("الجدول يحتوي على مواد بالفعل! لا يمكن إضافة 6 مواد فوقها.\nيرجى حفظ الترم الحالي أو مسحه أولاً.");
+        return;
+    }
+
+    const gradeVal = gradeSelect.value; 
+    const creditVal = parseFloat(creditsSelect.value);
     
     for (let i = 1; i <= 6; i++) {
-        subjectInp.value = "Course " + i; 
-        // محاكاة الضغط عالزرار
-        // ملاحظة: لو الزرار مش بيشتغل بالكود ده، ممكن ننده دالة الإضافة مباشرة
-        // هنا هننده كود الإضافة اللي فوق يدوي لو ال click مش شغال
-        const gradeVal = document.querySelector('select:nth-of-type(1)').value; 
-        const creditVal = parseFloat(document.querySelector('select:nth-of-type(2)').value);
         courses.push({ subject: "Course " + i, grade: gradeVal, credits: creditVal });
     }
-    subjectInp.value = "";
+    
     renderCourses();
     calculateGPA();
 }
 
-// === 5. حفظ الترم الحالي (Save & Add New Semester) ===
+// === 5. حفظ الترم الحالي (Save & Clear) ===
 function saveAndClearSemester() {
     if (courses.length === 0) {
         alert("لا يوجد مواد لحفظها!");
@@ -125,7 +130,7 @@ function saveAndClearSemester() {
     let semPoints = 0;
     let semHours = 0;
     
-    // حساب النقاط والساعات
+    // حساب إحصائيات الترم للحفظ
     courses.forEach(c => {
         semPoints += (gradePoints[c.grade] || 0) * c.credits;
         semHours += c.credits;
@@ -140,12 +145,12 @@ function saveAndClearSemester() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
-        courseDetails: [...courses] // <--- السطر السحري: نسخ تفاصيل المواد عشان نرجعها وقت التعديل
+        courseDetails: [...courses] // حفظ نسخة من تفاصيل المواد (للتعديل لاحقاً)
     };
 
     savedSemesters.push(newSemester);
 
-    // تنظيف الشاشة
+    // تفريغ الجدول الحالي
     courses = [];
     renderCourses();
     renderSavedSemesters();
@@ -153,7 +158,6 @@ function saveAndClearSemester() {
 }
 
 // === 6. رسم قائمة الترمات المحفوظة ===
-// === تعديل دالة رسم السيمسترات لإضافة زر الحذف ===
 function renderSavedSemesters() {
     semestersList.innerHTML = '';
     
@@ -177,7 +181,6 @@ function renderSavedSemesters() {
                 <span class="semester-gpa" style="margin-right: 10px;">GPA: ${sem.gpa}</span>
                 
                 <button onclick="editSemester(${index})" class="btn-edit-sem">Edit</button>
-                
                 <button onclick="deleteSemester(${index})" class="btn-delete-sem">Delete</button>
             </div>
         `;
@@ -185,48 +188,42 @@ function renderSavedSemesters() {
     });
 }
 
-// === دالة حذف سيمستر محفوظ ===
+// === 7. الدوال المساعدة (حذف ترم، تعديل ترم، تفعيل ترم) ===
+
+// حذف ترم محفوظ
 function deleteSemester(index) {
-    // 1. تأكيد الحذف (اختياري)
-    let confirmAction = confirm("Are you sure you want to delete this semester?");
-    if (confirmAction) {
-        // 2. مسح السيمستر من المصفوفة
+    if (confirm("Are you sure you want to delete this semester?")) {
         savedSemesters.splice(index, 1);
-        
-        // 3. إعادة رسم القائمة وإعادة حساب المعدل التراكمي
         renderSavedSemesters();
         calculateGPA();
     }
 }
 
-// === 7. تفعيل/تعطيل ترم معين من الحساب ===
+// تفعيل/تعطيل ترم (Checkbox)
 function toggleSemester(index) {
-    // عكس الحالة (لو صح تبقى غلط والعكس)
     savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
-    // إعادة الحساب
     calculateGPA();
 }
+
+// تعديل ترم محفوظ (استرجاعه للجدول)
 function editSemester(index) {
-    // 1. حماية: لو المستخدم عنده مواد حالية في الجدول مش محفوظة
+    // حماية: لو المستخدم شغال على مواد حالياً
     if (courses.length > 0) {
-        let confirmSwitch = confirm("تنبيه: الجدول الحالي يحتوي على مواد غير محفوظة. هل تريد استبدالها ببيانات الترم الذي تريد تعديله؟");
-        if (!confirmSwitch) return; // لو رفض، نوقف العملية
+        let confirmSwitch = confirm("تحذير: الجدول الحالي يحتوي على مواد غير محفوظة.\nهل تريد استبدالها ببيانات الترم الذي تريد تعديله؟");
+        if (!confirmSwitch) return;
     }
 
-    // 2. استرجاع الترم المطلوب
+    // استرجاع البيانات
     const semesterToEdit = savedSemesters[index];
+    courses = [...semesterToEdit.courseDetails]; // نسخ المواد للجدول الرئيسي
 
-    // 3. وضع مواد الترم ده في الجدول الرئيسي
-    courses = [...semesterToEdit.courseDetails]; 
-
-    // 4. حذف الترم من قائمة "المحفوظات" (لأننا بنعدله دلوقتي)
+    // حذف الترم من المحفوظات (لأنه أصبح قيد التعديل الآن)
     savedSemesters.splice(index, 1);
 
-    // 5. تحديث الشاشة
-    renderCourses();          // إظهار المواد في الجدول للتعديل
-    renderSavedSemesters();   // تحديث قائمة المحفوظات (هيختفي منها الترم ده مؤقتاً)
-    calculateGPA();           // إعادة الحساب
+    // تحديث الواجهة
+    renderCourses();
+    renderSavedSemesters();
+    calculateGPA();
     
-    // رسالة للمستخدم
-    alert(`تم استرجاع مواد ${semesterToEdit.name} للتعديل.`);
+    alert(`تم استرجاع ${semesterToEdit.name} للتعديل.`);
 }
