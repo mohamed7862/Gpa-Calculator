@@ -112,3 +112,56 @@ button {
     font-size: 28px;
     color: #000000;
 }
+.btn-semester {
+    background-color: #28a745; /* لون أخضر مثلاً */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* مسافة بينه وبين الزر الآخر */
+    font-size: 16px;
+}
+
+.btn-semester:hover {
+    background-color: #218838;
+}
+.semester-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.semester-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.semester-gpa {
+    background-color: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.btn-delete-sem {
+    background-color: #dc3545; /* لون أحمر */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.btn-delete-sem:hover {
+    background-color: #c82333;
+}
