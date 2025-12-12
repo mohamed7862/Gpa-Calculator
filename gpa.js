@@ -122,9 +122,10 @@ function saveAndClearSemester() {
         return;
     }
 
-    // حساب إحصائيات الترم الحالي لتخزينها
     let semPoints = 0;
     let semHours = 0;
+    
+    // حساب النقاط والساعات
     courses.forEach(c => {
         semPoints += (gradePoints[c.grade] || 0) * c.credits;
         semHours += c.credits;
@@ -132,24 +133,21 @@ function saveAndClearSemester() {
     
     let semGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
 
-    // إنشاء كائن الترم
     const newSemester = {
-        id: Date.now(), // رقم مميز
+        id: Date.now(),
         name: `Semester ${savedSemesters.length + 1}`,
         totalPoints: semPoints,
         totalHours: semHours,
         gpa: semGPA,
-        isChecked: true // افتراضياً يكون محسوب
+        isChecked: true,
+        courseDetails: [...courses] // <--- السطر السحري: نسخ تفاصيل المواد عشان نرجعها وقت التعديل
     };
 
-    // الإضافة للمصفوفة
     savedSemesters.push(newSemester);
 
     // تنظيف الشاشة
     courses = [];
     renderCourses();
-    
-    // رسم قائمة الترمات وتحديث الحساب
     renderSavedSemesters();
     calculateGPA();
 }
@@ -159,7 +157,6 @@ function saveAndClearSemester() {
 function renderSavedSemesters() {
     semestersList.innerHTML = '';
     
-    // إخفاء الصندوق لو مفيش سيمسترات
     if (savedSemesters.length > 0) {
         savedSemestersBox.style.display = 'block';
     } else {
@@ -178,7 +175,8 @@ function renderSavedSemesters() {
             
             <div style="display: flex; align-items: center;">
                 <span class="semester-gpa" style="margin-right: 10px;">GPA: ${sem.gpa}</span>
-                <span style="font-size: 0.8em; color: gray; margin-right: 10px;">(${sem.totalHours} Hrs)</span>
+                
+                <button onclick="editSemester(${index})" class="btn-edit-sem">Edit</button>
                 
                 <button onclick="deleteSemester(${index})" class="btn-delete-sem">Delete</button>
             </div>
@@ -207,4 +205,28 @@ function toggleSemester(index) {
     savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
     // إعادة الحساب
     calculateGPA();
+}
+function editSemester(index) {
+    // 1. حماية: لو المستخدم عنده مواد حالية في الجدول مش محفوظة
+    if (courses.length > 0) {
+        let confirmSwitch = confirm("تنبيه: الجدول الحالي يحتوي على مواد غير محفوظة. هل تريد استبدالها ببيانات الترم الذي تريد تعديله؟");
+        if (!confirmSwitch) return; // لو رفض، نوقف العملية
+    }
+
+    // 2. استرجاع الترم المطلوب
+    const semesterToEdit = savedSemesters[index];
+
+    // 3. وضع مواد الترم ده في الجدول الرئيسي
+    courses = [...semesterToEdit.courseDetails]; 
+
+    // 4. حذف الترم من قائمة "المحفوظات" (لأننا بنعدله دلوقتي)
+    savedSemesters.splice(index, 1);
+
+    // 5. تحديث الشاشة
+    renderCourses();          // إظهار المواد في الجدول للتعديل
+    renderSavedSemesters();   // تحديث قائمة المحفوظات (هيختفي منها الترم ده مؤقتاً)
+    calculateGPA();           // إعادة الحساب
+    
+    // رسالة للمستخدم
+    alert(`تم استرجاع مواد ${semesterToEdit.name} للتعديل.`);
 }
