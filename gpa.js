@@ -1,7 +1,8 @@
 // === المتغيرات الأساسية ===
 let savedSemesters = []; // مصفوفة لتخزين الترمات السابقة
 let courses = [];        // مصفوفة الكورسات الحالية
-let currentEditingName = null; // متغير جديد: لحفظ اسم الترم عند التعديل
+let currentEditingName = null; // متغير لحفظ اسم الترم عند التعديل
+let maxCoursesAllowed = 6;    // الحد الأقصى الافتراضي للمواد
 
 const gradePoints = {
     'A+': 4.0, 'A': 3.7, 'A-': 3.4, 'B+': 3.2, 'B': 3.0, 'B-': 2.8,
@@ -20,8 +21,9 @@ const semestersList = document.getElementById('semesters-list');
 
 // === 1. إضافة كورس جديد (يدوي) ===
 addCourseBtn.addEventListener('click', () => {
-    if (courses.length >= 6) {
-        alert("عفواً! الحد الأقصى هو 6 مواد فقط في الترم الواحد.");
+    // التحقق بناءً على الحد الأقصى الديناميكي (6 أو 7)
+    if (courses.length >= maxCoursesAllowed) {
+        alert(`عفواً! الحد الأقصى المسموح لك هو ${maxCoursesAllowed} مواد فقط بناءً على معدلك.`);
         return;
     }
 
@@ -98,13 +100,14 @@ function calculateGPA() {
 // === 4. زر إضافة 6 مواد ===
 function addSemester() {
     if (courses.length > 0) {
-        alert("الجدول يحتوي على مواد بالفعل! لا يمكن إضافة 6 مواد فوقها.");
+        alert("الجدول يحتوي على مواد بالفعل! لا يمكن إضافة مواد تلقائية فوقها.");
         return;
     }
 
     const gradeVal = gradeSelect.value; 
     const creditVal = parseFloat(creditsSelect.value);
     
+    // يضيف 6 مواد دائماً كبداية سريعة
     for (let i = 1; i <= 6; i++) {
         courses.push({ subject: "Course " + i, grade: gradeVal, credits: creditVal });
     }
@@ -113,7 +116,7 @@ function addSemester() {
     calculateGPA();
 }
 
-// === 5. حفظ الترم الحالي (تم التعديل هنا) ===
+// === 5. حفظ الترم الحالي (تم تحديث المنطق هنا) ===
 function saveAndClearSemester() {
     if (courses.length === 0) {
         alert("لا يوجد مواد لحفظها!");
@@ -130,20 +133,21 @@ function saveAndClearSemester() {
     
     let semGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
 
-    // تحديد اسم الترم
-    let semesterName;
-    if (currentEditingName !== null) {
-        // إذا كنا نعدل ترم سابق، نستخدم اسمه القديم
-        semesterName = currentEditingName;
-        currentEditingName = null; // إعادة تعيين المتغير بعد الاستخدام
+    // --- منطق المادة السابعة ---
+    if (parseFloat(semGPA) >= 3.0) {
+        maxCoursesAllowed = 7;
+        alert(`ممتاز! معدل الترم ${semGPA} يسمح لك بإضافة مادة سابعة في الترم القادم.`);
     } else {
-        // إذا كان ترم جديد، ننشئ اسماً جديداً
-        semesterName = `Semester ${savedSemesters.length + 1}`;
+        maxCoursesAllowed = 6;
     }
+
+    // تحديد اسم الترم
+    let semesterName = currentEditingName !== null ? currentEditingName : `Semester ${savedSemesters.length + 1}`;
+    currentEditingName = null; 
 
     const newSemester = {
         id: Date.now(),
-        name: semesterName, // استخدام الاسم المحدد
+        name: semesterName,
         totalPoints: semPoints,
         totalHours: semHours,
         gpa: semGPA,
@@ -204,7 +208,6 @@ function toggleSemester(index) {
     calculateGPA();
 }
 
-// تعديل ترم محفوظ (تم التعديل هنا)
 function editSemester(index) {
     if (courses.length > 0) {
         let confirmSwitch = confirm("تحذير: الجدول الحالي يحتوي على مواد غير محفوظة.\nهل تريد استبدالها ببيانات الترم الذي تريد تعديله؟");
@@ -213,8 +216,12 @@ function editSemester(index) {
 
     const semesterToEdit = savedSemesters[index];
     
-    // حفظ الاسم القديم في المتغير العام لاستخدامه عند الحفظ
     currentEditingName = semesterToEdit.name;
+
+    // إذا كان الترم الذي يتم تعديله يحتوي أصلاً على 7 مواد، نفتح الحد فوراً
+    if (semesterToEdit.courseDetails.length > 6) {
+        maxCoursesAllowed = 7;
+    }
 
     courses = [...semesterToEdit.courseDetails]; 
 
