@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>(GPA Calculator)</title>
+    <title>GPA Calculator</title>
     <link rel="stylesheet" href="gpa.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>(GPA Calculator)</h1>
+        <button onclick="toggleLanguage()" id="lang-btn" style="width: auto; float: right; padding: 5px 15px; background: #333; color: white; font-size: 14px; margin-bottom: 10px;">العربية</button>
+        
+        <h1 id="main-title">GPA Calculator</h1>
         
         <div id="course-form">
             <div class="form-group">
@@ -34,36 +36,35 @@
                     <option value="3">3 hours</option>
                 </select>
             </div>
+            
             <button id="add-course-btn">Add course ➕</button>
             
-            <button onclick="saveAndClearSemester()" style="background-color: #07ffb5; color: black;">
-    Save & Add New Semester
-</button>
+            <button id="save-sem-btn" onclick="saveAndClearSemester()" style="background-color: #07ffb5; color: black; font-weight: bold;">
+                Save & Add New Semester
+            </button>
         </div>
-            <div id="saved-semesters-box" style="margin: 20px 0; display: none;">
-                <h3>Saved Semesters</h3>
-                <div id="semesters-list">
-            </div>
-</div>
+
+        <div id="saved-semesters-box" style="margin: 20px 0; display: none;">
+            <h3 id="saved-title">Saved Semesters</h3>
+            <div id="semesters-list"></div>
+        </div>
 
         <div id="courses-list-container">
-            <div class="course-header">
+            <div class="course-header" id="list-header">
                 <div>Subject</div>
                 <div>Grade</div>
-                <div>TotalCreditHours</div>
-                <div>Delete</div>
+                <div>Hours</div>
+                <div>Action</div>
             </div>
-            <div id="courses-list">
-                </div>
+            <div id="courses-list"></div>
         </div>
 
         <div class="gpa-result">
-            <h2>Final Gpa</h2>
+            <h2 id="final-gpa-text">Final GPA</h2>
             <span id="gpa-display">0.00</span>
         </div>
     </div>
 
     <script src="gpa.js"></script>
-
 </body>
 </html>

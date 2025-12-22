@@ -1,17 +1,43 @@
-// === المتغيرات الأساسية ===
-let savedSemesters = []; // مصفوفة لتخزين الترمات السابقة
-let courses = [];        // مصفوفة الكورسات الحالية
-let currentEditingName = null; // متغير لحفظ اسم الترم عند التعديل
-let maxCoursesAllowed = 6;    // الحد الأقصى الافتراضي للمواد
+// === 1. الإعدادات والبيانات الأساسية ===
+let savedSemesters = JSON.parse(localStorage.getItem('savedSemesters')) || []; 
+let courses = [];         
+let currentEditingName = null; 
+let editingIndex = null; // لمتابعة الترم الذي يتم تعديله حالياً
+let maxCoursesAllowed = 6;     
+let currentLang = 'en';
 
 const gradePoints = {
     'A+': 4.0, 'A': 3.7, 'A-': 3.4, 'B+': 3.2, 'B': 3.0, 'B-': 2.8,
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// === عناصر HTML ===
+// نصوص الترجمة
+const i18n = {
+    en: {
+        title: "GPA Calculator",
+        subjectPlaceholder: "Subject Name",
+        addBtn: "Add course ➕",
+        saveBtn: "Save & Update Semester",
+        savedTitle: "Saved Semesters",
+        finalGpa: "Final GPA",
+        langBtn: "العربية",
+        header: ["Subject", "Grade", "Hours", "Delete"]
+    },
+    ar: {
+        title: "حاسبة المعدل التراكمي",
+        subjectPlaceholder: "اسم المادة",
+        addBtn: "إضافة مادة ➕",
+        saveBtn: "حفظ وتحديث الترم",
+        savedTitle: "الترمات المحفوظة",
+        finalGpa: "المعدل النهائي",
+        langBtn: "English",
+        header: ["المادة", "التقدير", "الساعات", "حذف"]
+    }
+};
+
+// === 2. ربط عناصر HTML ===
 const addCourseBtn = document.getElementById('add-course-btn');
-const subjectInput = document.getElementById('subject') || document.querySelector('input[type="text"]');
+const subjectInput = document.getElementById('subject');
 const gradeSelect = document.getElementById('grade');
 const creditsSelect = document.getElementById('credits');
 const coursesList = document.getElementById('courses-list');
@@ -19,135 +45,111 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === 1. إضافة كورس جديد (يدوي) ===
+// === 3. وظائف الذاكرة واللغة ===
+function saveToLocal() {
+    localStorage.setItem('savedSemesters', JSON.stringify(savedSemesters));
+}
+
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    const lang = i18n[currentLang];
+    
+    document.querySelector('h1').innerText = lang.title;
+    subjectInput.placeholder = lang.subjectPlaceholder;
+    addCourseBtn.innerText = lang.addBtn;
+    document.querySelector('button[onclick="saveAndClearSemester()"]').innerText = lang.saveBtn;
+    document.querySelector('#saved-semesters-box h3').innerText = lang.savedTitle;
+    document.querySelector('.gpa-result h2').innerText = lang.finalGpa;
+    document.getElementById('lang-btn').innerText = lang.langBtn;
+    
+    const headers = document.querySelectorAll('.course-header div');
+    if (headers.length > 0) {
+        lang.header.forEach((text, i) => headers[i].innerText = text);
+    }
+    
+    document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    renderSavedSemesters();
+}
+
+// === 4. إدارة الكورسات الحالية ===
 addCourseBtn.addEventListener('click', () => {
-    // التحقق بناءً على الحد الأقصى الديناميكي (6 أو 7)
     if (courses.length >= maxCoursesAllowed) {
-        alert(`عفواً! الحد الأقصى المسموح لك هو ${maxCoursesAllowed} مواد فقط بناءً على معدلك.`);
+        alert(currentLang === 'en' ? `Limit is ${maxCoursesAllowed} courses.` : `الحد الأقصى هو ${maxCoursesAllowed} مواد.`);
         return;
     }
 
     const subject = subjectInput.value.trim();
-    const gradeVal = gradeSelect.value;
-    const creditVal = parseFloat(creditsSelect.value);
-
-    if (subject === "") {
-        alert("Please enter a subject name!");
+    if (!subject) {
+        alert(currentLang === 'en' ? "Please enter subject name!" : "يرجى إدخال اسم المادة!");
         return;
     }
 
-    courses.push({ subject: subject, grade: gradeVal, credits: creditVal });
-    
-    renderCourses();
-    calculateGPA();
-    
+    courses.push({ subject, grade: gradeSelect.value, credits: parseFloat(creditsSelect.value) });
+    updateUI();
     subjectInput.value = '';
     subjectInput.focus();
 });
 
-// === 2. رسم الكورسات الحالية ===
+function deleteCourse(index) {
+    courses.splice(index, 1);
+    updateUI();
+}
+
+function updateUI() {
+    renderCourses();
+    calculateGPA();
+}
+
 function renderCourses() {
     coursesList.innerHTML = ''; 
     courses.forEach((course, index) => {
         const row = document.createElement('div');
         row.className = 'course-row'; 
-        
         row.innerHTML = `
             <div style="flex:1;">${course.subject}</div>
             <div style="flex:1;">${course.grade}</div>
-            <div style="flex:1;">${course.credits}</div>
-            <div style="flex:0.5;">
-                <button onclick="deleteCourse(${index})" style="background:red; color:white; border:none; padding:5px; cursor:pointer; border-radius:4px;">X</button>
-            </div>
+            <div style="flex:1;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
+            <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn">X</button></div>
         `;
         coursesList.appendChild(row);
     });
 }
 
-function deleteCourse(index) {
-    courses.splice(index, 1);
-    renderCourses();
-    calculateGPA();
-}
-
-// === 3. دالة الحساب الرئيسية ===
+// === 5. دالة الحساب الرئيسية (التراكمي) ===
 function calculateGPA() {
-    let totalPoints = 0;
-    let totalHours = 0;
-
-    // المواد الحالية
-    courses.forEach(course => {
-        const points = gradePoints[course.grade] || 0;
-        totalPoints += points * course.credits;
-        totalHours += course.credits;
+    let totalPoints = 0, totalHours = 0;
+    courses.forEach(c => {
+        totalPoints += (gradePoints[c.grade] || 0) * c.credits;
+        totalHours += c.credits;
     });
-
-    // الترمات المحفوظة
     savedSemesters.forEach(sem => {
         if (sem.isChecked) {
             totalPoints += sem.totalPoints;
             totalHours += sem.totalHours;
         }
     });
-
-    if (totalHours > 0) {
-        gpaDisplay.innerText = (totalPoints / totalHours).toFixed(2);
-    } else {
-        gpaDisplay.innerText = "0.00";
-    }
+    gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
 }
 
-// === 4. زر إضافة 6 مواد ===
-function addSemester() {
-    if (courses.length > 0) {
-        alert("الجدول يحتوي على مواد بالفعل! لا يمكن إضافة مواد تلقائية فوقها.");
-        return;
-    }
-
-    const gradeVal = gradeSelect.value; 
-    const creditVal = parseFloat(creditsSelect.value);
-    
-    // يضيف 6 مواد دائماً كبداية سريعة
-    for (let i = 1; i <= 6; i++) {
-        courses.push({ subject: "Course " + i, grade: gradeVal, credits: creditVal });
-    }
-    
-    renderCourses();
-    calculateGPA();
-}
-
-// === 5. حفظ الترم الحالي (تم تحديث المنطق هنا) ===
+// === 6. إدارة الترمات (حفظ وتعديل ذكي) ===
 function saveAndClearSemester() {
     if (courses.length === 0) {
-        alert("لا يوجد مواد لحفظها!");
+        alert(currentLang === 'en' ? "No courses to save!" : "لا توجد مواد لحفظها!");
         return;
     }
 
-    let semPoints = 0;
-    let semHours = 0;
-    
+    let semPoints = 0, semHours = 0;
     courses.forEach(c => {
         semPoints += (gradePoints[c.grade] || 0) * c.credits;
         semHours += c.credits;
     });
-    
-    let semGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
 
-    // --- منطق المادة السابعة ---
-    if (parseFloat(semGPA) >= 3.0) {
-        maxCoursesAllowed = 7;
-        alert(`ممتاز! معدل الترم ${semGPA} يسمح لك بإضافة مادة سابعة في الترم القادم.`);
-    } else {
-        maxCoursesAllowed = 6;
-    }
+    const semGPA = (semPoints / semHours).toFixed(2);
+    maxCoursesAllowed = parseFloat(semGPA) >= 3.0 ? 7 : 6;
 
-    // تحديد اسم الترم
-    let semesterName = currentEditingName !== null ? currentEditingName : `Semester ${savedSemesters.length + 1}`;
-    currentEditingName = null; 
-
-    const newSemester = {
-        id: Date.now(),
-        name: semesterName,
+    const semesterData = {
+        id: editingIndex !== null ? savedSemesters[editingIndex].id : Date.now(),
+        name: currentEditingName || (currentLang === 'en' ? `Semester ${savedSemesters.length + 1}` : `الترم ${savedSemesters.length + 1}`),
         totalPoints: semPoints,
         totalHours: semHours,
         gpa: semGPA,
@@ -155,81 +157,70 @@ function saveAndClearSemester() {
         courseDetails: [...courses]
     };
 
-    savedSemesters.push(newSemester);
+    if (editingIndex !== null) {
+        savedSemesters[editingIndex] = semesterData; // تحديث في نفس المكان
+        editingIndex = null;
+    } else {
+        savedSemesters.push(semesterData); // إضافة جديد
+    }
 
     courses = [];
-    renderCourses();
+    currentEditingName = null;
+    saveToLocal();
+    updateUI();
     renderSavedSemesters();
-    calculateGPA();
 }
 
-// === 6. رسم قائمة الترمات المحفوظة ===
 function renderSavedSemesters() {
     semestersList.innerHTML = '';
-    
-    if (savedSemesters.length > 0) {
-        savedSemestersBox.style.display = 'block';
-    } else {
-        savedSemestersBox.style.display = 'none';
-    }
+    savedSemestersBox.style.display = savedSemesters.length > 0 ? 'block' : 'none';
 
     savedSemesters.forEach((sem, index) => {
         const div = document.createElement('div');
         div.className = 'semester-card';
-        
         div.innerHTML = `
             <div class="semester-info">
                 <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
-                <label for="sem-${sem.id}" style="cursor: pointer;">${sem.name}</label>
+                <label for="sem-${sem.id}">${sem.name}</label>
             </div>
-            
             <div style="display: flex; align-items: center;">
-                <span class="semester-gpa" style="margin-right: 10px;">GPA: ${sem.gpa}</span>
-                <button onclick="editSemester(${index})" class="btn-edit-sem">Edit</button>
-                <button onclick="deleteSemester(${index})" class="btn-delete-sem">Delete</button>
+                <span class="semester-gpa">GPA: ${sem.gpa}</span>
+                <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                <button onclick="deleteSemester(${index})" class="btn-delete-sem">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
             </div>
         `;
         semestersList.appendChild(div);
     });
 }
 
-// === 7. الدوال المساعدة ===
+function toggleSemester(index) {
+    savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
+    saveToLocal();
+    calculateGPA();
+}
 
 function deleteSemester(index) {
-    if (confirm("Are you sure you want to delete this semester?")) {
+    if (confirm(currentLang === 'en' ? "Delete this semester?" : "هل تريد حذف هذا الترم؟")) {
         savedSemesters.splice(index, 1);
+        saveToLocal();
         renderSavedSemesters();
         calculateGPA();
     }
 }
 
-function toggleSemester(index) {
-    savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
-    calculateGPA();
-}
-
 function editSemester(index) {
-    if (courses.length > 0) {
-        let confirmSwitch = confirm("تحذير: الجدول الحالي يحتوي على مواد غير محفوظة.\nهل تريد استبدالها ببيانات الترم الذي تريد تعديله؟");
-        if (!confirmSwitch) return;
-    }
+    if (courses.length > 0 && !confirm(currentLang === 'en' ? "Unsaved changes will be lost. Continue?" : "لديك تعديلات غير محفوظة، هل تريد تجاهلها؟")) return;
 
-    const semesterToEdit = savedSemesters[index];
-    
-    currentEditingName = semesterToEdit.name;
+    const sem = savedSemesters[index];
+    courses = [...sem.courseDetails];
+    currentEditingName = sem.name; // الحفاظ على اسم ورقم الترم
+    editingIndex = index; // تحديد مكان الترم للتحديث لاحقاً
+    maxCoursesAllowed = courses.length > 6 ? 7 : 6;
 
-    // إذا كان الترم الذي يتم تعديله يحتوي أصلاً على 7 مواد، نفتح الحد فوراً
-    if (semesterToEdit.courseDetails.length > 6) {
-        maxCoursesAllowed = 7;
-    }
-
-    courses = [...semesterToEdit.courseDetails]; 
-
-    savedSemesters.splice(index, 1);
-
-    renderCourses();
+    updateUI();
     renderSavedSemesters();
-    calculateGPA();
-    
-    alert(`تم استرجاع ${semesterToEdit.name} للتعديل.`);
 }
+
+// تشغيل عند التحميل
+renderSavedSemesters();
+updateUI();
