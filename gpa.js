@@ -1,9 +1,9 @@
 // === 1. الإعدادات والبيانات الأساسية ===
 let savedSemesters = JSON.parse(localStorage.getItem('savedSemesters')) || []; 
-let courses = [];         
+let courses = []; 
 let currentEditingName = null; 
-let editingIndex = null; // لمتابعة الترم الذي يتم تعديله حالياً
-let maxCoursesAllowed = 6;     
+let editingIndex = null; 
+let maxCoursesAllowed = 6; 
 let currentLang = 'en';
 
 const gradePoints = {
@@ -115,19 +115,47 @@ function renderCourses() {
     });
 }
 
-// === 5. دالة الحساب الرئيسية (التراكمي) ===
+// === 5. دالة الحساب الذكية (تحسب التقدير الأعلى وتلغي القديم) ===
 function calculateGPA() {
+    let allCourses = [];
+
+    // 1. تجميع مواد الترم الحالي
+    courses.forEach(c => allCourses.push({ ...c }));
+
+    // 2. تجميع مواد الترمات المحفوظة (التي تم تفعيلها)
+    savedSemesters.forEach(sem => {
+        if (sem.isChecked) {
+            sem.courseDetails.forEach(c => allCourses.push({ ...c }));
+        }
+    });
+
+    // 3. تصفية المواد لأخذ الدرجة الأفضل فقط لكل مادة
+    let uniqueCourses = {};
+
+    allCourses.forEach(course => {
+        // توحيد الاسم لضمان المطابقة (حذف مسافات + حروف صغيرة)
+        let normalizedName = course.subject.trim().toLowerCase();
+        let points = gradePoints[course.grade] || 0;
+
+        if (!uniqueCourses[normalizedName]) {
+            // إضافة المادة لأول مرة
+            uniqueCourses[normalizedName] = { ...course, points };
+        } else {
+            // إذا المادة مكررة، نحتفظ بصاحبة النقاط الأعلى
+            if (points > uniqueCourses[normalizedName].points) {
+                uniqueCourses[normalizedName] = { ...course, points };
+            }
+        }
+    });
+
+    // 4. حساب المعدل النهائي من القائمة المصفاة
     let totalPoints = 0, totalHours = 0;
-    courses.forEach(c => {
+
+    Object.values(uniqueCourses).forEach(c => {
         totalPoints += (gradePoints[c.grade] || 0) * c.credits;
         totalHours += c.credits;
     });
-    savedSemesters.forEach(sem => {
-        if (sem.isChecked) {
-            totalPoints += sem.totalPoints;
-            totalHours += sem.totalHours;
-        }
-    });
+
     gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
 }
 
@@ -158,10 +186,10 @@ function saveAndClearSemester() {
     };
 
     if (editingIndex !== null) {
-        savedSemesters[editingIndex] = semesterData; // تحديث في نفس المكان
+        savedSemesters[editingIndex] = semesterData; 
         editingIndex = null;
     } else {
-        savedSemesters.push(semesterData); // إضافة جديد
+        savedSemesters.push(semesterData); 
     }
 
     courses = [];
@@ -196,7 +224,7 @@ function renderSavedSemesters() {
 function toggleSemester(index) {
     savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
     saveToLocal();
-    calculateGPA();
+    calculateGPA(); // ستقوم بإعادة الحساب بناءً على المواد المفعلة فقط
 }
 
 function deleteSemester(index) {
@@ -213,8 +241,8 @@ function editSemester(index) {
 
     const sem = savedSemesters[index];
     courses = [...sem.courseDetails];
-    currentEditingName = sem.name; // الحفاظ على اسم ورقم الترم
-    editingIndex = index; // تحديد مكان الترم للتحديث لاحقاً
+    currentEditingName = sem.name; 
+    editingIndex = index; 
     maxCoursesAllowed = courses.length > 6 ? 7 : 6;
 
     updateUI();
