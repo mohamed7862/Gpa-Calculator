@@ -141,11 +141,9 @@ function calculateGPA() {
             // إضافة المادة لأول مرة
             uniqueCourses[normalizedName] = { ...course, points };
         } else {
-            // إذا المادة مكررة، نحتفظ بصاحبة النقاط الأعلى
-            if (points > uniqueCourses[normalizedName].points) {
-                uniqueCourses[normalizedName] = { ...course, points };
-            }
-        }
+    // تحديث المادة دائماً لتصبح هي القيمة الأخيرة المدخلة
+    uniqueCourses[normalizedName] = { ...course, points };
+}
     });
 
     // 4. حساب المعدل النهائي من القائمة المصفاة
