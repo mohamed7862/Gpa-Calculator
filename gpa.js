@@ -11,7 +11,6 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة مع الـ Hints (تقدر تعدل وتضيف براحتك)
 // قائمة المواد المقترحة من الجداول (الأساسي والاختياري)
 const predefinedCourses = [
     // === First Level - First Semester ===
@@ -30,22 +29,27 @@ const predefinedCourses = [
     { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103" },
     { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121" },
 
-    // === Fourth Level ===
+    // === Fourth Level - First Semester ===
     { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413" },
     { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443" },
+    { en: "Elective 3", ar: "مقرر اختياري 3", hint: "TBD" },
+    { en: "Elective 4", ar: "مقرر اختياري 4", hint: "TBD" },
+    { en: "Elective 5", ar: "مقرر اختياري 5", hint: "TBD" },
     { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498" },
+
+    // === Fourth Level - Second Semester ===
     { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462" },
     { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455" },
+    { en: "Elective 6", ar: "مقرر اختياري 6", hint: "TBD" },
+    { en: "Elective 7", ar: "مقرر اختياري 7", hint: "TBD" },
     { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499" },
 
     // === Elective Courses (المقررات الاختيارية) ===
-    { en: "Selected Topics - level 3", ar: "موضوعات مختارة - مستوى 3", hint: "CS 300" },
     { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313" },
     { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314" },
     { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332" },
     { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351" },
     { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361" },
-    { en: "Selected Topics - level 4", ar: "موضوعات مختارة - مستوى 4", hint: "CS 400" },
     { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405" },
     { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418" },
     { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432" },
@@ -86,7 +90,7 @@ const predefinedCourses = [
     { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360" }
 ];
 
-// نصوص الترجمة (تم إضافة كلمات الفصلي والتراكمي)
+// نصوص الترجمة
 const i18n = {
     en: {
         title: "GPA Calculator",
@@ -160,7 +164,7 @@ function toggleLanguage() {
     }
     
     document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-    populateDatalist(); // تحديث لغة القائمة
+    populateDatalist(); 
     renderSavedSemesters();
 }
 
@@ -282,21 +286,18 @@ function renderSavedSemesters() {
     semestersList.innerHTML = '';
     savedSemestersBox.style.display = savedSemesters.length > 0 ? 'block' : 'none';
 
-    // متغيرات لحساب التراكمي التتابعي لكل ترم
     let runningUniqueCourses = {};
 
     savedSemesters.forEach((sem, index) => {
         let semCGPA = "0.00";
 
         if (sem.isChecked) {
-            // تحديث المواد الفريدة حتى هذا الترم (لو مادة متكررة هتاخد الجريد الأحدث)
             sem.courseDetails.forEach(course => {
                 let normalizedName = course.subject.trim().toLowerCase();
                 let points = gradePoints[course.grade] || 0;
                 runningUniqueCourses[normalizedName] = { ...course, points };
             });
 
-            // حساب التراكمي لحد الترم ده
             let runningPoints = 0;
             let runningHours = 0;
             Object.values(runningUniqueCourses).forEach(c => {
@@ -311,7 +312,6 @@ function renderSavedSemesters() {
 
         const div = document.createElement('div');
         div.className = 'semester-card';
-        // إضافة الفصلي والتراكمي بشكل متجاور ومنسق
         div.innerHTML = `
             <div class="semester-info" style="margin-bottom: 10px;">
                 <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
@@ -334,7 +334,7 @@ function toggleSemester(index) {
     savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
     saveToLocal();
     calculateGPA(); 
-    renderSavedSemesters(); // تحديث العرض عشان التراكمي يتغير لو قفلنا ترم في النص
+    renderSavedSemesters(); 
 }
 
 function deleteSemester(index) {
@@ -357,6 +357,36 @@ function editSemester(index) {
 
     updateUI();
     renderSavedSemesters();
+}
+
+// === 7. إعادة ضبط الآلة الحاسبة بالكامل (Reset) ===
+function resetCalculator() {
+    const confirmMsg = currentLang === 'en' 
+        ? "Are you sure you want to delete all data and start over?" 
+        : "هل أنت متأكد من مسح جميع البيانات والبدء من جديد؟";
+        
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    // تصفير المصفوفات والمتغيرات
+    courses = [];
+    savedSemesters = [];
+    currentEditingName = null;
+    editingIndex = null;
+    maxCoursesAllowed = 6;
+
+    // مسح البيانات المحفوظة في المتصفح
+    saveToLocal();
+
+    // تحديث الواجهة
+    updateUI();
+    renderSavedSemesters();
+
+    // تصفير حقول الإدخال لتكون جاهزة لترم جديد
+    document.getElementById('subject').value = '';
+    document.getElementById('grade').selectedIndex = 0;
+    document.getElementById('credits').selectedIndex = 1; // بيرجع لـ 3 ساعات
 }
 
 // تشغيل عند التحميل

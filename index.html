@@ -42,9 +42,16 @@
             
             <button id="add-course-btn">Add course ➕</button>
             
-            <button id="save-sem-btn" onclick="saveAndClearSemester()" style="background-color: #07ffb5; color: black; font-weight: bold;">
-                Save & Add New Semester
-            </button>
+            <!-- تم إضافة الزرارين هنا جنب بعض -->
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="save-sem-btn" onclick="saveAndClearSemester()" style="background-color: #07ffb5; color: black; font-weight: bold; flex: 2;">
+                    Save & Add New Semester
+                </button>
+                
+                <button id="reset-btn" onclick="resetCalculator()" style="background-color: #ff4d4d; color: white; font-weight: bold; flex: 1; border: none; border-radius: 5px; cursor: pointer;">
+                    Reset
+                </button>
+            </div>
         </div>
 
         <div id="saved-semesters-box" style="margin: 20px 0; display: none;">
