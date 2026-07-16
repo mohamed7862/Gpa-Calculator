@@ -11,27 +11,106 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// نصوص الترجمة
+// قائمة المواد المقترحة مع الـ Hints (تقدر تعدل وتضيف براحتك)
+// قائمة المواد المقترحة من الجداول (الأساسي والاختياري)
+const predefinedCourses = [
+    // === First Level - First Semester ===
+    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101" },
+    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102" },
+    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101" },
+    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101" },
+    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103" },
+    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131" },
+
+    // === First Level - Second Semester ===
+    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103" },
+    { en: "Physics", ar: "فيزياء", hint: "BS 121" },
+    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102" },
+    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102" },
+    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103" },
+    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121" },
+
+    // === Fourth Level ===
+    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413" },
+    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443" },
+    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498" },
+    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462" },
+    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455" },
+    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499" },
+
+    // === Elective Courses (المقررات الاختيارية) ===
+    { en: "Selected Topics - level 3", ar: "موضوعات مختارة - مستوى 3", hint: "CS 300" },
+    { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313" },
+    { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314" },
+    { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332" },
+    { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351" },
+    { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361" },
+    { en: "Selected Topics - level 4", ar: "موضوعات مختارة - مستوى 4", hint: "CS 400" },
+    { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405" },
+    { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418" },
+    { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432" },
+    { en: "Cloud Computing", ar: "الحوسبة السحابية", hint: "CS 433" },
+    { en: "Virtual Reality", ar: "الواقع الافتراضي", hint: "CS 444" },
+    { en: "Computer Vision Systems", ar: "نظم الرؤية بالحاسب", hint: "CS 445" },
+    { en: "Introduction to embedded systems", ar: "مقدمة في النظم المدمجة", hint: "CS 463" },
+    { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470" },
+
+    // === Second Level - First Semester ===
+    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201" },
+    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203" },
+    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205" },
+    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210" },
+    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211" },
+    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220" },
+
+    // === Second Level - Second Semester ===
+    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202" },
+    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201" },
+    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204" },
+    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210" },
+    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250" },
+    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206" },
+
+    // === Third Level - First Semester ===
+    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307" },
+    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309" },
+    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315" },
+    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331" },
+    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323" },
+
+    // === Third Level - Second Semester ===
+    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312" },
+    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321" },
+    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340" },
+    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353" },
+    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360" }
+];
+
+// نصوص الترجمة (تم إضافة كلمات الفصلي والتراكمي)
 const i18n = {
     en: {
         title: "GPA Calculator",
-        subjectPlaceholder: "Subject Name",
+        subjectPlaceholder: "Subject Name (Type to search)",
         addBtn: "Add course ➕",
         saveBtn: "Save & Update Semester",
         savedTitle: "Saved Semesters",
         finalGpa: "Final GPA",
         langBtn: "العربية",
-        header: ["Subject", "Grade", "Hours", "Delete"]
+        header: ["Subject", "Grade", "Hours", "Delete"],
+        termGpa: "Term:",
+        cgpa: "CGPA:"
     },
     ar: {
         title: "حاسبة المعدل التراكمي",
-        subjectPlaceholder: "اسم المادة",
+        subjectPlaceholder: "اسم المادة (ابحث أو اكتب)",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
         savedTitle: "الترمات المحفوظة",
         finalGpa: "المعدل النهائي",
         langBtn: "English",
-        header: ["المادة", "التقدير", "الساعات", "حذف"]
+        header: ["المادة", "التقدير", "الساعات", "حذف"],
+        termGpa: "فصلي:",
+        cgpa: "تراكمي:"
     }
 };
 
@@ -44,6 +123,19 @@ const coursesList = document.getElementById('courses-list');
 const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
+
+// === وظيفة جديدة: تعبئة قائمة المواد الذكية ===
+function populateDatalist() {
+    const datalist = document.getElementById('subjects-list');
+    if (!datalist) return;
+    datalist.innerHTML = '';
+    predefinedCourses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = currentLang === 'en' ? course.en : course.ar;
+        option.textContent = `- ${course.hint}`;
+        datalist.appendChild(option);
+    });
+}
 
 // === 3. وظائف الذاكرة واللغة ===
 function saveToLocal() {
@@ -68,6 +160,7 @@ function toggleLanguage() {
     }
     
     document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    populateDatalist(); // تحديث لغة القائمة
     renderSavedSemesters();
 }
 
@@ -115,42 +208,30 @@ function renderCourses() {
     });
 }
 
-// === 5. دالة الحساب الذكية (تحسب التقدير الأعلى وتلغي القديم) ===
+// === 5. دالة الحساب الذكية للنهائي ===
 function calculateGPA() {
     let allCourses = [];
 
-    // 1. تجميع مواد الترم الحالي
     courses.forEach(c => allCourses.push({ ...c }));
 
-    // 2. تجميع مواد الترمات المحفوظة (التي تم تفعيلها)
     savedSemesters.forEach(sem => {
         if (sem.isChecked) {
             sem.courseDetails.forEach(c => allCourses.push({ ...c }));
         }
     });
 
-    // 3. تصفية المواد لأخذ الدرجة الأفضل فقط لكل مادة
     let uniqueCourses = {};
 
     allCourses.forEach(course => {
-        // توحيد الاسم لضمان المطابقة (حذف مسافات + حروف صغيرة)
         let normalizedName = course.subject.trim().toLowerCase();
         let points = gradePoints[course.grade] || 0;
-
-        if (!uniqueCourses[normalizedName]) {
-            // إضافة المادة لأول مرة
-            uniqueCourses[normalizedName] = { ...course, points };
-        } else {
-    // تحديث المادة دائماً لتصبح هي القيمة الأخيرة المدخلة
-    uniqueCourses[normalizedName] = { ...course, points };
-}
+        uniqueCourses[normalizedName] = { ...course, points };
     });
 
-    // 4. حساب المعدل النهائي من القائمة المصفاة
     let totalPoints = 0, totalHours = 0;
 
     Object.values(uniqueCourses).forEach(c => {
-        totalPoints += (gradePoints[c.grade] || 0) * c.credits;
+        totalPoints += c.points * c.credits;
         totalHours += c.credits;
     });
 
@@ -201,18 +282,48 @@ function renderSavedSemesters() {
     semestersList.innerHTML = '';
     savedSemestersBox.style.display = savedSemesters.length > 0 ? 'block' : 'none';
 
+    // متغيرات لحساب التراكمي التتابعي لكل ترم
+    let runningUniqueCourses = {};
+
     savedSemesters.forEach((sem, index) => {
+        let semCGPA = "0.00";
+
+        if (sem.isChecked) {
+            // تحديث المواد الفريدة حتى هذا الترم (لو مادة متكررة هتاخد الجريد الأحدث)
+            sem.courseDetails.forEach(course => {
+                let normalizedName = course.subject.trim().toLowerCase();
+                let points = gradePoints[course.grade] || 0;
+                runningUniqueCourses[normalizedName] = { ...course, points };
+            });
+
+            // حساب التراكمي لحد الترم ده
+            let runningPoints = 0;
+            let runningHours = 0;
+            Object.values(runningUniqueCourses).forEach(c => {
+                runningPoints += c.points * c.credits;
+                runningHours += c.credits;
+            });
+
+            semCGPA = runningHours > 0 ? (runningPoints / runningHours).toFixed(2) : "0.00";
+        } else {
+            semCGPA = "-";
+        }
+
         const div = document.createElement('div');
         div.className = 'semester-card';
+        // إضافة الفصلي والتراكمي بشكل متجاور ومنسق
         div.innerHTML = `
-            <div class="semester-info">
+            <div class="semester-info" style="margin-bottom: 10px;">
                 <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
-                <label for="sem-${sem.id}">${sem.name}</label>
+                <label for="sem-${sem.id}" style="font-weight: bold; font-size: 16px;">${sem.name}</label>
             </div>
-            <div style="display: flex; align-items: center;">
-                <span class="semester-gpa">GPA: ${sem.gpa}</span>
-                <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
-                <button onclick="deleteSemester(${index})" class="btn-delete-sem">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                <span class="semester-gpa" style="font-size: 14px;">${i18n[currentLang].termGpa} <strong>${sem.gpa}</strong></span>
+                <span class="semester-cgpa" style="font-size: 14px; color: #07ffb5; font-weight: bold;">| ${i18n[currentLang].cgpa} ${semCGPA}</span>
+                <div style="margin-left: auto; display: flex; gap: 5px;">
+                    <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                    <button onclick="deleteSemester(${index})" class="btn-delete-sem" style="background: #ff4d4d; color: white;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
+                </div>
             </div>
         `;
         semestersList.appendChild(div);
@@ -222,7 +333,8 @@ function renderSavedSemesters() {
 function toggleSemester(index) {
     savedSemesters[index].isChecked = !savedSemesters[index].isChecked;
     saveToLocal();
-    calculateGPA(); // ستقوم بإعادة الحساب بناءً على المواد المفعلة فقط
+    calculateGPA(); 
+    renderSavedSemesters(); // تحديث العرض عشان التراكمي يتغير لو قفلنا ترم في النص
 }
 
 function deleteSemester(index) {
@@ -248,5 +360,6 @@ function editSemester(index) {
 }
 
 // تشغيل عند التحميل
+populateDatalist();
 renderSavedSemesters();
 updateUI();

@@ -34,6 +34,7 @@ h1 {
 /* --- مدخلات البيانات --- */
 .form-group {
     display: flex;
+    flex-wrap: wrap; /* لجعل المدخلات تتجاوب مع الشاشات الصغيرة */
     flex-direction: row; 
     gap: 12px;
     margin-bottom: 20px;
@@ -41,6 +42,7 @@ h1 {
 
 .form-group > * {
     flex: 1;
+    min-width: 120px; /* ضمان عدم صغر الحقول جداً على الموبايل */
     padding: 14px;
     border: 2px solid #dfe6e9;
     border-radius: 12px;
@@ -54,7 +56,7 @@ h1 {
     box-shadow: 0 0 8px rgba(0, 128, 255, 0.2);
 }
 
-/* --- الأزرار --- */
+/* --- الأزرار الأساسية --- */
 button {
     width: 100%;
     padding: 14px;
@@ -78,10 +80,10 @@ button:hover {
 }
 
 #add-course-btn:hover {
-    background-color: #077a74;
+    background-color: #5ab807; /* لون أغمق قليلاً عند الهوفر */
 }
 
-/* زر الحفظ (الذي لونه أخضر في الكود الأصلي) */
+/* زر الحفظ */
 button[onclick="saveAndClearSemester()"] {
     background: linear-gradient(to right, #00b894, #00cec9);
     color: white;
@@ -126,9 +128,12 @@ button[onclick="saveAndClearSemester()"] {
     font-size: 15px;
     font-weight: 500;
     box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* --- زر الحذف الصغير --- */
+/* --- زر الحذف الصغير في صف المادة --- */
 .delete-btn {
     background-color: #ff7675;
     color: white;
@@ -147,12 +152,13 @@ button[onclick="saveAndClearSemester()"] {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
     padding: 15px 20px;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     border-radius: 15px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column; /* جعل العناصر تترتب رأسياً */
+    gap: 10px;
     transition: all 0.3s ease;
+    text-align: inherit; /* احترام اتجاه اللغة الحالي */
 }
 
 .semester-card:hover {
@@ -160,12 +166,48 @@ button[onclick="saveAndClearSemester()"] {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* تنسيق الفصلي والتراكمي */
 .semester-gpa {
     background: #00b894;
     color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 8px;
     font-weight: bold;
+}
+
+.semester-cgpa {
+    background: #0984e3; /* تمييز لون التراكمي */
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* --- أزرار التعديل والحذف داخل بطاقة الترم --- */
+.btn-edit-sem, .btn-delete-sem {
+    width: auto; /* إلغاء العرض 100% */
+    padding: 8px 16px;
+    margin: 0;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+.btn-edit-sem {
+    background-color: #f39c12;
+    color: white;
+}
+
+.btn-edit-sem:hover {
+    background-color: #e67e22;
+}
+
+.btn-delete-sem {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.btn-delete-sem:hover {
+    background-color: #c0392b;
 }
 
 /* --- عرض النتيجة النهائية --- */
@@ -193,4 +235,12 @@ button[onclick="saveAndClearSemester()"] {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* تظبيط اتجاه اللغة (RTL & LTR) */
+body[dir="rtl"] .semester-info {
+    text-align: right;
+}
+body[dir="ltr"] .semester-info {
+    text-align: left;
 }

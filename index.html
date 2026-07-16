@@ -15,7 +15,10 @@
         
         <div id="course-form">
             <div class="form-group">
-                <input type="text" id="subject" placeholder="Subject Name" required>
+                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
+                
+                <datalist id="subjects-list"></datalist>
+
                 <select id="grade">
                     <option value="A+">A+</option>
                     <option value="A">A</option>
