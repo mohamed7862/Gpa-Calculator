@@ -14,80 +14,80 @@ const gradePoints = {
 // قائمة المواد المقترحة من الجداول (الأساسي والاختياري)
 const predefinedCourses = [
     // === First Level - First Semester ===
-    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101" },
-    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102" },
-    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101" },
-    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101" },
-    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103" },
-    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131" },
+    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
+    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2 },
+    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3 },
+    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3 },
+    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3 },
+    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3 },
 
     // === First Level - Second Semester ===
-    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103" },
-    { en: "Physics", ar: "فيزياء", hint: "BS 121" },
-    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102" },
-    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102" },
-    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103" },
-    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121" },
+    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2 },
+    { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3 },
+    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3 },
+    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3 },
+    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3 },
+    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3 },
 
     // === Fourth Level - First Semester ===
-    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413" },
-    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443" },
-    { en: "Elective 3", ar: "مقرر اختياري 3", hint: "TBD" },
-    { en: "Elective 4", ar: "مقرر اختياري 4", hint: "TBD" },
-    { en: "Elective 5", ar: "مقرر اختياري 5", hint: "TBD" },
-    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498" },
+    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413", credits: 3 },
+    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443", credits: 3 },
+    { en: "Elective 3", ar: "مقرر اختياري 3", hint: "TBD", credits: 3 },
+    { en: "Elective 4", ar: "مقرر اختياري 4", hint: "TBD", credits: 3 },
+    { en: "Elective 5", ar: "مقرر اختياري 5", hint: "TBD", credits: 3 },
+    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498", credits: 3 },
 
     // === Fourth Level - Second Semester ===
-    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462" },
-    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455" },
-    { en: "Elective 6", ar: "مقرر اختياري 6", hint: "TBD" },
-    { en: "Elective 7", ar: "مقرر اختياري 7", hint: "TBD" },
-    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499" },
+    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462", credits: 3 },
+    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455", credits: 3 },
+    { en: "Elective 6", ar: "مقرر اختياري 6", hint: "TBD", credits: 3 },
+    { en: "Elective 7", ar: "مقرر اختياري 7", hint: "TBD", credits: 3 },
+    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499", credits: 3 },
 
     // === Elective Courses (المقررات الاختيارية) ===
-    { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313" },
-    { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314" },
-    { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332" },
-    { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351" },
-    { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361" },
-    { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405" },
-    { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418" },
-    { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432" },
-    { en: "Cloud Computing", ar: "الحوسبة السحابية", hint: "CS 433" },
-    { en: "Virtual Reality", ar: "الواقع الافتراضي", hint: "CS 444" },
-    { en: "Computer Vision Systems", ar: "نظم الرؤية بالحاسب", hint: "CS 445" },
-    { en: "Introduction to embedded systems", ar: "مقدمة في النظم المدمجة", hint: "CS 463" },
-    { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470" },
+    { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313", credits: 3 },
+    { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314", credits: 3 },
+    { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332", credits: 3 },
+    { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351", credits: 3 },
+    { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361", credits: 3 },
+    { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405", credits: 3 },
+    { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418", credits: 3 },
+    { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432", credits: 3 },
+    { en: "Cloud Computing", ar: "الحوسبة السحابية", hint: "CS 433", credits: 3 },
+    { en: "Virtual Reality", ar: "الواقع الافتراضي", hint: "CS 444", credits: 3 },
+    { en: "Computer Vision Systems", ar: "نظم الرؤية بالحاسب", hint: "CS 445", credits: 3 },
+    { en: "Introduction to embedded systems", ar: "مقدمة في النظم المدمجة", hint: "CS 463", credits: 3 },
+    { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470", credits: 3 },
 
     // === Second Level - First Semester ===
-    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201" },
-    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203" },
-    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205" },
-    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210" },
-    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211" },
-    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220" },
+    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201", credits: 2 },
+    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3 },
+    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205", credits: 3 },
+    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210", credits: 3 },
+    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211", credits: 3 },
+    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3 },
 
     // === Second Level - Second Semester ===
-    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202" },
-    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201" },
-    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204" },
-    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210" },
-    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250" },
-    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206" },
+    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202", credits: 2 },
+    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3 },
+    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204", credits: 2 },
+    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3 },
+    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250", credits: 3 },
+    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206", credits: 3 },
 
     // === Third Level - First Semester ===
-    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307" },
-    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309" },
-    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315" },
-    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331" },
-    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323" },
+    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3 },
+    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309", credits: 3 },
+    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315", credits: 3 },
+    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3 },
+    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323", credits: 3 },
 
     // === Third Level - Second Semester ===
-    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312" },
-    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321" },
-    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340" },
-    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353" },
-    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360" }
+    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312", credits: 3 },
+    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3 },
+    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340", credits: 3 },
+    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353", credits: 3 },
+    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3 }
 ];
 
 // نصوص الترجمة
@@ -122,7 +122,7 @@ const i18n = {
 const addCourseBtn = document.getElementById('add-course-btn');
 const subjectInput = document.getElementById('subject');
 const gradeSelect = document.getElementById('grade');
-const creditsSelect = document.getElementById('credits');
+// لغينا creditsSelect من هنا
 const coursesList = document.getElementById('courses-list');
 const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
@@ -181,7 +181,17 @@ addCourseBtn.addEventListener('click', () => {
         return;
     }
 
-    courses.push({ subject, grade: gradeSelect.value, credits: parseFloat(creditsSelect.value) });
+    // التعرف على عدد الساعات تلقائياً
+    const predefinedCourse = predefinedCourses.find(c => c.en === subject || c.ar === subject);
+    let courseCredits = 3; // افتراضي 3 ساعات
+    
+    if (predefinedCourse) {
+        courseCredits = predefinedCourse.credits; // من القائمة
+    } else if (subject.toUpperCase().includes('H')) {
+        courseCredits = 2; // مادة خارجية تحتوي على حرف H
+    }
+
+    courses.push({ subject, grade: gradeSelect.value, credits: courseCredits });
     updateUI();
     subjectInput.value = '';
     subjectInput.focus();
@@ -386,7 +396,6 @@ function resetCalculator() {
     // تصفير حقول الإدخال لتكون جاهزة لترم جديد
     document.getElementById('subject').value = '';
     document.getElementById('grade').selectedIndex = 0;
-    document.getElementById('credits').selectedIndex = 1; // بيرجع لـ 3 ساعات
 }
 
 // تشغيل عند التحميل
