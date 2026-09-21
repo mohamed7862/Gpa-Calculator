@@ -254,6 +254,16 @@ function calculateGPA() {
     gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
 }
 
+// === دالة تجنب تكرار أسماء الترمات ===
+function getNextSemesterNumber() {
+    if (savedSemesters.length === 0) return 1;
+    const numbers = savedSemesters.map(s => {
+        const match = s.name.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+    });
+    return Math.max(...numbers, 0) + 1;
+}
+
 // === 6. إدارة الترمات ===
 function saveAndClearSemester() {
     if (courses.length === 0) {
@@ -272,7 +282,7 @@ function saveAndClearSemester() {
 
     const semesterData = {
         id: editingIndex !== null ? savedSemesters[editingIndex].id : Date.now(),
-        name: currentEditingName || (currentLang === 'en' ? `Semester ${savedSemesters.length + 1}` : `الترم ${savedSemesters.length + 1}`),
+        name: currentEditingName || (currentLang === 'en' ? `Semester ${getNextSemesterNumber()}` : `الترم ${getNextSemesterNumber()}`),
         totalPoints: semPoints,
         totalHours: semHours,
         gpa: semGPA,
