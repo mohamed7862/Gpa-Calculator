@@ -420,7 +420,7 @@ window.addEventListener("pagehide", function() {
     saveToLocal();
 });
 
-// === 9. دالة استيراد البيانات المقروءة تلقائياً من موقع الجامعة ===
+// === 9. دالة استيراد البيانات المقروءة أوتوماتيكياً وتقسيمها لترمات (6 مواد في كل ترم) ===
 function handleImportedData() {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -431,47 +431,51 @@ function handleImportedData() {
                 const importedCourses = JSON.parse(decodeURIComponent(rawData));
                 
                 if (Array.isArray(importedCourses) && importedCourses.length > 0) {
-                    let importedTermCourses = [];
+                    const chunkSize = 6; // تقسيم كل 6 مواد في ترم
+                    
+                    for (let i = 0; i < importedCourses.length; i += chunkSize) {
+                        const chunk = importedCourses.slice(i, i + chunkSize);
+                        
+                        let termCourses = chunk.map(imp => {
+                            const matchedCourse = predefinedCourses.find(c => 
+                                c.en.toLowerCase() === imp.name.toLowerCase() || 
+                                c.ar === imp.name ||
+                                (imp.code && c.hint.toLowerCase().includes(imp.code.toLowerCase()))
+                            );
 
-                    importedCourses.forEach(imp => {
-                        // مطابقة اسم المادة مع predefinedCourses لاقتناص عدد الساعات
-                        const matchedCourse = predefinedCourses.find(c => 
-                            c.en.toLowerCase() === imp.name.toLowerCase() || 
-                            c.ar === imp.name ||
-                            (imp.code && c.hint.toLowerCase().includes(imp.code.toLowerCase()))
-                        );
+                            let courseCredits = 3;
+                            if (matchedCourse) {
+                                courseCredits = matchedCourse.credits;
+                            } else if (imp.code && imp.code.toUpperCase().includes('H')) {
+                                courseCredits = 2;
+                            }
 
-                        let courseCredits = 3;
-                        if (matchedCourse) {
-                            courseCredits = matchedCourse.credits;
-                        } else if (imp.code && imp.code.toUpperCase().includes('H')) {
-                            courseCredits = 2;
-                        }
-
-                        importedTermCourses.push({
-                            subject: imp.name,
-                            grade: imp.grade.toUpperCase(),
-                            credits: courseCredits
+                            return {
+                                subject: imp.name,
+                                grade: imp.grade.toUpperCase(),
+                                credits: courseCredits
+                            };
                         });
-                    });
 
-                    // حفظ المواد المجلوبة كترم مستورد تلقائي
-                    const importedSemesterData = {
-                        id: Date.now(),
-                        name: currentLang === 'en' ? "Imported Term" : "الترم المستورد",
-                        totalPoints: importedTermCourses.reduce((sum, c) => sum + ((gradePoints[c.grade] || 0) * c.credits), 0),
-                        totalHours: importedTermCourses.reduce((sum, c) => sum + c.credits, 0),
-                        gpa: (importedTermCourses.reduce((sum, c) => sum + ((gradePoints[c.grade] || 0) * c.credits), 0) / importedTermCourses.reduce((sum, c) => sum + c.credits, 0)).toFixed(2),
-                        isChecked: true,
-                        courseDetails: importedTermCourses
-                    };
+                        let semPoints = termCourses.reduce((sum, c) => sum + ((gradePoints[c.grade] || 0) * c.credits), 0);
+                        let semHours = termCourses.reduce((sum, c) => sum + c.credits, 0);
 
-                    savedSemesters.push(importedSemesterData);
+                        savedSemesters.push({
+                            id: Date.now() + i,
+                            name: currentLang === 'en' ? `Semester ${getNextSemesterNumber()}` : `الترم ${getNextSemesterNumber()}`,
+                            totalPoints: semPoints,
+                            totalHours: semHours,
+                            gpa: semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00",
+                            isChecked: true,
+                            courseDetails: termCourses
+                        });
+                    }
+
                     saveToLocal();
                     renderSavedSemesters();
                     calculateGPA();
 
-                    // تنظيف الـ URL
+                    // تنظيف الـ URL بعد الاستيراد
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
             } catch (err) {
