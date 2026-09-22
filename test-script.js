@@ -420,7 +420,7 @@ window.addEventListener("pagehide", function() {
     saveToLocal();
 });
 
-// === 9. دالة استيراد البيانات المقروءة أوتوماتيكياً وتقسيمها لترمات (6 مواد في كل ترم) ===
+// === 9. دالة استيراد البيانات المقروءة أوتوماتيكياً وإنشاء كروت منفصلة لكل فصل دراسي ===
 function handleImportedData() {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -428,15 +428,12 @@ function handleImportedData() {
         const rawData = urlParams.get('data');
         if (rawData) {
             try {
-                const importedCourses = JSON.parse(decodeURIComponent(rawData));
+                const importedSemestersData = JSON.parse(decodeURIComponent(rawData));
                 
-                if (Array.isArray(importedCourses) && importedCourses.length > 0) {
-                    const chunkSize = 6; // تقسيم كل 6 مواد في ترم
+                if (Array.isArray(importedSemestersData) && importedSemestersData.length > 0) {
                     
-                    for (let i = 0; i < importedCourses.length; i += chunkSize) {
-                        const chunk = importedCourses.slice(i, i + chunkSize);
-                        
-                        let termCourses = chunk.map(imp => {
+                    importedSemestersData.forEach((semData, idx) => {
+                        let termCourses = semData.courses.map(imp => {
                             const matchedCourse = predefinedCourses.find(c => 
                                 c.en.toLowerCase() === imp.name.toLowerCase() || 
                                 c.ar === imp.name ||
@@ -461,15 +458,15 @@ function handleImportedData() {
                         let semHours = termCourses.reduce((sum, c) => sum + c.credits, 0);
 
                         savedSemesters.push({
-                            id: Date.now() + i,
-                            name: currentLang === 'en' ? `Semester ${getNextSemesterNumber()}` : `الترم ${getNextSemesterNumber()}`,
+                            id: Date.now() + idx,
+                            name: semData.termName || (currentLang === 'en' ? `Semester ${getNextSemesterNumber()}` : `الترم ${getNextSemesterNumber()}`),
                             totalPoints: semPoints,
                             totalHours: semHours,
                             gpa: semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00",
                             isChecked: true,
                             courseDetails: termCourses
                         });
-                    }
+                    });
 
                     saveToLocal();
                     renderSavedSemesters();
