@@ -172,32 +172,34 @@ function toggleLanguage() {
 }
 
 // === 4. إدارة الكورسات الحالية ===
-addCourseBtn.addEventListener('click', () => {
-    if (courses.length >= maxCoursesAllowed) {
-        alert(currentLang === 'en' ? `Limit is ${maxCoursesAllowed} courses.` : `الحد الأقصى هو ${maxCoursesAllowed} مواد.`);
-        return;
-    }
+if (addCourseBtn) {
+    addCourseBtn.addEventListener('click', () => {
+        if (courses.length >= maxCoursesAllowed) {
+            alert(currentLang === 'en' ? `Limit is ${maxCoursesAllowed} courses.` : `الحد الأقصى هو ${maxCoursesAllowed} مواد.`);
+            return;
+        }
 
-    const subject = subjectInput.value.trim();
-    if (!subject) {
-        alert(currentLang === 'en' ? "Please enter subject name!" : "يرجى إدخال اسم المادة!");
-        return;
-    }
+        const subject = subjectInput.value.trim();
+        if (!subject) {
+            alert(currentLang === 'en' ? "Please enter subject name!" : "يرجى إدخال اسم المادة!");
+            return;
+        }
 
-    const predefinedCourse = predefinedCourses.find(c => c.en === subject || c.ar === subject);
-    let courseCredits = 3;
-    
-    if (predefinedCourse) {
-        courseCredits = predefinedCourse.credits;
-    } else if (subject.toUpperCase().includes('H')) {
-        courseCredits = 2;
-    }
+        const predefinedCourse = predefinedCourses.find(c => c.en === subject || c.ar === subject);
+        let courseCredits = 3;
+        
+        if (predefinedCourse) {
+            courseCredits = predefinedCourse.credits;
+        } else if (subject.toUpperCase().includes('H')) {
+            courseCredits = 2;
+        }
 
-    courses.push({ subject, grade: gradeSelect.value, credits: courseCredits });
-    updateUI();
-    subjectInput.value = '';
-    subjectInput.focus();
-});
+        courses.push({ subject, grade: gradeSelect.value, credits: courseCredits });
+        updateUI();
+        subjectInput.value = '';
+        subjectInput.focus();
+    });
+}
 
 function deleteCourse(index) {
     courses.splice(index, 1);
@@ -210,6 +212,7 @@ function updateUI() {
 }
 
 function renderCourses() {
+    if (!coursesList) return;
     coursesList.innerHTML = ''; 
     courses.forEach((course, index) => {
         const row = document.createElement('div');
@@ -251,7 +254,9 @@ function calculateGPA() {
         totalHours += c.credits;
     });
 
-    gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
+    if (gpaDisplay) {
+        gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
+    }
 }
 
 // === دالة تجنب تكرار أسماء الترمات ===
@@ -305,6 +310,7 @@ function saveAndClearSemester() {
 }
 
 function renderSavedSemesters() {
+    if (!semestersList || !savedSemestersBox) return;
     semestersList.innerHTML = '';
     savedSemestersBox.style.display = savedSemesters.length > 0 ? 'block' : 'none';
 
@@ -399,14 +405,9 @@ function resetCalculator() {
     updateUI();
     renderSavedSemesters();
 
-    document.getElementById('subject').value = '';
-    document.getElementById('grade').selectedIndex = 0;
+    if (document.getElementById('subject')) document.getElementById('subject').value = '';
+    if (document.getElementById('grade')) document.getElementById('grade').selectedIndex = 0;
 }
-
-// تشغيل بدائي
-populateDatalist();
-renderSavedSemesters();
-updateUI();
 
 // === 8. حماية وإجبار الحفظ لمتصفح سفاري وأجهزة الآيفون (iOS) ===
 document.addEventListener("visibilitychange", function() {
@@ -418,3 +419,70 @@ document.addEventListener("visibilitychange", function() {
 window.addEventListener("pagehide", function() {
     saveToLocal();
 });
+
+// === 9. دالة استيراد البيانات المقروءة تلقائياً من موقع الجامعة ===
+function handleImportedData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('imported') === 'true') {
+        const rawData = urlParams.get('data');
+        if (rawData) {
+            try {
+                const importedCourses = JSON.parse(decodeURIComponent(rawData));
+                
+                if (Array.isArray(importedCourses) && importedCourses.length > 0) {
+                    let importedTermCourses = [];
+
+                    importedCourses.forEach(imp => {
+                        // مطابقة اسم المادة مع predefinedCourses لاقتناص عدد الساعات
+                        const matchedCourse = predefinedCourses.find(c => 
+                            c.en.toLowerCase() === imp.name.toLowerCase() || 
+                            c.ar === imp.name ||
+                            (imp.code && c.hint.toLowerCase().includes(imp.code.toLowerCase()))
+                        );
+
+                        let courseCredits = 3;
+                        if (matchedCourse) {
+                            courseCredits = matchedCourse.credits;
+                        } else if (imp.code && imp.code.toUpperCase().includes('H')) {
+                            courseCredits = 2;
+                        }
+
+                        importedTermCourses.push({
+                            subject: imp.name,
+                            grade: imp.grade.toUpperCase(),
+                            credits: courseCredits
+                        });
+                    });
+
+                    // حفظ المواد المجلوبة كترم مستورد تلقائي
+                    const importedSemesterData = {
+                        id: Date.now(),
+                        name: currentLang === 'en' ? "Imported Term" : "الترم المستورد",
+                        totalPoints: importedTermCourses.reduce((sum, c) => sum + ((gradePoints[c.grade] || 0) * c.credits), 0),
+                        totalHours: importedTermCourses.reduce((sum, c) => sum + c.credits, 0),
+                        gpa: (importedTermCourses.reduce((sum, c) => sum + ((gradePoints[c.grade] || 0) * c.credits), 0) / importedTermCourses.reduce((sum, c) => sum + c.credits, 0)).toFixed(2),
+                        isChecked: true,
+                        courseDetails: importedTermCourses
+                    };
+
+                    savedSemesters.push(importedSemesterData);
+                    saveToLocal();
+                    renderSavedSemesters();
+                    calculateGPA();
+
+                    // تنظيف الـ URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch (err) {
+                console.error("خطأ في معالجة البيانات المستوردة:", err);
+            }
+        }
+    }
+}
+
+// === التشغيل البدائي ===
+populateDatalist();
+renderSavedSemesters();
+updateUI();
+handleImportedData();
