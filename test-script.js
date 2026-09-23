@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المكتملة وشجرة المتطلبات السابقة (Prerequisites)
+// قائمة المواد المقترحة وشجرة المتطلبات السابقة
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
@@ -69,7 +69,7 @@ const predefinedCourses = [
     { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455", credits: 3, prereq: "CS 250" },
     { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499", credits: 3, prereq: "CS 498" },
 
-    // === Elective Courses (المقررات الاختيارية) ===
+    // === Elective Courses ===
     { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313", credits: 3, prereq: "CS 312" },
     { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314", credits: 3, prereq: "CS 203" },
     { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332", credits: 3, prereq: "CS 331" },
@@ -85,7 +85,6 @@ const predefinedCourses = [
     { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470", credits: 3, prereq: "CS 323" }
 ];
 
-// نصوص الترجمة
 const i18n = {
     en: {
         title: "GPA Calculator",
@@ -119,7 +118,6 @@ const i18n = {
     }
 };
 
-// === 2. ربط عناصر HTML ===
 const addCourseBtn = document.getElementById('add-course-btn');
 const subjectInput = document.getElementById('subject');
 const gradeSelect = document.getElementById('grade');
@@ -128,7 +126,6 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تعبئة القائمة المنسدلة ===
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
     if (!datalist) return;
@@ -142,7 +139,6 @@ function populateDatalist() {
     });
 }
 
-// === 3. وظائف الذاكرة واللغة ===
 function saveToLocal() {
     try {
         localStorage.setItem('savedSemesters', JSON.stringify(savedSemesters));
@@ -174,7 +170,6 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === 4. إضافة مادة مع فحص المتطلب السابق الشامل (الترمات المحفوظة + الترم الحالي) ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -188,43 +183,45 @@ if (addCourseBtn) {
             return;
         }
 
-        const predefinedCourse = predefinedCourses.find(c => c.en.toLowerCase() === subject.toLowerCase() || c.ar === subject);
+        const predefinedCourse = predefinedCourses.find(c => 
+            c.en.trim().toLowerCase() === subject.toLowerCase() || 
+            c.ar.trim() === subject ||
+            c.hint.toLowerCase() === subject.toLowerCase()
+        );
 
-        // === فحص المتطلب السابق الشامل ===
+        // === فحص المتطلب السابق الأكاديمي الصارم ===
         if (predefinedCourse && predefinedCourse.prereq) {
-            let passedCoursesHints = new Set();
+            let passedCourseHints = new Set();
 
-            // 1. فحص المواد في الترمات المحفوظة سابقاً
-            savedSemesters.forEach(sem => {
-                if (sem.isChecked) {
-                    sem.courseDetails.forEach(c => {
-                        let pts = gradePoints[c.grade] || 0;
-                        if (pts > 0) { // ناجح (ليس F)
-                            let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
-                            if (match && match.hint) passedCoursesHints.add(match.hint);
-                        }
-                    });
-                }
-            });
-
-            // 2. فحص المواد المسجلة في الترم الحالي (المضافة مؤقتاً بالجدول قبل الحفظ)
-            courses.forEach(c => {
+            const checkAndAddPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح (ليس F)
-                    let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
-                    if (match && match.hint) passedCoursesHints.add(match.hint);
+                if (pts > 0) { // ناجح (مش F)
+                    let inputSub = c.subject.trim().toLowerCase();
+                    let match = predefinedCourses.find(p => 
+                        p.en.trim().toLowerCase() === inputSub || 
+                        p.ar.trim() === c.subject.trim() ||
+                        p.hint.toLowerCase() === inputSub
+                    );
+                    if (match && match.hint) {
+                        passedCourseHints.add(match.hint.toUpperCase());
+                    }
                 }
-            });
+            };
 
-            // 3. إذا لم يمر من المتطلب السابق بنجاح
-            if (!passedCoursesHints.has(predefinedCourse.prereq)) {
-                let reqCourse = predefinedCourses.find(p => p.hint === predefinedCourse.prereq);
-                let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : predefinedCourse.prereq;
+            savedSemesters.forEach(sem => {
+                if (sem.isChecked) sem.courseDetails.forEach(checkAndAddPassed);
+            });
+            courses.forEach(checkAndAddPassed);
+
+            const requiredHint = predefinedCourse.prereq.toUpperCase();
+            if (!passedCourseHints.has(requiredHint)) {
+                let reqCourse = predefinedCourses.find(p => p.hint.toUpperCase() === requiredHint);
+                let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : requiredHint;
 
                 alert(currentLang === 'en' 
-                    ? `❌ Cannot register [${subject}]. You have not passed the prerequisite: (${reqName} - ${predefinedCourse.prereq})!` 
-                    : `❌ عفواً! لا يمكنك تسجيل مادة [${subject}] لأنك لم تتجاوز المادة المتطلبة لها بنجاح: (${reqName} - ${predefinedCourse.prereq})!`);
-                return; // منع الإضافة تماماً
+                    ? `❌ Cannot register [${subject}]. You have not passed prerequisite: (${reqName} - ${requiredHint})!` 
+                    : `❌ عفواً! لا يمكنك تسجيل مادة [${subject}] لأنك لم تتجاوز المادة المتطلبة لها بنجاح: (${reqName} - ${requiredHint})!`);
+                return;
             }
         }
 
@@ -264,7 +261,6 @@ function renderCourses() {
     });
 }
 
-// === 5. حساب الـ GPA والتراكمي والتحسين الأكاديمي ===
 function calculateGPA() {
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
@@ -406,7 +402,6 @@ function runImprovementSimulation(totalPoints, totalHours) {
         : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#07ffb5; font-size:16px;">${simulatedCGPA}</span>`;
 }
 
-// === 6. إدارة الترمات والحفظ ===
 function getNextSemesterNumber() {
     if (savedSemesters.length === 0) return 1;
     const numbers = savedSemesters.map(s => {
@@ -455,6 +450,7 @@ function saveAndClearSemester() {
     renderSavedSemesters();
 }
 
+// === تصحيح دالة إعادة حساب وتحديث كروت الترمات بدقة متناهية ===
 function renderSavedSemesters() {
     if (!semestersList || !savedSemestersBox) return;
     semestersList.innerHTML = '';
@@ -463,6 +459,14 @@ function renderSavedSemesters() {
     let runningUniqueCourses = {};
 
     savedSemesters.forEach((sem, index) => {
+        // حساب GPA الترم الحقيقي بدقة بناءً على مواده الحالية
+        let semPts = 0, semHrs = 0;
+        sem.courseDetails.forEach(c => {
+            semPts += (gradePoints[c.grade] || 0) * c.credits;
+            semHrs += c.credits;
+        });
+        sem.gpa = semHrs > 0 ? (semPts / semHrs).toFixed(2) : "0.00";
+
         let semCGPA = "0.00";
         if (sem.isChecked) {
             sem.courseDetails.forEach(course => {
@@ -550,7 +554,6 @@ function resetCalculator() {
     renderSavedSemesters();
 }
 
-// === 7. الحفظ والاستدعاء المباشر ===
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "hidden") saveToLocal();
 });
