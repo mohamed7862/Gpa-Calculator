@@ -102,7 +102,10 @@ const i18n = {
         langBtn: "العربية",
         header: ["Subject", "Grade", "Hours", "Delete"],
         termGpa: "Term:",
-        cgpa: "CGPA:"
+        cgpa: "CGPA:",
+        probationWarning: "⚠️ Academic Probation: CGPA is below 2.00!",
+        mandatoryImprovement: "Mandatory Improvement Plan (To reach 2.00):",
+        optionalImprovement: "Optional Course Improvement Simulator 🚀"
     },
     ar: {
         title: "حاسبة المعدل التراكمي",
@@ -114,7 +117,10 @@ const i18n = {
         langBtn: "English",
         header: ["المادة", "التقدير", "الساعات", "حذف"],
         termGpa: "فصلي:",
-        cgpa: "تراكمي:"
+        cgpa: "تراكمي:",
+        probationWarning: "🚨 إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
+        mandatoryImprovement: "الخطة الإجبارية لتحسين المواد (للوصول لـ 2.00):",
+        optionalImprovement: "مُحاكي تحسين المواد الاختياري 🚀"
     }
 };
 
@@ -227,7 +233,7 @@ function renderCourses() {
     });
 }
 
-// === 5. دالة الحساب الذكية للنهائي ===
+// === 5. دالة الحساب الذكية للنهائي ومحاكي التحسين ===
 function calculateGPA() {
     let allCourses = [];
 
@@ -254,9 +260,127 @@ function calculateGPA() {
         totalHours += c.credits;
     });
 
+    let finalCGPA = totalHours > 0 ? (totalPoints / totalHours) : 0;
+
     if (gpaDisplay) {
-        gpaDisplay.innerText = totalHours > 0 ? (totalPoints / totalHours).toFixed(2) : "0.00";
+        gpaDisplay.innerText = finalCGPA.toFixed(2);
     }
+
+    // تشغيل محاكي وخوارزمية التحسين بناءً على التراكمي
+    renderImprovementEngine(Object.values(uniqueCourses), finalCGPA, totalPoints, totalHours);
+}
+
+// === 5.1 خوارزمية ومحاكي التحسين الإجباري والابيض والأحمر ===
+function renderImprovementEngine(uniqueCoursesList, currentCGPA, totalPoints, totalHours) {
+    let container = document.getElementById('improvement-engine-box');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'improvement-engine-box';
+        container.style.marginTop = '20px';
+        const mainContainer = document.querySelector('.gpa-result') || document.body;
+        mainContainer.appendChild(container);
+    }
+
+    if (totalHours === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // أ) إذا كان الطالب تحت الإنذار (أقل من 2.00)
+    if (currentCGPA < 2.0) {
+        let pointsNeeded = (2.0 * totalHours) - totalPoints;
+        let improvableCourses = uniqueCoursesList.filter(c => c.points < 2.4); // المواد D+, D, D-, F
+
+        let recommendedPlan = [];
+        let accumulatedGain = 0;
+
+        for (let course of improvableCourses) {
+            // تجربة تحسين المادة لـ C+ (2.6) أو B (3.0)
+            let targetGrade = 'C+';
+            let targetPoints = gradePoints[targetGrade];
+            let gain = (targetPoints - course.points) * course.credits;
+
+            if (gain > 0) {
+                accumulatedGain += gain;
+                recommendedPlan.push({
+                    subject: course.subject,
+                    currentGrade: course.grade,
+                    targetGrade: targetGrade,
+                    credits: course.credits
+                });
+            }
+
+            if ((totalPoints + accumulatedGain) / totalHours >= 2.0) break;
+        }
+
+        let planHTML = recommendedPlan.length > 0 ? recommendedPlan.map(item => `
+            <li style="margin-bottom: 6px; font-size: 14px;">
+                📌 <strong>${item.subject}</strong> (${item.credits} س): تحسين التقدير من 
+                <span style="color:#ff4d4d; font-weight:bold;">${item.currentGrade}</span> إلى 
+                <span style="color:#07ffb5; font-weight:bold;">${item.targetGrade}</span> على الأقل.
+            </li>
+        `).join('') : `<li>يرجى إعادة اختيار مواد أخرى أو مراجعة المرشد الأكاديمي.</li>`;
+
+        container.innerHTML = `
+            <div style="background: rgba(255, 77, 77, 0.15); border: 1px solid #ff4d4d; padding: 15px; border-radius: 10px; text-align: right;">
+                <h3 style="color: #ff4d4d; margin-top: 0;">${i18n[currentLang].probationWarning}</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">${i18n[currentLang].mandatoryImprovement}</p>
+                <ul style="padding-right: 20px; color: #fff; line-height: 1.6;">
+                    ${planHTML}
+                </ul>
+            </div>
+        `;
+    } 
+    // ب) إذا كان التراكمي فوق 2.00 (تحسين اختياري)
+    else {
+        let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2); // مواد B وأقل
+
+        if (improvableCourses.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let optionsHTML = improvableCourses.map((c, i) => `
+            <option value="${i}">${c.subject} (الحالي: ${c.grade})</option>
+        `).join('');
+
+        container.innerHTML = `
+            <div style="background: rgba(7, 255, 181, 0.1); border: 1px solid #07ffb5; padding: 15px; border-radius: 10px; text-align: right;">
+                <h4 style="color: #07ffb5; margin-top: 0;">${i18n[currentLang].optionalImprovement}</h4>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="sim-course-select" style="padding: 8px; border-radius: 5px; flex: 1; background: #222; color: #fff;">
+                        ${optionsHTML}
+                    </select>
+                    <select id="sim-grade-select" style="padding: 8px; border-radius: 5px; background: #222; color: #fff;">
+                        <option value="A+">A+</option>
+                        <option value="A">A</option>
+                        <option value="B+">B+</option>
+                        <option value="B">B</option>
+                    </select>
+                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 8px 15px; background: #07ffb5; color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">تجربة التحسين</button>
+                </div>
+                <div id="sim-result" style="margin-top: 10px; font-weight: bold; font-size: 14px; color: #fff;"></div>
+            </div>
+        `;
+
+        window.simCourses = improvableCourses;
+    }
+}
+
+// دالة المحاكة الاختيارية
+function runImprovementSimulation(totalPoints, totalHours) {
+    const courseIdx = document.getElementById('sim-course-select').value;
+    const targetGrade = document.getElementById('sim-grade-select').value;
+    const selectedCourse = window.simCourses[courseIdx];
+
+    let oldPts = selectedCourse.points * selectedCourse.credits;
+    let newPts = gradePoints[targetGrade] * selectedCourse.credits;
+    let simulatedTotalPoints = totalPoints - oldPts + newPts;
+    let simulatedCGPA = (simulatedTotalPoints / totalHours).toFixed(2);
+
+    document.getElementById('sim-result').innerHTML = `
+        ✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع المعدل التراكمي إلى: <span style="color:#07ffb5; font-size:16px;">${simulatedCGPA}</span>
+    `;
 }
 
 // === دالة تجنب تكرار أسماء الترمات ===
