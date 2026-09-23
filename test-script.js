@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة وشجرة المتطلبات السابقة
+// قائمة المواد وشجرة المتطلبات السابقة (Prerequisites)
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
@@ -170,6 +170,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
+// === 4. إتاحة إعادة المواد القديمة وفحص المتطلب للمواد الجديدة فقط ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -189,13 +190,28 @@ if (addCourseBtn) {
             c.hint.toLowerCase() === subject.toLowerCase()
         );
 
-        // === فحص المتطلب السابق الأكاديمي الصارم ===
-        if (predefinedCourse && predefinedCourse.prereq) {
+        // === فحص: هل هذه المادة قد أخذها الطالب سابقاً وراسب فيها (F)؟ ===
+        let isRetakingCourse = false;
+        if (predefinedCourse) {
+            savedSemesters.forEach(sem => {
+                if (sem.isChecked) {
+                    sem.courseDetails.forEach(c => {
+                        let inputSub = c.subject.trim().toLowerCase();
+                        if (inputSub === predefinedCourse.en.toLowerCase() || inputSub === predefinedCourse.ar.toLowerCase() || inputSub === predefinedCourse.hint.toLowerCase()) {
+                            isRetakingCourse = true; // المادة قديمة وسجلها قبل كده
+                        }
+                    });
+                }
+            });
+        }
+
+        // === إذا كانت المادة مادة جديدة تماماً ولم يسجلها من قبل، نفحص المتطلب السابق ===
+        if (predefinedCourse && predefinedCourse.prereq && !isRetakingCourse) {
             let passedCourseHints = new Set();
 
             const checkAndAddPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح (مش F)
+                if (pts > 0) { // ناجح وليس F
                     let inputSub = c.subject.trim().toLowerCase();
                     let match = predefinedCourses.find(p => 
                         p.en.trim().toLowerCase() === inputSub || 
@@ -219,9 +235,9 @@ if (addCourseBtn) {
                 let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : requiredHint;
 
                 alert(currentLang === 'en' 
-                    ? `❌ Cannot register [${subject}]. You have not passed prerequisite: (${reqName} - ${requiredHint})!` 
-                    : `❌ عفواً! لا يمكنك تسجيل مادة [${subject}] لأنك لم تتجاوز المادة المتطلبة لها بنجاح: (${reqName} - ${requiredHint})!`);
-                return;
+                    ? `❌ Cannot register new course [${subject}]. You must pass prerequisite first: (${reqName} - ${requiredHint})!` 
+                    : `❌ عفواً! لا يمكنك تسجيل مادة جديدة [${subject}] لأنك لم تتجاوز المتطلب السابق لها بنجاح: (${reqName} - ${requiredHint})!`);
+                return; // منع إضافة المادة الجديدة فقط
             }
         }
 
@@ -450,7 +466,6 @@ function saveAndClearSemester() {
     renderSavedSemesters();
 }
 
-// === تصحيح دالة إعادة حساب وتحديث كروت الترمات بدقة متناهية ===
 function renderSavedSemesters() {
     if (!semestersList || !savedSemestersBox) return;
     semestersList.innerHTML = '';
@@ -459,7 +474,6 @@ function renderSavedSemesters() {
     let runningUniqueCourses = {};
 
     savedSemesters.forEach((sem, index) => {
-        // حساب GPA الترم الحقيقي بدقة بناءً على مواده الحالية
         let semPts = 0, semHrs = 0;
         sem.courseDetails.forEach(c => {
             semPts += (gradePoints[c.grade] || 0) * c.credits;
