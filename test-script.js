@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة من الجداول
+// قائمة المواد المقترحة من الجداول الأصليّة
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -133,13 +133,13 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تعبئة قائمة الـ datalist بالمواد المتاحة ===
+// === تعبئة قائمة المواد الذكية مع دعم البحث بالـ datalist ===
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
     if (!datalist) return;
     datalist.innerHTML = '';
 
-    // 1. حساب التراكمي الحالي لمعرفة حالة الطالب
+    // 1. حساب التراكمي الحالي
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
     savedSemesters.forEach(sem => {
@@ -163,40 +163,38 @@ function populateDatalist() {
 
     let currentCGPA = totalHours > 0 ? (totalPoints / totalHours) : 0;
 
-    // 2. تجميع المواد المراد استبعادها من القائمة
+    // 2. تجميع المواد لاستبعادها
     let passedSubjectsToExclude = new Set();
 
     if (currentCGPA >= 2.0) {
-        // لو الطالب فوق 2.00، يخفي المواد اللي جاب فيها C+ فأعلى فقط
+        // لو الطالب فوق 2.00، يخفي المواد الناجحة مرتفعة التقدير (C+ فأعلى)
         Object.values(uniqueCourses).forEach(c => {
             if (c.points >= 2.6) {
                 passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
             }
         });
     } else {
-        // لو الطالب تحت الـ 2.00، القائمة تفتح بالكامل لحفظ نفسه، وتستبعد فقط المواد المضافة بالترم الحالي
+        // لو الطالب أقل من 2.00، القائمة تفتح بالكامل ويستبعد فقط ما هو مضاف بالترم الحالي
         courses.forEach(c => {
             passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
         });
     }
 
-    // 3. فلترة المواد المتاحة للتسجيل
-    const availableCourses = predefinedCourses.filter(course => {
+    // 3. إضافة الخيارات للـ Datalist
+    predefinedCourses.forEach(course => {
         let nameEn = course.en.trim().toLowerCase();
         let nameAr = course.ar.trim().toLowerCase();
-        return !passedSubjectsToExclude.has(nameEn) && !passedSubjectsToExclude.has(nameAr);
-    });
 
-    // 4. تعبئة قائمة الـ Datalist
-    availableCourses.forEach(course => {
-        const option = document.createElement('option');
-        const courseName = currentLang === 'en' ? course.en : course.ar;
-        option.value = courseName;
-        option.textContent = `- ${course.hint}`;
-        datalist.appendChild(option);
+        if (!passedSubjectsToExclude.has(nameEn) && !passedSubjectsToExclude.has(nameAr)) {
+            const option = document.createElement('option');
+            const courseName = currentLang === 'en' ? course.en : course.ar;
+            option.value = courseName;
+            datalist.appendChild(option);
+        }
     });
 }
 
+// === 3. وظائف الذاكرة واللغة ===
 function saveToLocal() {
     try {
         localStorage.setItem('savedSemesters', JSON.stringify(savedSemesters));
@@ -228,6 +226,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
+// === 4. إضافة مادة وحذف مادة ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -241,7 +240,7 @@ if (addCourseBtn) {
             return;
         }
 
-        const predefinedCourse = predefinedCourses.find(c => c.en === subject || c.ar === subject);
+        const predefinedCourse = predefinedCourses.find(c => c.en.toLowerCase() === subject.toLowerCase() || c.ar === subject);
         let courseCredits = 3;
 
         if (predefinedCourse) {
@@ -284,6 +283,7 @@ function renderCourses() {
     });
 }
 
+// === 5. حساب الـ GPA وعرض خطة التحسين في جدول أنيق ===
 function calculateGPA() {
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
@@ -329,6 +329,7 @@ function renderImprovementEngine(uniqueCoursesList, currentCGPA, totalPoints, to
 
     const isAr = currentLang === 'ar';
 
+    // حالة الإنذار (أقل من 2.00)
     if (currentCGPA < 2.0) {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 2.4);
         let recommendedPlan = [];
@@ -382,7 +383,9 @@ function renderImprovementEngine(uniqueCoursesList, currentCGPA, totalPoints, to
                 </div>` : `<p style="font-size: 13px; color: #aaa;">${isAr ? 'يرجى مراجعة المرشد الأكاديمي.' : 'Consult academic advisor.'}</p>`}
             </div>
         `;
-    } else {
+    } 
+    // حالة تحسين اختياري (2.00 فما فوق)
+    else {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
             container.innerHTML = '';
@@ -425,6 +428,7 @@ function runImprovementSimulation(totalPoints, totalHours) {
         : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#07ffb5; font-size:16px;">${simulatedCGPA}</span>`;
 }
 
+// === 6. حفظ وإدارة الترمات ===
 function getNextSemesterNumber() {
     if (savedSemesters.length === 0) return 1;
     const numbers = savedSemesters.map(s => {
@@ -568,6 +572,7 @@ function resetCalculator() {
     renderSavedSemesters();
 }
 
+// === 7. حماية البيانات والاستدعاء البدائي ===
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "hidden") saveToLocal();
 });
