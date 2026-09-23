@@ -11,78 +11,78 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد وشجرة المتطلبات السابقة (Prerequisites)
+// قائمة المواد المتاحة بالكامل
 const predefinedCourses = [
     // === First Level - First Semester ===
-    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
-    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
-    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
-    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
-    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
-    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
+    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
+    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2 },
+    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3 },
+    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3 },
+    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3 },
+    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3 },
 
     // === First Level - Second Semester ===
-    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
-    { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
-    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
-    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
-    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
-    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
+    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2 },
+    { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3 },
+    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3 },
+    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3 },
+    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3 },
+    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3 },
 
     // === Second Level - First Semester ===
-    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201", credits: 2, prereq: null },
-    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
-    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205", credits: 3, prereq: "BS 101" },
-    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210", credits: 3, prereq: "BS 101" },
-    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211", credits: 3, prereq: "CS 102" },
-    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
+    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201", credits: 2 },
+    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3 },
+    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205", credits: 3 },
+    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210", credits: 3 },
+    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211", credits: 3 },
+    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3 },
 
     // === Second Level - Second Semester ===
-    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202", credits: 2, prereq: null },
-    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
-    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204", credits: 2, prereq: null },
-    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
-    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250", credits: 3, prereq: "CS 101" },
-    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206", credits: 3, prereq: "CS 102" },
+    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202", credits: 2 },
+    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3 },
+    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204", credits: 2 },
+    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3 },
+    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250", credits: 3 },
+    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206", credits: 3 },
 
     // === Third Level - First Semester ===
-    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
-    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309", credits: 3, prereq: "CS 206" },
-    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315", credits: 3, prereq: "CS 210" },
-    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
-    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323", credits: 3, prereq: "CS 103" },
+    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3 },
+    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309", credits: 3 },
+    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315", credits: 3 },
+    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3 },
+    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323", credits: 3 },
 
     // === Third Level - Second Semester ===
-    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312", credits: 3, prereq: "CS 201" },
-    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
-    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340", credits: 3, prereq: "CS 220" },
-    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353", credits: 3, prereq: "CS 102" },
-    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 312" },
+    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312", credits: 3 },
+    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3 },
+    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340", credits: 3 },
+    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353", credits: 3 },
+    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3 },
 
     // === Fourth Level - First Semester ===
-    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413", credits: 3, prereq: "CS 250" },
-    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443", credits: 3, prereq: "CS 340" },
-    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498", credits: 3, prereq: "CS 315" },
+    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413", credits: 3 },
+    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443", credits: 3 },
+    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498", credits: 3 },
 
     // === Fourth Level - Second Semester ===
-    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462", credits: 3, prereq: "BS 210" },
-    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455", credits: 3, prereq: "CS 250" },
-    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499", credits: 3, prereq: "CS 498" },
+    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462", credits: 3 },
+    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455", credits: 3 },
+    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499", credits: 3 },
 
     // === Elective Courses ===
-    { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313", credits: 3, prereq: "CS 312" },
-    { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314", credits: 3, prereq: "CS 203" },
-    { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332", credits: 3, prereq: "CS 331" },
-    { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351", credits: 3, prereq: "BS 210" },
-    { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361", credits: 3, prereq: "CS 307" },
-    { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405", credits: 3, prereq: "CS 323" },
-    { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418", credits: 3, prereq: "CS 331" },
-    { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432", credits: 3, prereq: "CS 250" },
-    { en: "Cloud Computing", ar: "الحوسبة السحابية", hint: "CS 433", credits: 3, prereq: "CS 250" },
-    { en: "Virtual Reality", ar: "الواقع الافتراضي", hint: "CS 444", credits: 3, prereq: "CS 340" },
-    { en: "Computer Vision Systems", ar: "نظم الرؤية بالحاسب", hint: "CS 445", credits: 3, prereq: "CS 312" },
-    { en: "Introduction to embedded systems", ar: "مقدمة في النظم المدمجة", hint: "CS 463", credits: 3, prereq: "CS 102" },
-    { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470", credits: 3, prereq: "CS 323" }
+    { en: "Game Design & Development", ar: "تطوير وتصميم الألعاب", hint: "CS 313", credits: 3 },
+    { en: "Human Computer Interaction", ar: "طرق اتصال الإنسان بالحاسب", hint: "CS 314", credits: 3 },
+    { en: "Real Time Systems", ar: "نظم الزمن الحقيقي", hint: "CS 332", credits: 3 },
+    { en: "Simulation and Modeling", ar: "النمذجة والمحاكاة", hint: "CS 351", credits: 3 },
+    { en: "Neural Networks", ar: "الشبكات العصبية", hint: "CS 361", credits: 3 },
+    { en: "Geographic Information Systems", ar: "نظم المعلومات الجغرافية", hint: "CS 405", credits: 3 },
+    { en: "Parallel Processing", ar: "المعالجة المتوازية", hint: "CS 418", credits: 3 },
+    { en: "Distributed Systems", ar: "الأنظمة الموزعة", hint: "CS 432", credits: 3 },
+    { en: "Cloud Computing", ar: "الحوسبة السحابية", hint: "CS 433", credits: 3 },
+    { en: "Virtual Reality", ar: "الواقع الافتراضي", hint: "CS 444", credits: 3 },
+    { en: "Computer Vision Systems", ar: "نظم الرؤية بالحاسب", hint: "CS 445", credits: 3 },
+    { en: "Introduction to embedded systems", ar: "مقدمة في النظم المدمجة", hint: "CS 463", credits: 3 },
+    { en: "Data Warehousing", ar: "مستودعات البيانات", hint: "CS 470", credits: 3 }
 ];
 
 const i18n = {
@@ -170,7 +170,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === 4. إضافة مادة مع معالجة ذكية وشاملة لإعادة المواد الرسوبية ===
+// === إضافة المادة فوراً وبدون أي شروط أو منع تعسفي ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -189,64 +189,6 @@ if (addCourseBtn) {
             c.ar.trim() === subject ||
             c.hint.toLowerCase() === subject.toLowerCase()
         );
-
-        // === فحص: هل المادة أخذها الطالب سابقاً (سواء في ترم محفوظ أو الترم الحالي)؟ ===
-        let isAlreadyTaken = false;
-        if (predefinedCourse) {
-            const checkMatch = (c) => {
-                let inputSub = c.subject.trim().toLowerCase();
-                return inputSub === predefinedCourse.en.toLowerCase() || 
-                       inputSub === predefinedCourse.ar.toLowerCase() || 
-                       inputSub === predefinedCourse.hint.toLowerCase();
-            };
-
-            // فحص الترمات المحفوظة
-            savedSemesters.forEach(sem => {
-                if (sem.isChecked && sem.courseDetails.some(checkMatch)) {
-                    isAlreadyTaken = true;
-                }
-            });
-
-            // فحص الترم الحالي
-            if (courses.some(checkMatch)) {
-                isAlreadyTaken = true;
-            }
-        }
-
-        // === الفحص يطبق فقط إذا كانت المادة "جديدة تماماً" على الطالب ولم يسبق له تسجيلها شائبة أو ناجحة ===
-        if (predefinedCourse && predefinedCourse.prereq && !isAlreadyTaken) {
-            let passedCourseHints = new Set();
-
-            const checkAndAddPassed = (c) => {
-                let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح في المادة (ليس F)
-                    let inputSub = c.subject.trim().toLowerCase();
-                    let match = predefinedCourses.find(p => 
-                        p.en.trim().toLowerCase() === inputSub || 
-                        p.ar.trim() === c.subject.trim() ||
-                        p.hint.toLowerCase() === inputSub
-                    );
-                    if (match && match.hint) {
-                        passedCourseHints.add(match.hint.toUpperCase());
-                    }
-                }
-            };
-
-            savedSemesters.forEach(sem => {
-                if (sem.isChecked) sem.courseDetails.forEach(checkAndAddPassed);
-            });
-
-            const requiredHint = predefinedCourse.prereq.toUpperCase();
-            if (!passedCourseHints.has(requiredHint)) {
-                let reqCourse = predefinedCourses.find(p => p.hint.toUpperCase() === requiredHint);
-                let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : requiredHint;
-
-                alert(currentLang === 'en' 
-                    ? `❌ Cannot register new course [${subject}]. You must pass prerequisite first: (${reqName} - ${requiredHint})!` 
-                    : `❌ عفواً! لا يمكنك تسجيل مادة جديدة [${subject}] لأنك لم تتجاوز المتطلب السابق لها بنجاح: (${reqName} - ${requiredHint})!`);
-                return;
-            }
-        }
 
         let courseCredits = predefinedCourse ? predefinedCourse.credits : (subject.toUpperCase().includes('H') ? 2 : 3);
 
