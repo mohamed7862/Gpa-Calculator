@@ -94,6 +94,7 @@ const predefinedCourses = [
 const i18n = {
     en: {
         title: "GPA Calculator",
+        subjectPlaceholder: "Subject Name (Type to search)",
         addBtn: "Add course ➕",
         saveBtn: "Save & Update Semester",
         savedTitle: "Saved Semesters",
@@ -108,6 +109,7 @@ const i18n = {
     },
     ar: {
         title: "حاسبة المعدل التراكمي",
+        subjectPlaceholder: "اسم المادة (ابحث أو اكتب)",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
         savedTitle: "الترمات المحفوظة",
@@ -122,18 +124,20 @@ const i18n = {
     }
 };
 
+// === 2. ربط عناصر HTML ===
 const addCourseBtn = document.getElementById('add-course-btn');
-const subjectSelect = document.getElementById('subject');
+const subjectInput = document.getElementById('subject');
 const gradeSelect = document.getElementById('grade');
 const coursesList = document.getElementById('courses-list');
 const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تعبئة القائمة مع إتاحة التحسين الكامل لمن هو تحت الـ 2.00 ===
+// === تعبئة قائمة الـ datalist بالمواد المتاحة ===
 function populateDatalist() {
-    if (!subjectSelect) return;
-    subjectSelect.innerHTML = `<option value="" disabled selected>${currentLang === 'ar' ? 'اختر المادة' : 'Select Subject'}</option>`;
+    const datalist = document.getElementById('subjects-list');
+    if (!datalist) return;
+    datalist.innerHTML = '';
 
     // 1. حساب التراكمي الحالي لمعرفة حالة الطالب
     let allCourses = [];
@@ -163,15 +167,14 @@ function populateDatalist() {
     let passedSubjectsToExclude = new Set();
 
     if (currentCGPA >= 2.0) {
-        // لو الطالب التراكمي بتاعه ممتاز/مستقر (فوق 2)، يخفي المواد اللي جاب فيها C+ فأعلى فقط
+        // لو الطالب فوق 2.00، يخفي المواد اللي جاب فيها C+ فأعلى فقط
         Object.values(uniqueCourses).forEach(c => {
             if (c.points >= 2.6) {
                 passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
             }
         });
     } else {
-        // لو الطالب تحت الـ 2.00، يفتح القائمة كاملة لأي مادة أخدها قبل كده عشان يلحق نفسه!
-        // فقط يستبعد المادة لو كانت مضافة جوه الجدول الحالي لسه قبل الحفظ
+        // لو الطالب تحت الـ 2.00، القائمة تفتح بالكامل لحفظ نفسه، وتستبعد فقط المواد المضافة بالترم الحالي
         courses.forEach(c => {
             passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
         });
@@ -184,13 +187,13 @@ function populateDatalist() {
         return !passedSubjectsToExclude.has(nameEn) && !passedSubjectsToExclude.has(nameAr);
     });
 
-    // 4. تعبئة القائمة
+    // 4. تعبئة قائمة الـ Datalist
     availableCourses.forEach(course => {
         const option = document.createElement('option');
         const courseName = currentLang === 'en' ? course.en : course.ar;
         option.value = courseName;
-        option.textContent = `[${course.hint}] ${courseName}`;
-        subjectSelect.appendChild(option);
+        option.textContent = `- ${course.hint}`;
+        datalist.appendChild(option);
     });
 }
 
@@ -207,12 +210,18 @@ function toggleLanguage() {
     const lang = i18n[currentLang];
     
     if (document.querySelector('h1')) document.querySelector('h1').innerText = lang.title;
+    if (subjectInput) subjectInput.placeholder = lang.subjectPlaceholder;
     if (addCourseBtn) addCourseBtn.innerText = lang.addBtn;
     if (document.querySelector('#save-sem-btn')) document.querySelector('#save-sem-btn').innerText = lang.saveBtn;
     if (document.querySelector('#saved-semesters-box h3')) document.querySelector('#saved-semesters-box h3').innerText = lang.savedTitle;
     if (document.querySelector('.gpa-result h2')) document.querySelector('.gpa-result h2').innerText = lang.finalGpa;
     if (document.getElementById('lang-btn')) document.getElementById('lang-btn').innerText = lang.langBtn;
     
+    const headers = document.querySelectorAll('.course-header div');
+    if (headers.length > 0) {
+        lang.header.forEach((text, i) => headers[i].innerText = text);
+    }
+
     document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
     populateDatalist(); 
     renderSavedSemesters();
@@ -226,18 +235,25 @@ if (addCourseBtn) {
             return;
         }
 
-        const subject = subjectSelect.value;
+        const subject = subjectInput.value.trim();
         if (!subject) {
-            alert(currentLang === 'en' ? "Please select a subject!" : "يرجى اختيار مادة!");
+            alert(currentLang === 'en' ? "Please enter subject name!" : "يرجى إدخال اسم المادة!");
             return;
         }
 
         const predefinedCourse = predefinedCourses.find(c => c.en === subject || c.ar === subject);
-        let courseCredits = predefinedCourse ? predefinedCourse.credits : 3;
+        let courseCredits = 3;
+
+        if (predefinedCourse) {
+            courseCredits = predefinedCourse.credits;
+        } else if (subject.toUpperCase().includes('H')) {
+            courseCredits = 2;
+        }
 
         courses.push({ subject, grade: gradeSelect.value, credits: courseCredits });
         updateUI();
-        subjectSelect.selectedIndex = 0;
+        subjectInput.value = '';
+        subjectInput.focus();
     });
 }
 
