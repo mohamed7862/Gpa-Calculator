@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة
+// قائمة المواد بالكامل
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -226,7 +226,7 @@ function renderCourses() {
     });
 }
 
-// === حساب الـ GPA التراكمي ===
+// === حساب الـ GPA التراكمي وحفظ البيانات الفريدة ===
 function calculateGPA() {
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
@@ -260,7 +260,7 @@ function calculateGPA() {
     };
 }
 
-// === عند الضغط على زرار "خطة التحسين والمحاكاة" ===
+// === خوارزمية خطة التحسين الذكية الديناميكية ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -273,14 +273,23 @@ function handleImprovementClick() {
 
     const isAr = currentLang === 'ar';
 
-    // 1. لو المعدل التراكمي أقل من 2.00 (إنذار أكاديمي وخطة إجبارية)
+    // 1. لو المعدل التراكمي أقل من 2.00 (خطة إجبارية متدرجة)
     if (finalCGPA < 2.0) {
-        let improvableCourses = uniqueCoursesList.filter(c => c.points < 2.4); // المواد التي تقديرها أقل من C+
+        // ترتيب المواد الأقل تقديرًا أولاً
+        let improvableCourses = uniqueCoursesList
+            .filter(c => c.points < 3.0) 
+            .sort((a, b) => a.points - b.points);
+
         let recommendedPlan = [];
         let accumulatedGain = 0;
 
         for (let course of improvableCourses) {
-            let targetGrade = 'C+';
+            // تحديد تقدير مستهدف يتدرج ديناميكيًا بحسب تقدير المادة الحالي
+            let targetGrade = 'B';
+            if (course.grade === 'F' || course.grade === 'D-') targetGrade = 'B';
+            else if (course.grade === 'D' || course.grade === 'D+') targetGrade = 'B+';
+            else targetGrade = 'A';
+
             let gain = (gradePoints[targetGrade] - course.points) * course.credits;
 
             if (gain > 0) {
@@ -292,7 +301,7 @@ function handleImprovementClick() {
                     credits: course.credits
                 });
             }
-            // التوقف فور التمكن من تخطي حاجز الـ 2.00
+            // التوقف فور تخطي حاجز الأمان 2.00
             if ((totalPoints + accumulatedGain) / totalHours >= 2.0) break;
         }
 
@@ -320,7 +329,7 @@ function handleImprovementClick() {
                                 <th style="padding: 10px; text-align: ${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th>
                                 <th style="padding: 10px; text-align: center;">${isAr ? 'الساعات' : 'Credits'}</th>
                                 <th style="padding: 10px; text-align: center;">${isAr ? 'الحالي' : 'Current'}</th>
-                                <th style="padding: 10px; text-align: center;">${isAr ? 'المطلوب' : 'Target'}</th>
+                                <th style="padding: 10px; text-align: center;">${isAr ? 'المستهدف' : 'Target'}</th>
                             </tr>
                         </thead>
                         <tbody>${rowsHTML}</tbody>
@@ -331,7 +340,7 @@ function handleImprovementClick() {
     } 
     // 2. لو المعدل التراكمي أكبر من أو يساوي 2.00 (محاكي تحسين اختياري)
     else {
-        let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2); // مواد أقل من B
+        let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
             container.innerHTML = `
                 <div style="background: #1e1e2f; border: 1px solid #07ffb5; padding: 15px; border-radius: 12px; color: #fff; margin-top: 20px; text-align: center;">
