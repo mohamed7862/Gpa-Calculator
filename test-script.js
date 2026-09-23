@@ -128,7 +128,7 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تعبئة القائمة ===
+// === تعبئة القائمة المنسدلة ===
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
     if (!datalist) return;
@@ -174,7 +174,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === 4. إضافة مادة مع فحص المتطلب السابق الأكاديمي الصارم (Prerequisites Engine) ===
+// === 4. إضافة مادة مع فحص المتطلب السابق الشامل (الترمات المحفوظة + الترم الحالي) ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -190,16 +190,16 @@ if (addCourseBtn) {
 
         const predefinedCourse = predefinedCourses.find(c => c.en.toLowerCase() === subject.toLowerCase() || c.ar === subject);
 
-        // === فحص المتطلب السابق للمادة ===
+        // === فحص المتطلب السابق الشامل ===
         if (predefinedCourse && predefinedCourse.prereq) {
             let passedCoursesHints = new Set();
 
-            // فحص المواد المسجلة في الترمات المحفوظة
+            // 1. فحص المواد في الترمات المحفوظة سابقاً
             savedSemesters.forEach(sem => {
                 if (sem.isChecked) {
                     sem.courseDetails.forEach(c => {
                         let pts = gradePoints[c.grade] || 0;
-                        if (pts > 0) { // ناجح في المادة (ليس F)
+                        if (pts > 0) { // ناجح (ليس F)
                             let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
                             if (match && match.hint) passedCoursesHints.add(match.hint);
                         }
@@ -207,15 +207,24 @@ if (addCourseBtn) {
                 }
             });
 
-            // لو المتطلب السابق مش مجتاز أو راسب فيه الطالب
+            // 2. فحص المواد المسجلة في الترم الحالي (المضافة مؤقتاً بالجدول قبل الحفظ)
+            courses.forEach(c => {
+                let pts = gradePoints[c.grade] || 0;
+                if (pts > 0) { // ناجح (ليس F)
+                    let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
+                    if (match && match.hint) passedCoursesHints.add(match.hint);
+                }
+            });
+
+            // 3. إذا لم يمر من المتطلب السابق بنجاح
             if (!passedCoursesHints.has(predefinedCourse.prereq)) {
                 let reqCourse = predefinedCourses.find(p => p.hint === predefinedCourse.prereq);
                 let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : predefinedCourse.prereq;
 
                 alert(currentLang === 'en' 
-                    ? `❌ Cannot register [${subject}]. Prerequisite required: (${reqName} - ${predefinedCourse.prereq})!` 
-                    : `❌ عفواً! لا يمكنك تسجيل مادة [${subject}] لأنك لم تجتز المتطلب السابق لها: (${reqName} - ${predefinedCourse.prereq})!`);
-                return; // منع الإضافة فوراً
+                    ? `❌ Cannot register [${subject}]. You have not passed the prerequisite: (${reqName} - ${predefinedCourse.prereq})!` 
+                    : `❌ عفواً! لا يمكنك تسجيل مادة [${subject}] لأنك لم تتجاوز المادة المتطلبة لها بنجاح: (${reqName} - ${predefinedCourse.prereq})!`);
+                return; // منع الإضافة تماماً
             }
         }
 
