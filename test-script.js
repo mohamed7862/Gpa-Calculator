@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة زي ما هي بالضبط
+// قائمة المواد المقترحة من الجداول
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -130,28 +130,61 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تعبئة القائمة مع إخفاء المواد المسجلة مسبقاً ===
+// === تعبئة القائمة مع إتاحة التحسين الكامل لمن هو تحت الـ 2.00 ===
 function populateDatalist() {
     if (!subjectSelect) return;
     subjectSelect.innerHTML = `<option value="" disabled selected>${currentLang === 'ar' ? 'اختر المادة' : 'Select Subject'}</option>`;
 
-    // 1. تجميع الأسماء المنفذة في الترم الحالي والترمات المحفوظة
-    let registeredSubjects = new Set();
-    courses.forEach(c => registeredSubjects.add(c.subject.trim().toLowerCase()));
+    // 1. حساب التراكمي الحالي لمعرفة حالة الطالب
+    let allCourses = [];
+    courses.forEach(c => allCourses.push({ ...c }));
     savedSemesters.forEach(sem => {
         if (sem.isChecked) {
-            sem.courseDetails.forEach(c => registeredSubjects.add(c.subject.trim().toLowerCase()));
+            sem.courseDetails.forEach(c => allCourses.push({ ...c }));
         }
     });
 
-    // 2. إستبعاد المواد المسجلة
+    let uniqueCourses = {};
+    allCourses.forEach(course => {
+        let normalizedName = course.subject.trim().toLowerCase();
+        let points = gradePoints[course.grade] || 0;
+        uniqueCourses[normalizedName] = { ...course, points };
+    });
+
+    let totalPoints = 0, totalHours = 0;
+    Object.values(uniqueCourses).forEach(c => {
+        totalPoints += c.points * c.credits;
+        totalHours += c.credits;
+    });
+
+    let currentCGPA = totalHours > 0 ? (totalPoints / totalHours) : 0;
+
+    // 2. تجميع المواد المراد استبعادها من القائمة
+    let passedSubjectsToExclude = new Set();
+
+    if (currentCGPA >= 2.0) {
+        // لو الطالب التراكمي بتاعه ممتاز/مستقر (فوق 2)، يخفي المواد اللي جاب فيها C+ فأعلى فقط
+        Object.values(uniqueCourses).forEach(c => {
+            if (c.points >= 2.6) {
+                passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
+            }
+        });
+    } else {
+        // لو الطالب تحت الـ 2.00، يفتح القائمة كاملة لأي مادة أخدها قبل كده عشان يلحق نفسه!
+        // فقط يستبعد المادة لو كانت مضافة جوه الجدول الحالي لسه قبل الحفظ
+        courses.forEach(c => {
+            passedSubjectsToExclude.add(c.subject.trim().toLowerCase());
+        });
+    }
+
+    // 3. فلترة المواد المتاحة للتسجيل
     const availableCourses = predefinedCourses.filter(course => {
         let nameEn = course.en.trim().toLowerCase();
         let nameAr = course.ar.trim().toLowerCase();
-        return !registeredSubjects.has(nameEn) && !registeredSubjects.has(nameAr);
+        return !passedSubjectsToExclude.has(nameEn) && !passedSubjectsToExclude.has(nameAr);
     });
 
-    // 3. تعبئة الخيارات المتاحة فقط
+    // 4. تعبئة القائمة
     availableCourses.forEach(course => {
         const option = document.createElement('option');
         const courseName = currentLang === 'en' ? course.en : course.ar;
