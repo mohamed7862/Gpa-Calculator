@@ -170,7 +170,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === 4. إتاحة إعادة المواد القديمة وفحص المتطلب للمواد الجديدة فقط ===
+// === 4. إضافة مادة مع معالجة ذكية وشاملة لإعادة المواد الرسوبية ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -190,28 +190,36 @@ if (addCourseBtn) {
             c.hint.toLowerCase() === subject.toLowerCase()
         );
 
-        // === فحص: هل هذه المادة قد أخذها الطالب سابقاً وراسب فيها (F)؟ ===
-        let isRetakingCourse = false;
+        // === فحص: هل المادة أخذها الطالب سابقاً (سواء في ترم محفوظ أو الترم الحالي)؟ ===
+        let isAlreadyTaken = false;
         if (predefinedCourse) {
+            const checkMatch = (c) => {
+                let inputSub = c.subject.trim().toLowerCase();
+                return inputSub === predefinedCourse.en.toLowerCase() || 
+                       inputSub === predefinedCourse.ar.toLowerCase() || 
+                       inputSub === predefinedCourse.hint.toLowerCase();
+            };
+
+            // فحص الترمات المحفوظة
             savedSemesters.forEach(sem => {
-                if (sem.isChecked) {
-                    sem.courseDetails.forEach(c => {
-                        let inputSub = c.subject.trim().toLowerCase();
-                        if (inputSub === predefinedCourse.en.toLowerCase() || inputSub === predefinedCourse.ar.toLowerCase() || inputSub === predefinedCourse.hint.toLowerCase()) {
-                            isRetakingCourse = true; // المادة قديمة وسجلها قبل كده
-                        }
-                    });
+                if (sem.isChecked && sem.courseDetails.some(checkMatch)) {
+                    isAlreadyTaken = true;
                 }
             });
+
+            // فحص الترم الحالي
+            if (courses.some(checkMatch)) {
+                isAlreadyTaken = true;
+            }
         }
 
-        // === إذا كانت المادة مادة جديدة تماماً ولم يسجلها من قبل، نفحص المتطلب السابق ===
-        if (predefinedCourse && predefinedCourse.prereq && !isRetakingCourse) {
+        // === الفحص يطبق فقط إذا كانت المادة "جديدة تماماً" على الطالب ولم يسبق له تسجيلها شائبة أو ناجحة ===
+        if (predefinedCourse && predefinedCourse.prereq && !isAlreadyTaken) {
             let passedCourseHints = new Set();
 
             const checkAndAddPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح وليس F
+                if (pts > 0) { // ناجح في المادة (ليس F)
                     let inputSub = c.subject.trim().toLowerCase();
                     let match = predefinedCourses.find(p => 
                         p.en.trim().toLowerCase() === inputSub || 
@@ -227,7 +235,6 @@ if (addCourseBtn) {
             savedSemesters.forEach(sem => {
                 if (sem.isChecked) sem.courseDetails.forEach(checkAndAddPassed);
             });
-            courses.forEach(checkAndAddPassed);
 
             const requiredHint = predefinedCourse.prereq.toUpperCase();
             if (!passedCourseHints.has(requiredHint)) {
@@ -237,7 +244,7 @@ if (addCourseBtn) {
                 alert(currentLang === 'en' 
                     ? `❌ Cannot register new course [${subject}]. You must pass prerequisite first: (${reqName} - ${requiredHint})!` 
                     : `❌ عفواً! لا يمكنك تسجيل مادة جديدة [${subject}] لأنك لم تتجاوز المتطلب السابق لها بنجاح: (${reqName} - ${requiredHint})!`);
-                return; // منع إضافة المادة الجديدة فقط
+                return;
             }
         }
 
