@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد بالكامل
+// قائمة المواد المقترحة للكلية
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -260,7 +260,7 @@ function calculateGPA() {
     };
 }
 
-// === خوارزمية التدرج الأدنى الذكية لخطة التحسين (Minimum Effort Optimization) ===
+// === محرك التوزيع الأكاديمي الذكي على الترمات القادمة ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -277,7 +277,7 @@ function handleImprovementClick() {
     if (finalCGPA < 2.0) {
         // ترتيب الأولويات: F أولاً ثم D- ثم D ثم D+
         let improvableCourses = uniqueCoursesList
-            .filter(c => c.points < 2.6) // المواد الأقل من C+
+            .filter(c => c.points < 2.6)
             .sort((a, b) => a.points - b.points);
 
         let simCoursesMap = {};
@@ -288,7 +288,7 @@ function handleImprovementClick() {
         let currentSimPoints = totalPoints;
         let targetReached = false;
 
-        // المرحلة 1: تجربة رفع المواد الأقل لـ C+ مادة مادة والتوقف فور الوصول لـ 2.00
+        // خوارزمية رفع الدرجات المتدرجة (C+ أولاً)
         for (let c of improvableCourses) {
             let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
             let newPts = gradePoints['C+'] * c.credits;
@@ -303,7 +303,6 @@ function handleImprovementClick() {
             }
         }
 
-        // المرحلة 2: لو C+ لكافة المواد الضعيفة ما كفتش، نرفع السقف بالتدريج (B -> B+ -> A)
         if (!targetReached) {
             let targetGradesLadder = ['B', 'B+', 'A'];
             for (let gradeLevel of targetGradesLadder) {
@@ -324,46 +323,88 @@ function handleImprovementClick() {
             }
         }
 
-        // تصفية المواد التي تطلبت الإعادة والتعديل فقط
+        // قائمة المواد الواجب إعادتها
         let recommendedPlan = Object.values(simCoursesMap).filter(c => c.targetGrade !== c.grade);
 
-        let rowsHTML = recommendedPlan.map(item => `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <td style="padding: 10px; text-align: ${isAr ? 'right' : 'left'}; font-weight: 600;">${item.subject}</td>
-                <td style="padding: 10px; text-align: center;">${item.credits} ${isAr ? 'س' : 'hrs'}</td>
-                <td style="padding: 10px; text-align: center; color: #ff6b6b; font-weight: bold;">${item.grade}</td>
-                <td style="padding: 10px; text-align: center; color: #00f2fe; font-weight: bold;">${item.targetGrade}</td>
-            </tr>
-        `).join('');
+        // === تقسيم المواد على ترمات (سقف الترم للإنذار = 12 ساعة معتمدة) ===
+        const MAX_HOURS_PER_PROBATION_SEM = 12;
+        let semestersPlan = [];
+        let currentSemCourses = [];
+        let currentSemHours = 0;
 
-        let estimatedGPA = (currentSimPoints / totalHours).toFixed(2);
+        recommendedPlan.forEach(course => {
+            if (currentSemHours + course.credits > MAX_HOURS_PER_PROBATION_SEM) {
+                semestersPlan.push(currentSemCourses);
+                currentSemCourses = [course];
+                currentSemHours = course.credits;
+            } else {
+                currentSemCourses.push(course);
+                currentSemHours += course.credits;
+            }
+        });
+        if (currentSemCourses.length > 0) {
+            semestersPlan.push(currentSemCourses);
+        }
+
+        // بناء العرض التفاعلي للترمات
+        let semestersHTML = '';
+        let accumPointsTracking = totalPoints;
+
+        semestersPlan.forEach((semCourses, idx) => {
+            let semHours = 0;
+            let semTableRows = semCourses.map(item => {
+                semHours += item.credits;
+                let oldPts = item.points * item.credits;
+                let newPts = gradePoints[item.targetGrade] * item.credits;
+                accumPointsTracking = accumPointsTracking - oldPts + newPts;
+
+                return `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <td style="padding: 8px; text-align: ${isAr ? 'right' : 'left'}; font-weight: 600;">${item.subject}</td>
+                        <td style="padding: 8px; text-align: center;">${item.credits} ${isAr ? 'س' : 'hrs'}</td>
+                        <td style="padding: 8px; text-align: center; color: #ff6b6b; font-weight: bold;">${item.grade}</td>
+                        <td style="padding: 8px; text-align: center; color: #00f2fe; font-weight: bold;">${item.targetGrade}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            let expectedCGPAAfterSem = (accumPointsTracking / totalHours).toFixed(2);
+
+            semestersHTML += `
+                <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #00f2fe;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0; color: #00f2fe; font-size: 15px;">📅 ${isAr ? `الترم القادم (${idx + 1}) - المسموح: ${semHours} ساعة` : `Next Semester (${idx + 1}) -${semHours} Credits`}</h4>
+                        <span style="font-size: 12px; color: #07ffb5; font-weight: bold;">${isAr ? `التراكمي المتوقع: ${expectedCGPAAfterSem}` : `Expected CGPA: ${expectedCGPAAfterSem}`}</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05); color: #aaa;">
+                                <th style="padding: 6px; text-align: ${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th>
+                                <th style="padding: 6px; text-align: center;">${isAr ? 'الساعات' : 'Credits'}</th>
+                                <th style="padding: 6px; text-align: center;">${isAr ? 'الحالي' : 'Current'}</th>
+                                <th style="padding: 6px; text-align: center;">${isAr ? 'المستهدف' : 'Target'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>${semTableRows}</tbody>
+                    </table>
+                </div>
+            `;
+        });
 
         container.innerHTML = `
             <div style="background: #1e1e2f; border: 2px solid #ff4d4d; border-radius: 12px; padding: 20px; color: #fff; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.2); margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                     <span style="font-size: 22px;">🚨</span>
-                    <h3 style="margin: 0; color: #ff4d4d; font-size: 18px; font-weight: bold;">${i18n[currentLang].probationWarning}</h3>
+                    <h3 style="margin: 0; color: #ff4d4d; font-size: 17px; font-weight: bold;">${i18n[currentLang].probationWarning}</h3>
                 </div>
-                <p style="margin-bottom: 10px; font-size: 14px; opacity: 0.9; line-height: 1.5;">${i18n[currentLang].mandatoryImprovement}</p>
-                <p style="margin-bottom: 15px; font-size: 13px; color: #07ffb5;">✨ ${isAr ? `المعدل المتوقع بعد تنفيذ الخطة: <strong>${estimatedGPA}</strong>` : `Expected CGPA after plan: <strong>${estimatedGPA}</strong>`}</p>
-                ${recommendedPlan.length > 0 ? `
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                        <thead>
-                            <tr style="background: rgba(255,255,255,0.08); color: #ddd; font-size: 13px;">
-                                <th style="padding: 10px; text-align: ${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th>
-                                <th style="padding: 10px; text-align: center;">${isAr ? 'الساعات' : 'Credits'}</th>
-                                <th style="padding: 10px; text-align: center;">${isAr ? 'الحالي' : 'Current'}</th>
-                                <th style="padding: 10px; text-align: center;">${isAr ? 'المستهدف' : 'Target'}</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rowsHTML}</tbody>
-                    </table>
-                </div>` : `<p style="font-size: 13px; color: #aaa;">${isAr ? 'يرجى مراجعة المرشد الأكاديمي.' : 'Consult academic advisor.'}</p>`}
+                <p style="margin-bottom: 15px; font-size: 13px; opacity: 0.9; line-height: 1.4;">
+                    ${isAr ? 'خطة التسجيل المقترحة للترمات القادمة (بحد أقصى 12 ساعة لكل ترم للخروج من الإنذار):' : 'Suggested registration plan for upcoming semesters (Max 12 hrs/sem):'}
+                </p>
+                ${semestersHTML}
             </div>
         `;
     } 
-    // 2. حالة المعدل أكبر من أو يساوي 2.00 (محاكي اختياري)
+    // 2. حالة المعدل أكثر من 2.00 (محاكي اختياري)
     else {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
