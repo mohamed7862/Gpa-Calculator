@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة للكلية
+// قائمة المواد بالكامل
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -372,7 +372,7 @@ function handleImprovementClick() {
 
             semestersHTML += `
                 <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #00f2fe;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; justify-between; align-items: center; margin-bottom: 8px;">
                         <h4 style="margin: 0; color: #00f2fe; font-size: 15px;">📅 ${isAr ? `الترم القادم (${idx + 1}) - المسموح: ${semHours} ساعة` : `Next Semester (${idx + 1}) -${semHours} Credits`}</h4>
                         <span style="font-size: 12px; color: #07ffb5; font-weight: bold;">${isAr ? `التراكمي المتوقع: ${expectedCGPAAfterSem}` : `Expected CGPA: ${expectedCGPAAfterSem}`}</span>
                     </div>
