@@ -11,7 +11,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد المقترحة للكلية
+// قائمة المواد بالكامل
 const predefinedCourses = [
     // === First Level - First Semester ===
     { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2 },
@@ -170,7 +170,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === إضافة مادة جديدة بدون تعقيدات ===
+// === إضافة مادة جديدة ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -260,7 +260,7 @@ function calculateGPA() {
     };
 }
 
-// === المنطق الأكاديمي المظبوط لخطة التحسين ===
+// === خوارزمية التدرج الأدنى الذكية لخطة التحسين (Minimum Effort Optimization) ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -275,8 +275,9 @@ function handleImprovementClick() {
 
     // 1. حالة الإنذار الأكاديمي (أقل من 2.00)
     if (finalCGPA < 2.0) {
+        // ترتيب الأولويات: F أولاً ثم D- ثم D ثم D+
         let improvableCourses = uniqueCoursesList
-            .filter(c => c.points < 2.6)
+            .filter(c => c.points < 2.6) // المواد الأقل من C+
             .sort((a, b) => a.points - b.points);
 
         let simCoursesMap = {};
@@ -287,7 +288,7 @@ function handleImprovementClick() {
         let currentSimPoints = totalPoints;
         let targetReached = false;
 
-        // المرحلة الأولى: رفع كل مواد الرسوب والـ D لتقدير C+
+        // المرحلة 1: تجربة رفع المواد الأقل لـ C+ مادة مادة والتوقف فور الوصول لـ 2.00
         for (let c of improvableCourses) {
             let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
             let newPts = gradePoints['C+'] * c.credits;
@@ -302,7 +303,7 @@ function handleImprovementClick() {
             }
         }
 
-        // المرحلة الثانية: لو C+ ما كفتش، رفع تدريجي لـ B أو B+ أو A
+        // المرحلة 2: لو C+ لكافة المواد الضعيفة ما كفتش، نرفع السقف بالتدريج (B -> B+ -> A)
         if (!targetReached) {
             let targetGradesLadder = ['B', 'B+', 'A'];
             for (let gradeLevel of targetGradesLadder) {
@@ -323,6 +324,7 @@ function handleImprovementClick() {
             }
         }
 
+        // تصفية المواد التي تطلبت الإعادة والتعديل فقط
         let recommendedPlan = Object.values(simCoursesMap).filter(c => c.targetGrade !== c.grade);
 
         let rowsHTML = recommendedPlan.map(item => `
@@ -343,7 +345,7 @@ function handleImprovementClick() {
                     <h3 style="margin: 0; color: #ff4d4d; font-size: 18px; font-weight: bold;">${i18n[currentLang].probationWarning}</h3>
                 </div>
                 <p style="margin-bottom: 10px; font-size: 14px; opacity: 0.9; line-height: 1.5;">${i18n[currentLang].mandatoryImprovement}</p>
-                <p style="margin-bottom: 15px; font-size: 13px; color: #07ffb5;">✨ ${isAr ? `المعدل المتوقع بعد الخطة: <strong>${estimatedGPA}</strong>` : `Expected CGPA after plan: <strong>${estimatedGPA}</strong>`}</p>
+                <p style="margin-bottom: 15px; font-size: 13px; color: #07ffb5;">✨ ${isAr ? `المعدل المتوقع بعد تنفيذ الخطة: <strong>${estimatedGPA}</strong>` : `Expected CGPA after plan: <strong>${estimatedGPA}</strong>`}</p>
                 ${recommendedPlan.length > 0 ? `
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: rgba(0,0,0,0.2); border-radius: 8px;">
@@ -361,7 +363,7 @@ function handleImprovementClick() {
             </div>
         `;
     } 
-    // 2. حالة المعدل أكثر من 2.00 (محاكي تحسين اختياري)
+    // 2. حالة المعدل أكبر من أو يساوي 2.00 (محاكي اختياري)
     else {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
