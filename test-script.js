@@ -78,7 +78,7 @@ const i18n = {
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        mandatoryImprovement: "خطة التعافي الأكاديمي (التقدير الأدنى المطلوبة لكل مادة لتجاوز 2.00):",
+        mandatoryImprovement: "خطة التعافي الأكاديمي (التقدير الأدنى المطلوب لكل مادة لتجاوز 2.00):",
         optionalImprovement: "مُحاكي تحسين المواد الاختياري 🚀"
     }
 };
@@ -113,12 +113,13 @@ function saveToLocal() {
     }
 }
 
+// === دالة تحويل اللغة المظبوطة مع جميع عناصر الواجهة ===
 window.toggleLanguage = function() {
     currentLang = currentLang === 'en' ? 'ar' : 'en';
     const lang = i18n[currentLang];
     
-    const titleElem = document.getElementById('main-title');
-    if (titleElem) titleElem.innerText = lang.title;
+    const mainTitle = document.getElementById('main-title');
+    if (mainTitle) mainTitle.innerText = lang.title;
 
     const subInput = document.getElementById('subject');
     if (subInput) subInput.placeholder = lang.subjectPlaceholder;
@@ -129,6 +130,9 @@ window.toggleLanguage = function() {
     const saveBtn = document.getElementById('save-sem-btn');
     if (saveBtn) saveBtn.innerText = lang.saveBtn;
 
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) resetBtn.innerText = currentLang === 'ar' ? 'إعادة ضبط' : 'Reset';
+
     const savedTitle = document.getElementById('saved-title');
     if (savedTitle) savedTitle.innerText = lang.savedTitle;
 
@@ -137,19 +141,28 @@ window.toggleLanguage = function() {
 
     const langBtn = document.getElementById('lang-btn');
     if (langBtn) langBtn.innerText = lang.langBtn;
-    
+
+    const printBtn = document.getElementById('print-btn');
+    if (printBtn) printBtn.innerText = currentLang === 'ar' ? '🖨️ طباعة' : '🖨️ Print';
+
+    const deptLabel = document.getElementById('dept-label');
+    if (deptLabel) deptLabel.innerText = currentLang === 'ar' ? 'القسم / Department:' : 'Department / القسم:';
+
     const headers = document.querySelectorAll('#list-header div');
-    if (headers.length > 0) {
-        lang.header.forEach((text, i) => { if(headers[i]) headers[i].innerText = text; });
+    if (headers.length >= 4) {
+        lang.header.forEach((text, i) => {
+            if (headers[i]) headers[i].innerText = text;
+        });
     }
 
     document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
     populateDatalist(); 
     renderSavedSemesters();
     calculateGPA();
 };
 
-// === إضافة مادة جديدة ===
+// === إضافة مادة جديدة وفحص المتطلب ===
 document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-course-btn');
     const subInput = document.getElementById('subject');
@@ -174,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.hint.toLowerCase() === subject.toLowerCase()
             );
 
-            // فحص المتطلب المسبق
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
 
