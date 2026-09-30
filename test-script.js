@@ -12,7 +12,7 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// === دالة التنبيهات الذكية بـ SweetAlert2 ===
+// === دالة التنبيهات المخصصة عبر SweetAlert2 ===
 function showCustomAlert(title, text, icon = 'error') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
@@ -31,7 +31,7 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
-// === لوائح الأقسام كاملة مقسمة حسب المستويات (Level 1 to Level 4) ===
+// === لوائح الأقسام مقسمة حسب المستويات الأكاديمية (Level 1 to Level 4) ===
 const departmentSyllabus = {
     CS: [
         { level: 1, en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
@@ -206,7 +206,6 @@ window.toggleLanguage = function() {
     calculateGPA();
 };
 
-// === إضافة مادة مع SweetAlert2 لتنبيهات المتطلب والحد الأقصى ===
 document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-course-btn');
     const subInput = document.getElementById('subject');
@@ -239,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.hint.toLowerCase() === subject.toLowerCase()
             );
 
-            // فحص المتطلب الصارم بـ SweetAlert2
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
                 const checkPassed = (c) => {
@@ -303,11 +301,12 @@ function renderCourses() {
     courses.forEach((course, index) => {
         const row = document.createElement('div');
         row.className = 'course-row'; 
+        row.style.animationDelay = `${index * 0.05}s`;
         row.innerHTML = `
-            <div style="flex:1;">${course.subject}</div>
-            <div style="flex:1;">${course.grade}</div>
+            <div style="flex:1; font-weight:600;">✨ ${course.subject}</div>
+            <div style="flex:1;"><span style="background: rgba(0,242,254,0.15); padding: 3px 8px; border-radius: 6px; color: #00f2fe; font-weight:bold;">${course.grade}</span></div>
             <div style="flex:1;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
-            <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn">X</button></div>
+            <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn" style="transition:0.2s;">✕</button></div>
         `;
         coursesList.appendChild(row);
     });
@@ -408,7 +407,6 @@ function updateGPAChart() {
     });
 }
 
-// === خطط تحسين مبتكرة (2 سيناريو: خطة تعافي سريعة / خطة متوازنة) ===
 window.handleImprovementClick = function() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         showCustomAlert(
@@ -430,7 +428,6 @@ window.handleImprovementClick = function() {
         const requiredTotalPoints = totalHours * targetCGPA;
         let neededGain = requiredTotalPoints - totalPoints;
 
-        // الخطة A: التعافي السريع (التركيز على رفع المواد الفاشلة لـ B)
         let planA_Courses = uniqueCoursesList.filter(c => c.points < 2.0).sort((a,b) => a.points - b.points);
         let planA_HTML = planA_Courses.map(c => `
             <tr>
@@ -440,7 +437,6 @@ window.handleImprovementClick = function() {
             </tr>
         `).join('');
 
-        // الخطة B: الرفع التدريجي والمتوازن (استهداف B+ أو A لمواد محددة لتوزيع العبء)
         let planB_Courses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a,b) => a.points - b.points);
         let planB_HTML = planB_Courses.map(c => `
             <tr>
@@ -456,7 +452,6 @@ window.handleImprovementClick = function() {
                 <p style="font-size:13px; opacity:0.9;">اختر الخطة المناسبة لقدراتك الأكاديمية لتجاوز الـ 2.00 بأسرع وقت:</p>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                    <!-- المسار الأول -->
                     <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #07ffb5;">
                         <h4 style="margin: 0 0 10px 0; color: #07ffb5; font-size:14px;">⚡ المسار 1: التعافي المباشر السريع</h4>
                         <table style="width: 100%; font-size: 12px;">
@@ -465,7 +460,6 @@ window.handleImprovementClick = function() {
                         </table>
                     </div>
 
-                    <!-- المسار الثاني -->
                     <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #00f2fe;">
                         <h4 style="margin: 0 0 10px 0; color: #00f2fe; font-size:14px;">🛡️ المسار 2: التوازن والرفع المريح</h4>
                         <table style="width: 100%; font-size: 12px;">
