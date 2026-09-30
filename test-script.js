@@ -12,10 +12,28 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
+// === دالة التنبيهات الذكية بـ SweetAlert2 ===
+function showCustomAlert(title, text, icon = 'error') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            background: '#1e1e2f',
+            color: '#fff',
+            confirmButtonColor: '#00f2fe',
+            customClass: {
+                popup: 'swal2-dark-popup'
+            }
+        });
+    } else {
+        alert(`${title}\n${text}`);
+    }
+}
+
 // === لوائح الأقسام كاملة مقسمة حسب المستويات (Level 1 to Level 4) ===
 const departmentSyllabus = {
     CS: [
-        // Level 1 (0 - 33 hrs)
         { level: 1, en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { level: 1, en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { level: 1, en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
@@ -27,7 +45,6 @@ const departmentSyllabus = {
         { level: 1, en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
         { level: 1, en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
         
-        // Level 2 (34 - 66 hrs)
         { level: 2, en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
         { level: 2, en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { level: 2, en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
@@ -35,7 +52,6 @@ const departmentSyllabus = {
         { level: 2, en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
         { level: 2, en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
 
-        // Level 3 (67 - 99 hrs)
         { level: 3, en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
         { level: 3, en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
         { level: 3, en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
@@ -109,13 +125,11 @@ window.changeDepartment = function(deptKey) {
     calculateGPA();
 };
 
-// === دالة تصفية المواد ذكياً بحسب مستوى الطالب من الساعات المكتسبة + المواد الرسوب/غير المسجلة ===
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
     if (!datalist) return;
     datalist.innerHTML = '';
 
-    // 1. حساب الساعات المكتسبة الفعلية للطالب
     let totalEarnedHours = 0;
     let passedHints = new Set();
     
@@ -132,16 +146,13 @@ function populateDatalist() {
         }
     });
 
-    // 2. تحديد المستوى الأكاديمي الحالي للطالب (1 - 4)
     let currentStudentLevel = 1;
     if (totalEarnedHours >= 100) currentStudentLevel = 4;
     else if (totalEarnedHours >= 66) currentStudentLevel = 3;
     else if (totalEarnedHours >= 33) currentStudentLevel = 2;
 
-    // 3. عرض المواد المتاحة للمستوى الحالي والمستويات السابقة (المواد المتبقية/الرسوب)
     predefinedCourses.forEach(course => {
         const isPassed = passedHints.has(course.hint);
-        // تظهر المادة إذا كانت في مستواه الحالي أو أقل ولم يتجاوزها، أو المادة التالية المتاحة
         if (!isPassed && course.level <= (currentStudentLevel + 1)) {
             const option = document.createElement('option');
             const courseName = currentLang === 'en' ? course.en : course.ar;
@@ -160,7 +171,6 @@ function saveToLocal() {
     }
 }
 
-// === دالة تحويل اللغة الشاملة والمنظمة 100% ===
 window.toggleLanguage = function() {
     currentLang = currentLang === 'en' ? 'ar' : 'en';
     const lang = i18n[currentLang];
@@ -177,7 +187,6 @@ window.toggleLanguage = function() {
     document.getElementById('print-btn').innerText = lang.printBtn;
     document.getElementById('dept-label').innerText = lang.deptLabel;
 
-    // ترجمة خيارات القائمة المنسدلة للقسم
     const deptSelect = document.getElementById('dept-select');
     if (deptSelect) {
         deptSelect.options[0].text = lang.deptOptions.CS;
@@ -197,6 +206,7 @@ window.toggleLanguage = function() {
     calculateGPA();
 };
 
+// === إضافة مادة مع SweetAlert2 لتنبيهات المتطلب والحد الأقصى ===
 document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-course-btn');
     const subInput = document.getElementById('subject');
@@ -205,13 +215,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addBtn) {
         addBtn.onclick = function() {
             if (courses.length >= maxCoursesAllowed) {
-                alert(currentLang === 'en' ? `Limit is ${maxCoursesAllowed} courses.` : `الحد الأقصى هو ${maxCoursesAllowed} مواد.`);
+                showCustomAlert(
+                    currentLang === 'en' ? 'Course Limit Reached' : 'تجاوز عدد المواد',
+                    currentLang === 'en' ? `Max limit is ${maxCoursesAllowed} courses per semester.` : `الحد الأقصى المسموح به هو ${maxCoursesAllowed} مواد في الترم.`,
+                    'warning'
+                );
                 return;
             }
 
             const subject = subInput.value.trim();
             if (!subject) {
-                alert(currentLang === 'en' ? "Please enter subject name!" : "يرجى إدخال اسم المادة!");
+                showCustomAlert(
+                    currentLang === 'en' ? 'Missing Input' : 'حقل فارغ',
+                    currentLang === 'en' ? 'Please enter or select a subject name!' : 'يرجى اختيار أو كتابة اسم المادة أولاً!',
+                    'info'
+                );
                 return;
             }
 
@@ -221,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.hint.toLowerCase() === subject.toLowerCase()
             );
 
+            // فحص المتطلب الصارم بـ SweetAlert2
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
                 const checkPassed = (c) => {
@@ -241,9 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     let reqCourse = predefinedCourses.find(p => p.hint.toUpperCase() === requiredHint);
                     let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : requiredHint;
 
-                    alert(currentLang === 'en' 
-                        ? `⛔ Access Denied! You must PASS prerequisite (${reqName} - ${requiredHint}) first!` 
-                        : `⛔ خطأ أكاديمي! لا يمكنك تسجيل مادة [${subject}] قبل اجتياز المتطلب السابق: (${reqName} - ${requiredHint})!`);
+                    showCustomAlert(
+                        currentLang === 'en' ? 'Prerequisite Required ⛔' : 'متطلب مسبق غير مجتاز ⛔',
+                        currentLang === 'en' 
+                            ? `You cannot register [${subject}] without passing its prerequisite: (${reqName} - ${requiredHint})!` 
+                            : `لا يمكنك تسجيل مادة [${subject}] قبل اجتياز المتطلب السابق لها أولاً: (${reqName} - ${requiredHint})!`,
+                        'error'
+                    );
                     return;
                 }
             }
@@ -385,9 +408,14 @@ function updateGPAChart() {
     });
 }
 
+// === خطط تحسين مبتكرة (2 سيناريو: خطة تعافي سريعة / خطة متوازنة) ===
 window.handleImprovementClick = function() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
-        alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
+        showCustomAlert(
+            currentLang === 'en' ? 'No Data Available' : 'لا توجد بيانات',
+            currentLang === 'en' ? 'Please add courses or semesters first!' : 'يرجى إضافة مواد أو ترمات أولاً لحساب خطة التحسين!',
+            'info'
+        );
         return;
     }
 
@@ -402,118 +430,53 @@ window.handleImprovementClick = function() {
         const requiredTotalPoints = totalHours * targetCGPA;
         let neededGain = requiredTotalPoints - totalPoints;
 
-        let improvableCourses = uniqueCoursesList
-            .filter(c => c.points < 2.0)
-            .sort((a, b) => a.points - b.points)
-            .map(c => ({ ...c, targetGrade: c.grade, targetPoints: c.points }));
+        // الخطة A: التعافي السريع (التركيز على رفع المواد الفاشلة لـ B)
+        let planA_Courses = uniqueCoursesList.filter(c => c.points < 2.0).sort((a,b) => a.points - b.points);
+        let planA_HTML = planA_Courses.map(c => `
+            <tr>
+                <td style="padding:6px; text-align:right;">${c.subject}</td>
+                <td style="padding:6px; text-align:center; color:#ff4d4d;">${c.grade}</td>
+                <td style="padding:6px; text-align:center; color:#07ffb5; font-weight:bold;">B (3.0)</td>
+            </tr>
+        `).join('');
 
-        let accumulatedGain = 0;
-
-        for (let course of improvableCourses) {
-            if (accumulatedGain >= neededGain) break;
-
-            let oldPts = course.points * course.credits;
-            let newPts = gradePoints['B'] * course.credits;
-            let gain = newPts - oldPts;
-
-            course.targetGrade = 'B';
-            course.targetPoints = gradePoints['B'];
-            accumulatedGain += gain;
-        }
-
-        if (accumulatedGain < neededGain) {
-            for (let course of improvableCourses) {
-                if (accumulatedGain >= neededGain) break;
-
-                let oldPts = course.targetPoints * course.credits;
-                let newPts = gradePoints['A'] * course.credits;
-                let extraGain = newPts - oldPts;
-
-                course.targetGrade = 'A';
-                course.targetPoints = gradePoints['A'];
-                accumulatedGain += extraGain;
-            }
-        }
-
-        let recommendedPlan = improvableCourses.filter(c => c.targetGrade !== c.grade);
-
-        const MAX_HOURS_PER_PROBATION_SEM = 12;
-        let semestersPlan = [];
-        let currentSemCourses = [];
-        let currentSemHours = 0;
-
-        recommendedPlan.forEach(course => {
-            if (currentSemHours + course.credits > MAX_HOURS_PER_PROBATION_SEM) {
-                semestersPlan.push(currentSemCourses);
-                currentSemCourses = [course];
-                currentSemHours = course.credits;
-            } else {
-                currentSemCourses.push(course);
-                currentSemHours += course.credits;
-            }
-        });
-        if (currentSemCourses.length > 0) {
-            semestersPlan.push(currentSemCourses);
-        }
-
-        let semestersHTML = '';
-        let accumPointsTracking = totalPoints;
-
-        semestersPlan.forEach((semCourses, idx) => {
-            let semHours = 0;
-            let semTableRows = semCourses.map(item => {
-                semHours += item.credits;
-                let oldPts = item.points * item.credits;
-                let newPts = gradePoints[item.targetGrade] * item.credits;
-                accumPointsTracking = accumPointsTracking - oldPts + newPts;
-
-                return `
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <td style="padding: 8px; text-align: ${isAr ? 'right' : 'left'}; font-weight: 600;">${item.subject}</td>
-                        <td style="padding: 8px; text-align: center;">${item.credits} ${isAr ? 'س' : 'hrs'}</td>
-                        <td style="padding: 8px; text-align: center; color: #ff6b6b; font-weight: bold;">${item.grade}</td>
-                        <td style="padding: 8px; text-align: center; color: #00f2fe; font-weight: bold;">${item.targetGrade}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            let expectedCGPAAfterSem = (accumPointsTracking / totalHours).toFixed(2);
-
-            semestersHTML += `
-                <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #00f2fe;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0; color: #00f2fe; font-size: 15px;">📅 ${isAr ? `الترم القادم (${idx + 1}) - المسموح: ${semHours} ساعة` : `Next Semester (${idx + 1}) -${semHours} Credits`}</h4>
-                        <span style="font-size: 12px; color: #07ffb5; font-weight: bold;">${isAr ? `التراكمي المتوقع: ${expectedCGPAAfterSem}` : `Expected CGPA: ${expectedCGPAAfterSem}`}</span>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: rgba(255,255,255,0.05); color: #aaa;">
-                                <th style="padding: 6px; text-align: ${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th>
-                                <th style="padding: 6px; text-align: center;">${isAr ? 'الساعات' : 'Credits'}</th>
-                                <th style="padding: 6px; text-align: center;">${isAr ? 'الحالي' : 'Current'}</th>
-                                <th style="padding: 6px; text-align: center;">${isAr ? 'التقدير المطلوب' : 'Min Grade'}</th>
-                            </tr>
-                        </thead>
-                        <tbody>${semTableRows}</tbody>
-                    </table>
-                </div>
-            `;
-        });
+        // الخطة B: الرفع التدريجي والمتوازن (استهداف B+ أو A لمواد محددة لتوزيع العبء)
+        let planB_Courses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a,b) => a.points - b.points);
+        let planB_HTML = planB_Courses.map(c => `
+            <tr>
+                <td style="padding:6px; text-align:right;">${c.subject}</td>
+                <td style="padding:6px; text-align:center; color:#ff4d4d;">${c.grade}</td>
+                <td style="padding:6px; text-align:center; color:#00f2fe; font-weight:bold;">B+ / A</td>
+            </tr>
+        `).join('');
 
         container.innerHTML = `
-            <div style="background: #1e1e2f; border: 2px solid #ff4d4d; border-radius: 12px; padding: 20px; color: #fff; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.2); margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span style="font-size: 22px;">🚨</span>
-                    <h3 style="margin: 0; color: #ff4d4d; font-size: 17px; font-weight: bold;">${i18n[currentLang].probationWarning}</h3>
+            <div style="background: #1e1e2f; border: 2px solid #ff4d4d; border-radius: 12px; padding: 20px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
+                <h3 style="color: #ff4d4d; margin-top: 0;">🚨 ${i18n[currentLang].probationWarning}</h3>
+                <p style="font-size:13px; opacity:0.9;">اختر الخطة المناسبة لقدراتك الأكاديمية لتجاوز الـ 2.00 بأسرع وقت:</p>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <!-- المسار الأول -->
+                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #07ffb5;">
+                        <h4 style="margin: 0 0 10px 0; color: #07ffb5; font-size:14px;">⚡ المسار 1: التعافي المباشر السريع</h4>
+                        <table style="width: 100%; font-size: 12px;">
+                            <thead><tr><th style="text-align:right;">المادة</th><th>الحالي</th><th>المستهدف</th></tr></thead>
+                            <tbody>${planA_HTML}</tbody>
+                        </table>
+                    </div>
+
+                    <!-- المسار الثاني -->
+                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #00f2fe;">
+                        <h4 style="margin: 0 0 10px 0; color: #00f2fe; font-size:14px;">🛡️ المسار 2: التوازن والرفع المريح</h4>
+                        <table style="width: 100%; font-size: 12px;">
+                            <thead><tr><th style="text-align:right;">المادة</th><th>الحالي</th><th>المستهدف</th></tr></thead>
+                            <tbody>${planB_HTML}</tbody>
+                        </table>
+                    </div>
                 </div>
-                <p style="margin-bottom: 15px; font-size: 13px; opacity: 0.9; line-height: 1.4;">
-                    ${i18n[currentLang].mandatoryImprovement}
-                </p>
-                ${semestersHTML}
             </div>
         `;
-    } 
-    else {
+    } else {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
             container.innerHTML = `
@@ -571,7 +534,11 @@ function getNextSemesterNumber() {
 
 window.saveAndClearSemester = function() {
     if (courses.length === 0) {
-        alert(currentLang === 'en' ? "No courses to save!" : "لا توجد مواد لحفظها!");
+        showCustomAlert(
+            currentLang === 'en' ? 'Empty Semester' : 'ترم فارغ',
+            currentLang === 'en' ? 'No courses to save!' : 'لا توجد مواد أضيفت لحفظ الترم!',
+            'info'
+        );
         return;
     }
 
@@ -607,6 +574,12 @@ window.saveAndClearSemester = function() {
     saveToLocal();
     updateUI();
     renderSavedSemesters();
+
+    showCustomAlert(
+        currentLang === 'en' ? 'Saved Successfully' : 'تم الحفظ بنجاح',
+        currentLang === 'en' ? 'Semester saved to academic history!' : 'تم حفظ الترم وإضافته للسجل الأكاديمي!',
+        'success'
+    );
 };
 
 function renderSavedSemesters() {
@@ -680,18 +653,39 @@ window.toggleSemester = function(index) {
 };
 
 window.deleteSemester = function(index) {
-    if (confirm(currentLang === 'en' ? "Delete this semester?" : "هل تريد حذف هذا الترم؟")) {
-        savedSemesters.splice(index, 1);
-        saveToLocal();
-        renderSavedSemesters();
-        calculateGPA();
-        populateDatalist();
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: currentLang === 'en' ? 'Delete Semester?' : 'حذف الترم؟',
+            text: currentLang === 'en' ? 'Are you sure you want to remove this semester?' : 'هل أنت متأكد من حذف هذا الترم؟',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4d',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: currentLang === 'en' ? 'Yes, delete' : 'نعم، احذف',
+            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
+            background: '#1e1e2f',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                savedSemesters.splice(index, 1);
+                saveToLocal();
+                renderSavedSemesters();
+                calculateGPA();
+                populateDatalist();
+            }
+        });
+    } else {
+        if (confirm("Delete semester?")) {
+            savedSemesters.splice(index, 1);
+            saveToLocal();
+            renderSavedSemesters();
+            calculateGPA();
+            populateDatalist();
+        }
     }
 };
 
 window.editSemester = function(index) {
-    if (courses.length > 0 && !confirm(currentLang === 'en' ? "Unsaved changes will be lost. Continue?" : "لديك تعديلات غير محفوظة، هل تريد تجاهلها؟")) return;
-
     const sem = savedSemesters[index];
     courses = [...sem.courseDetails];
     currentEditingName = sem.name; 
@@ -703,19 +697,29 @@ window.editSemester = function(index) {
 };
 
 window.resetCalculator = function() {
-    const confirmMsg = currentLang === 'en' 
-        ? "Are you sure you want to delete all data and start over?" 
-        : "هل أنت متأكد من مسح جميع البيانات والبدء من جديد؟";
-        
-    if (!confirm(confirmMsg)) return;
-
-    courses = [];
-    savedSemesters = [];
-    currentEditingName = null;
-    editingIndex = null;
-    maxCoursesAllowed = 6;
-
-    saveToLocal();
-    updateUI();
-    renderSavedSemesters();
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: currentLang === 'en' ? 'Reset All Data?' : 'مسح كافة البيانات؟',
+            text: currentLang === 'en' ? 'This action will clear all saved semesters!' : 'سيتم حذف جميع الترمات والمواد المسجلة نهائياً!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4d',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: currentLang === 'en' ? 'Reset All' : 'مسح الكل',
+            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
+            background: '#1e1e2f',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                courses = [];
+                savedSemesters = [];
+                currentEditingName = null;
+                editingIndex = null;
+                maxCoursesAllowed = 6;
+                saveToLocal();
+                updateUI();
+                renderSavedSemesters();
+            }
+        });
+    }
 };
