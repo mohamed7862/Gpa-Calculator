@@ -27,43 +27,42 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
+// اللوائح الأصلية بدون لغبطة
 const departmentSyllabus = {
     CS: [
-        { level: 1, en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
-        { level: 1, en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
-        { level: 1, en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
-        { level: 1, en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
-        { level: 1, en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
-        { level: 1, en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
-        { level: 1, en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
-        { level: 1, en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
-        { level: 1, en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
-        { level: 1, en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
-        
-        { level: 2, en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
-        { level: 2, en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
-        { level: 2, en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
-        { level: 2, en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
-        { level: 2, en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
-        { level: 2, en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
-
-        { level: 3, en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
-        { level: 3, en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
-        { level: 3, en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
-        { level: 3, en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 201" }
+        { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
+        { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
+        { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
+        { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
+        { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
+        { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
+        { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
+        { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
+        { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
+        { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
+        { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
+        { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
+        { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
+        { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
+        { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
+        { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
+        { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
+        { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
+        { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
+        { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 201" }
     ],
     AI: [
-        { level: 1, en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
-        { level: 1, en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
-        { level: 2, en: "Intro to Artificial Intelligence", ar: "مقدمة في الذكاء الاصطناعي", hint: "AI 102", credits: 3, prereq: "AI 101" },
-        { level: 2, en: "Data Analysis & Visualization", ar: "تحليل ورسم البيانات", hint: "AI 201", credits: 3, prereq: "AI 101" },
-        { level: 3, en: "Machine Learning Fundamentals", ar: "أساسيات تعلم الآلة", hint: "AI 202", credits: 3, prereq: "BS 105" }
+        { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
+        { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
+        { en: "Intro to Artificial Intelligence", ar: "مقدمة في الذكاء الاصطناعي", hint: "AI 102", credits: 3, prereq: "AI 101" },
+        { en: "Data Analysis & Visualization", ar: "تحليل ورسم البيانات", hint: "AI 201", credits: 3, prereq: "AI 101" },
+        { en: "Machine Learning Fundamentals", ar: "أساسيات تعلم الآلة", hint: "AI 202", credits: 3, prereq: "BS 105" }
     ],
     CYBER: [
-        { level: 1, en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "CY 101", credits: 3, prereq: null },
-        { level: 1, en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CY 102", credits: 3, prereq: null },
-        { level: 2, en: "Network Security & Cryptography", ar: "أمن الشبكات والتشفير", hint: "CY 201", credits: 3, prereq: "CY 101" },
-        { level: 3, en: "Ethical Hacking & Penetration Testing", ar: "الاختراق الأخلاقي واختبار الاختراق", hint: "CY 202", credits: 3, prereq: "CY 102" }
+        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "CY 101", credits: 3, prereq: null },
+        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CY 102", credits: 3, prereq: null },
+        { en: "Network Security & Cryptography", ar: "أمن الشبكات والتشفير", hint: "CY 201", credits: 3, prereq: "CY 101" },
+        { en: "Ethical Hacking & Penetration Testing", ar: "الاختراق الأخلاقي واختبار الاختراق", hint: "CY 202", credits: 3, prereq: "CY 102" }
     ]
 };
 
@@ -72,7 +71,7 @@ let predefinedCourses = departmentSyllabus[currentDepartment];
 
 const i18n = {
     en: {
-        title: "GPA Calculator & Academic Advisor",
+        title: "GPA Calculator",
         subjectPlaceholder: "Subject Name",
         addBtn: "Add course ➕",
         saveBtn: "Save & Add New Semester",
@@ -82,7 +81,6 @@ const i18n = {
         header: ["Subject", "Grade", "Hours", "Action"],
         termGpa: "Term:",
         cgpa: "CGPA:",
-        deptLabel: "Department / القسم:",
         improvementBtn: "🚀 Academic Recovery & Simulator",
         printBtn: "🖨️ Print",
         resetBtn: "Reset",
@@ -90,7 +88,7 @@ const i18n = {
         deptOptions: { CS: "Computer Science", AI: "Artificial Intelligence", CYBER: "Cyber Security" }
     },
     ar: {
-        title: "حاسبة المعدل التراكمي والمرشد الأكاديمي",
+        title: "حاسبة المعدل التراكمي",
         subjectPlaceholder: "اسم المادة",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
@@ -100,7 +98,6 @@ const i18n = {
         header: ["المادة", "التقدير", "الساعات", "حذف"],
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
-        deptLabel: "القسم / Department:",
         improvementBtn: "🚀 خطة التحسين والمحاكاة",
         printBtn: "🖨️ طباعة",
         resetBtn: "إعادة ضبط",
@@ -123,36 +120,11 @@ function populateDatalist() {
     if (!datalist) return;
     datalist.innerHTML = '';
 
-    let totalEarnedHours = 0;
-    let passedHints = new Set();
-    
-    savedSemesters.forEach(sem => {
-        if (sem.isChecked) {
-            sem.courseDetails.forEach(c => {
-                let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) {
-                    totalEarnedHours += c.credits;
-                    let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim() || p.hint.toLowerCase() === c.subject.trim().toLowerCase());
-                    if (match) passedHints.add(match.hint);
-                }
-            });
-        }
-    });
-
-    let currentStudentLevel = 1;
-    if (totalEarnedHours >= 100) currentStudentLevel = 4;
-    else if (totalEarnedHours >= 66) currentStudentLevel = 3;
-    else if (totalEarnedHours >= 33) currentStudentLevel = 2;
-
     predefinedCourses.forEach(course => {
-        const isPassed = passedHints.has(course.hint);
-        if (!isPassed && course.level <= (currentStudentLevel + 1)) {
-            const option = document.createElement('option');
-            const courseName = currentLang === 'en' ? course.en : course.ar;
-            option.value = courseName;
-            option.label = `[Level ${course.level}] - ${course.hint}`;
-            datalist.appendChild(option);
-        }
+        const option = document.createElement('option');
+        const courseName = currentLang === 'en' ? course.en : course.ar;
+        option.value = courseName;
+        datalist.appendChild(option);
     });
 }
 
@@ -178,7 +150,6 @@ window.toggleLanguage = function() {
     document.getElementById('lang-btn').innerText = lang.langBtn;
     document.getElementById('improvement-btn').innerText = lang.improvementBtn;
     document.getElementById('print-btn').innerText = lang.printBtn;
-    document.getElementById('dept-label').innerText = lang.deptLabel;
 
     const deptSelect = document.getElementById('dept-select');
     if (deptSelect) {
