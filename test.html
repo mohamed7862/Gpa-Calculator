@@ -147,16 +147,18 @@
             border-bottom: 1px solid #334155 !important;
         }
 
+        /* تعديل لون صفوف المواد لإظهار اسم المادة والساعات بوضوح */
         .dark-clean-theme .course-row {
             display: flex !important;
             justify-content: space-between !important;
             align-items: center !important;
-            background: #0f172a !important;
+            background: #ffffff !important;
             padding: 10px !important;
             border-radius: 8px !important;
             margin-top: 8px !important;
-            border: 1px solid #334155 !important;
-            color: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            font-weight: bold !important;
         }
 
         .dark-clean-theme .delete-btn {
@@ -220,7 +222,7 @@
 
         <h1 id="main-title">GPA Calculator</h1>
 
-        <!-- اختيار القسم مباشرة وبدون أي كلمة جنبه -->
+        <!-- اختيار القسم فقط بدون أي نص بجانبه -->
         <div class="dept-container">
             <select id="dept-select" onchange="changeDepartment(this.value)">
                 <option value="CS">Computer Science</option>
