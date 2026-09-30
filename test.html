@@ -10,33 +10,39 @@
 <body>
 
     <div class="container">
-        <!-- زرار اللغة في الأعلى يمين -->
-        <button onclick="toggleLanguage()" id="lang-btn" style="float: right; padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer; margin-bottom: 15px;">العربية</button>
-        <div style="clear: both;"></div>
+        <!-- زرار اللغة صغير وشيك ومستقل فوق على اليمين -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+            <button onclick="toggleLanguage()" id="lang-btn" style="padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
+        </div>
 
-        <!-- عنوان التطبيق -->
-        <h1 id="main-title" style="text-align: center; margin-top: 5px; margin-bottom: 20px;">GPA Calculator</h1>
+        <h1 id="main-title" style="text-align: center; margin-top: 0; margin-bottom: 25px;">GPA Calculator</h1>
         
         <div id="course-form">
-            <!-- اختيار القسم داخل الفورم بنفس تصميم وتناسق الخانات -->
-            <div style="margin-bottom: 15px;">
-                <label for="dept-select" style="font-weight: bold; font-size: 13px; color: #495057; display: block; margin-bottom: 5px;">Department / القسم:</label>
-                <select id="dept-select" onchange="changeDepartment(this.value)" style="width: 100%; padding: 10px; border-radius: 8px; background: #f8f9fa; color: #212529; border: 1px solid #ced4da; font-weight: bold; font-size: 14px; outline: none; cursor: pointer;">
-                    <option value="CS">💻 Computer Science (علوم حاسب)</option>
-                    <option value="AI">🤖 Artificial Intelligence (الذكاء الاصطناعي)</option>
-                    <option value="CYBER">🛡️ Cyber Security (الأمن السيبراني)</option>
+            <!-- قسم المادة + الاسم + التقدير كلهم مصفوفين جنب بعض في سطر واحد منظم -->
+            <div class="form-group" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                <select id="dept-select" onchange="changeDepartment(this.value)" style="flex: 1.2; min-width: 140px; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f8f9fa; color: #333; font-weight: bold; font-size: 13.5px; outline: none; cursor: pointer;">
+                    <option value="CS">💻 CS (علوم حاسب)</option>
+                    <option value="AI">🤖 AI (ذكاء اصطناعي)</option>
+                    <option value="CYBER">🛡️ CYBER (أمن سيبراني)</option>
                 </select>
-            </div>
 
-            <div class="form-group">
-                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
+                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required style="flex: 2; min-width: 160px;">
+                
                 <datalist id="subjects-list"></datalist>
 
-                <select id="grade">
-                    <option value="A+">A+</option><option value="A">A</option><option value="A-">A-</option>
-                    <option value="B+">B+</option><option value="B">B</option><option value="B-">B-</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="C-">C-</option>
-                    <option value="D+">D+</option><option value="D">D</option><option value="D-">D-</option>
+                <select id="grade" style="flex: 0.8; min-width: 75px;">
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="B-">B-</option>
+                    <option value="C+">C+</option>
+                    <option value="C">C</option>
+                    <option value="C-">C-</option>
+                    <option value="D+">D+</option>
+                    <option value="D">D</option>
+                    <option value="D-">D-</option>
                     <option value="F">F</option>
                 </select>
             </div>
