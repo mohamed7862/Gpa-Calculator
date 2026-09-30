@@ -52,7 +52,6 @@ const departmentSyllabus = {
     ]
 };
 
-// تحديد القسم الافتراضي أو المحفوظ
 let currentDepartment = localStorage.getItem('selectedDept') || "CS";
 let predefinedCourses = departmentSyllabus[currentDepartment];
 
@@ -69,7 +68,7 @@ const i18n = {
         termGpa: "Term:",
         cgpa: "CGPA:",
         probationWarning: "Academic Probation Alert: CGPA is below 2.00!",
-        mandatoryImprovement: "Academic Recovery Roadmap (Target Grade: B):",
+        mandatoryImprovement: "Academic Recovery Roadmap (Target Minimum Grade per Course):",
         optionalImprovement: "Optional Course Improvement Simulator 🚀"
     },
     ar: {
@@ -84,7 +83,7 @@ const i18n = {
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        mandatoryImprovement: "خطة التعافي الأكاديمي المقترحة للخروج من الإنذار (مستهدف B):",
+        mandatoryImprovement: "خطة التعافي الأكاديمي (التقدير الأدنى المطلوبة لكل مادة لتجاوز 2.00):",
         optionalImprovement: "مُحاكي تحسين المواد الاختياري 🚀"
     }
 };
@@ -97,7 +96,6 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === دالة تغيير القسم ديناميكياً ===
 function changeDepartment(deptKey) {
     if (!departmentSyllabus[deptKey]) return;
     currentDepartment = deptKey;
@@ -151,7 +149,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === إضافة مادة مع الفحص الصارم للمتطلبات ===
+// === إضافة مادة مع فحص المتطلب ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -171,13 +169,12 @@ if (addCourseBtn) {
             c.hint.toLowerCase() === subject.toLowerCase()
         );
 
-        // التحقق من المتطلب السابق
         if (predefinedCourse && predefinedCourse.prereq) {
             let passedCourseHints = new Set();
 
             const checkPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح في المادة
+                if (pts > 0) {
                     let inputSub = c.subject.trim().toLowerCase();
                     let match = predefinedCourses.find(p => 
                         p.en.trim().toLowerCase() === inputSub || 
@@ -240,7 +237,6 @@ function renderCourses() {
     });
 }
 
-// === حساب التراكمي وتجميع المواد الفريدة ===
 function calculateGPA() {
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
@@ -274,7 +270,7 @@ function calculateGPA() {
     };
 }
 
-// === محرك المرشد الأكاديمي الذكي ===
+// === محرك التعافي الحسابي الدقيق لكسر حاجز 2.00 ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -288,54 +284,49 @@ function handleImprovementClick() {
     const isAr = currentLang === 'ar';
 
     if (finalCGPA < 2.0) {
+        const targetCGPA = 2.00;
+        const requiredTotalPoints = totalHours * targetCGPA;
+        let neededGain = requiredTotalPoints - totalPoints;
+
+        // تجميع المواد التي يمكن تحسينها (F ثم D ثم C-)
         let improvableCourses = uniqueCoursesList
             .filter(c => c.points < 2.0)
-            .sort((a, b) => a.points - b.points);
+            .sort((a, b) => a.points - b.points)
+            .map(c => ({ ...c, targetGrade: c.grade, targetPoints: c.points }));
 
-        let simCoursesMap = {};
-        improvableCourses.forEach(c => {
-            simCoursesMap[c.subject] = { ...c, targetGrade: c.grade, targetPoints: c.points };
-        });
+        let accumulatedGain = 0;
 
-        let currentSimPoints = totalPoints;
-        let targetReached = false;
+        // المرحلة 1: رفع التقديرات لـ B (3.0 points) والتوقف فور الوصول لـ 2.00
+        for (let course of improvableCourses) {
+            if (accumulatedGain >= neededGain) break;
 
-        // استهداف تقدير B والتوقف فور كسر حاجز 2.00
-        for (let c of improvableCourses) {
-            let targetGrade = 'B';
-            let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
-            let newPts = gradePoints[targetGrade] * c.credits;
-            
-            currentSimPoints = currentSimPoints - oldPts + newPts;
-            simCoursesMap[c.subject].targetGrade = targetGrade;
-            simCoursesMap[c.subject].targetPoints = gradePoints[targetGrade];
+            let oldPts = course.points * course.credits;
+            let newPts = gradePoints['B'] * course.credits;
+            let gain = newPts - oldPts;
 
-            if (currentSimPoints / totalHours >= 2.0) {
-                targetReached = true;
-                break;
+            course.targetGrade = 'B';
+            course.targetPoints = gradePoints['B'];
+            accumulatedGain += gain;
+        }
+
+        // المرحلة 2: لو لسه ما وصلناش لـ 2.00، نرفع التقدير المطلوبة لـ A (3.7 points)
+        if (accumulatedGain < neededGain) {
+            for (let course of improvableCourses) {
+                if (accumulatedGain >= neededGain) break;
+
+                let oldPts = course.targetPoints * course.credits;
+                let newPts = gradePoints['A'] * course.credits;
+                let extraGain = newPts - oldPts;
+
+                course.targetGrade = 'A';
+                course.targetPoints = gradePoints['A'];
+                accumulatedGain += extraGain;
             }
         }
 
-        // إذا لزم الأمر رفع التقدير لـ A
-        if (!targetReached) {
-            for (let c of improvableCourses) {
-                let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
-                let newPts = gradePoints['A'] * c.credits;
+        let recommendedPlan = improvableCourses.filter(c => c.targetGrade !== c.grade);
 
-                currentSimPoints = currentSimPoints - oldPts + newPts;
-                simCoursesMap[c.subject].targetGrade = 'A';
-                simCoursesMap[c.subject].targetPoints = gradePoints['A'];
-
-                if (currentSimPoints / totalHours >= 2.0) {
-                    targetReached = true;
-                    break;
-                }
-            }
-        }
-
-        let recommendedPlan = Object.values(simCoursesMap).filter(c => c.targetGrade !== c.grade);
-
-        // تقسيم على 12 ساعة كحد أقصى للإنذار
+        // تقسيم المواد بحد أقصى 12 ساعة للإنذار
         const MAX_HOURS_PER_PROBATION_SEM = 12;
         let semestersPlan = [];
         let currentSemCourses = [];
@@ -390,7 +381,7 @@ function handleImprovementClick() {
                                 <th style="padding: 6px; text-align: ${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th>
                                 <th style="padding: 6px; text-align: center;">${isAr ? 'الساعات' : 'Credits'}</th>
                                 <th style="padding: 6px; text-align: center;">${isAr ? 'الحالي' : 'Current'}</th>
-                                <th style="padding: 6px; text-align: center;">${isAr ? 'المستهدف' : 'Target'}</th>
+                                <th style="padding: 6px; text-align: center;">${isAr ? 'التقدير المطلوب' : 'Min Grade'}</th>
                             </tr>
                         </thead>
                         <tbody>${semTableRows}</tbody>
@@ -490,7 +481,7 @@ function saveAndClearSemester() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
-        isLocked: false, // الترم المدخل يدويًا متاح للتعديل
+        isLocked: false,
         courseDetails: [...courses]
     };
 
@@ -541,7 +532,6 @@ function renderSavedSemesters() {
             semCGPA = "-";
         }
 
-        // إخفاء أزرار التحكم للمواد المستوردة (isLocked)
         const actionButtonsHTML = sem.isLocked 
             ? `<span style="font-size: 12px; color: #00f2fe; background: rgba(0,242,254,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,242,254,0.3);">🔒 سجل أكاديمي معتمد</span>`
             : `
@@ -617,8 +607,7 @@ function resetCalculator() {
     renderSavedSemesters();
 }
 
-// === دالة ديناميكية لاستقبال سجل الطالب من داتابيز الجامعة (API Endpoint) ===
-// تستقبل أي عدد من المواد السابقة وتقفلها لمنع التعديل.
+// === دالة استقبال أي بيانات قادمة من سيرفر الجامعة لقفلها ===
 window.loadStudentDataFromUniversity = function(studentData) {
     if (studentData.department) {
         changeDepartment(studentData.department);
