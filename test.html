@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPA Calculator & Academic Advisor</title>
+    <title>GPA Calculator</title>
     <link rel="stylesheet" href="gpa.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- إصلاح الألوان والتباين بالكامل لإظهار جميع النصوص بوضوح -->
     <style>
-        body.dark-test-theme {
+        body.dark-clean-theme {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
             background: #0f172a !important;
             color: #ffffff !important;
@@ -22,7 +21,7 @@
             align-items: center;
         }
 
-        .dark-test-theme .container {
+        .dark-clean-theme .container {
             width: 100% !important;
             max-width: 650px !important;
             background: #1e293b !important;
@@ -32,7 +31,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
         }
 
-        .dark-test-theme h1 {
+        .dark-clean-theme h1 {
             color: #38bdf8 !important;
             text-align: center !important;
             margin-top: 0 !important;
@@ -41,20 +40,14 @@
             font-weight: bold !important;
         }
 
-        .dark-test-theme .dept-container {
+        .dark-clean-theme .dept-container {
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            gap: 10px !important;
             margin-bottom: 20px !important;
         }
 
-        .dark-test-theme label {
-            color: #f1f5f9 !important;
-            font-weight: 600 !important;
-        }
-
-        .dark-test-theme .btn-top-lang {
+        .dark-clean-theme .btn-top-lang {
             width: auto !important;
             display: inline-block !important;
             padding: 6px 18px !important;
@@ -67,15 +60,14 @@
             cursor: pointer !important;
         }
 
-        .dark-test-theme .form-group {
+        .dark-clean-theme .form-group {
             display: flex !important;
             gap: 10px !important;
             margin-bottom: 15px !important;
         }
 
-        /* إصلاح خانات الكتابة القوائم لتظهر بالنص الأبيض الواضح */
-        .dark-test-theme input[type="text"], 
-        .dark-test-theme select {
+        .dark-clean-theme input[type="text"], 
+        .dark-clean-theme select {
             background: #0f172a !important;
             border: 1.5px solid #475569 !important;
             color: #ffffff !important;
@@ -86,22 +78,25 @@
             outline: none !important;
         }
 
-        .dark-test-theme input[type="text"]::placeholder {
+        .dark-clean-theme input[type="text"] { flex: 2 !important; }
+        .dark-clean-theme select { flex: 1 !important; }
+
+        .dark-clean-theme input[type="text"]::placeholder {
             color: #94a3b8 !important;
         }
 
-        .dark-test-theme select option {
+        .dark-clean-theme select option {
             background: #0f172a !important;
             color: #ffffff !important;
         }
 
-        .dark-test-theme input[type="text"]:focus, 
-        .dark-test-theme select:focus {
+        .dark-clean-theme input[type="text"]:focus, 
+        .dark-clean-theme select:focus {
             border-color: #38bdf8 !important;
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
         }
 
-        .dark-test-theme button {
+        .dark-clean-theme button {
             border-radius: 10px !important;
             padding: 12px 18px !important;
             font-weight: bold !important;
@@ -109,7 +104,7 @@
             cursor: pointer !important;
         }
 
-        .dark-test-theme #add-course-btn {
+        .dark-clean-theme #add-course-btn {
             width: 100% !important;
             background: #10b981 !important;
             color: #ffffff !important;
@@ -117,24 +112,24 @@
             margin-bottom: 15px !important;
         }
 
-        .dark-test-theme .action-buttons-row {
+        .dark-clean-theme .action-buttons-row {
             display: flex !important;
             gap: 10px !important;
         }
 
-        .dark-test-theme .btn-save {
+        .dark-clean-theme .btn-save {
             background: #0284c7 !important;
             color: #ffffff !important;
             flex: 2 !important;
         }
 
-        .dark-test-theme .btn-reset {
+        .dark-clean-theme .btn-reset {
             background: #ef4444 !important;
             color: #ffffff !important;
             flex: 1 !important;
         }
 
-        .dark-test-theme .semester-card {
+        .dark-clean-theme .semester-card {
             background: #0f172a !important;
             border: 1px solid #334155 !important;
             border-radius: 12px !important;
@@ -143,7 +138,7 @@
             color: #ffffff !important;
         }
 
-        .dark-test-theme .course-header {
+        .dark-clean-theme .course-header {
             display: flex !important;
             justify-content: space-between !important;
             padding: 10px !important;
@@ -152,7 +147,7 @@
             border-bottom: 1px solid #334155 !important;
         }
 
-        .dark-test-theme .course-row {
+        .dark-clean-theme .course-row {
             display: flex !important;
             justify-content: space-between !important;
             align-items: center !important;
@@ -164,31 +159,31 @@
             color: #ffffff !important;
         }
 
-        .dark-test-theme .delete-btn {
+        .dark-clean-theme .delete-btn {
             background: #ef4444 !important;
             color: #ffffff !important;
             padding: 4px 10px !important;
             border-radius: 6px !important;
         }
 
-        .dark-test-theme .gpa-result {
+        .dark-clean-theme .gpa-result {
             text-align: center !important;
             margin-top: 25px !important;
             padding-top: 15px !important;
             border-top: 1px solid #334155 !important;
         }
 
-        .dark-test-theme #final-gpa-text {
+        .dark-clean-theme #final-gpa-text {
             color: #f1f5f9 !important;
         }
 
-        .dark-test-theme #gpa-display {
+        .dark-clean-theme #gpa-display {
             font-size: 44px !important;
             font-weight: 800 !important;
             color: #38bdf8 !important;
         }
 
-        .dark-test-theme #chart-container {
+        .dark-clean-theme #chart-container {
             margin-top: 20px !important;
             background: #0f172a !important;
             padding: 15px !important;
@@ -196,7 +191,7 @@
             border: 1px solid #334155 !important;
         }
 
-        .dark-test-theme .footer-buttons {
+        .dark-clean-theme .footer-buttons {
             margin-top: 15px !important;
             display: flex !important;
             gap: 10px !important;
@@ -204,18 +199,18 @@
             flex-wrap: wrap !important;
         }
 
-        .dark-test-theme .btn-improvement {
+        .dark-clean-theme .btn-improvement {
             background: #6366f1 !important;
             color: #ffffff !important;
         }
 
-        .dark-test-theme .btn-print {
+        .dark-clean-theme .btn-print {
             background: #475569 !important;
             color: #ffffff !important;
         }
     </style>
 </head>
-<body class="dark-test-theme">
+<body class="dark-clean-theme">
 
     <div class="container">
         <!-- زر تحويل اللغة -->
@@ -225,9 +220,8 @@
 
         <h1 id="main-title">GPA Calculator</h1>
 
-        <!-- اختيار القسم -->
+        <!-- اختيار القسم مباشرة وبدون أي كلمة جنبه -->
         <div class="dept-container">
-            <label for="dept-select" id="dept-label">Department / القسم:</label>
             <select id="dept-select" onchange="changeDepartment(this.value)">
                 <option value="CS">Computer Science</option>
                 <option value="AI">Artificial Intelligence</option>
