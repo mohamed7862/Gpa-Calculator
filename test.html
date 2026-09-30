@@ -4,13 +4,209 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator & Academic Advisor</title>
+    <!-- الاحتفاظ بملف الـ CSS الأساسي -->
     <link rel="stylesheet" href="gpa.css">
-    <!-- Chart.js -->
+    <!-- Chart.js للرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SweetAlert2 -->
+    <!-- SweetAlert2 للتنبيهات الشيك -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- التنسيقات الخاصة بصفحة الاختيارات والتجربة الحديثة -->
+    <style>
+        body.dark-test-theme {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%) !important;
+            color: #f8fafc !important;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dark-test-theme .container {
+            width: 100% !important;
+            max-width: 650px !important;
+            background: rgba(30, 41, 59, 0.75) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 24px !important;
+            padding: 28px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .dark-test-theme h1 {
+            color: #38bdf8 !important;
+            text-align: center !important;
+            margin-top: 0 !important;
+            margin-bottom: 20px !important;
+            font-size: 28px !important;
+        }
+
+        .dark-test-theme .dept-container {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .dark-test-theme .btn-top-lang {
+            width: auto !important;
+            display: inline-block !important;
+            padding: 6px 18px !important;
+            background: #334155 !important;
+            color: #f8fafc !important;
+            font-size: 13px !important;
+            font-weight: bold !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            cursor: pointer !important;
+        }
+
+        .dark-test-theme .form-group {
+            display: flex !important;
+            gap: 10px !important;
+            margin-bottom: 15px !important;
+        }
+
+        .dark-test-theme input[type="text"], 
+        .dark-test-theme select {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #f8fafc !important;
+            padding: 12px !important;
+            border-radius: 12px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            transition: all 0.25s ease !important;
+        }
+
+        .dark-test-theme input[type="text"] { flex: 2 !important; }
+        .dark-test-theme select { flex: 1 !important; }
+
+        .dark-test-theme input[type="text"]:focus, 
+        .dark-test-theme select:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
+        }
+
+        .dark-test-theme button {
+            border-radius: 12px !important;
+            padding: 12px 18px !important;
+            font-weight: bold !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+
+        .dark-test-theme button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .dark-test-theme #add-course-btn {
+            width: 100% !important;
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: #ffffff !important;
+            font-size: 15px !important;
+            margin-bottom: 15px !important;
+        }
+
+        .dark-test-theme .action-buttons-row {
+            display: flex !important;
+            gap: 10px !important;
+        }
+
+        .dark-test-theme .btn-save {
+            background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
+            color: #ffffff !important;
+            flex: 2 !important;
+        }
+
+        .dark-test-theme .btn-reset {
+            background: #ef4444 !important;
+            color: #ffffff !important;
+            flex: 1 !important;
+        }
+
+        .dark-test-theme .semester-card {
+            background: rgba(15, 23, 42, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 12px !important;
+            padding: 14px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .dark-test-theme .course-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            padding: 10px !important;
+            font-weight: bold !important;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .dark-test-theme .course-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: rgba(15, 23, 42, 0.3) !important;
+            padding: 10px !important;
+            border-radius: 8px !important;
+            margin-top: 8px !important;
+        }
+
+        .dark-test-theme .delete-btn {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: #f87171 !important;
+            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+            padding: 4px 10px !important;
+            border-radius: 6px !important;
+        }
+
+        .dark-test-theme .gpa-result {
+            text-align: center !important;
+            margin-top: 25px !important;
+            padding-top: 15px !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .dark-test-theme #gpa-display {
+            font-size: 44px !important;
+            font-weight: 800 !important;
+            color: #38bdf8 !important;
+        }
+
+        .dark-test-theme #chart-container {
+            margin-top: 20px !important;
+            background: rgba(15, 23, 42, 0.4) !important;
+            padding: 15px !important;
+            border-radius: 14px !important;
+        }
+
+        .dark-test-theme .footer-buttons {
+            margin-top: 15px !important;
+            display: flex !important;
+            gap: 10px !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+        }
+
+        .dark-test-theme .btn-improvement {
+            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+            color: #ffffff !important;
+        }
+
+        .dark-test-theme .btn-print {
+            background: #334155 !important;
+            color: #ffffff !important;
+        }
+    </style>
 </head>
-<body class="dark-theme">
+<body class="dark-test-theme">
 
     <div class="container">
         <!-- زر تحويل اللغة -->
@@ -81,7 +277,7 @@
                     🚀 Academic Recovery & Simulator
                 </button>
                 <button id="print-btn" onclick="window.print()" class="btn-print">
-                    🖨️️ Print
+                    🖨 Print
                 </button>
             </div>
             <div id="improvement-engine-box"></div>
