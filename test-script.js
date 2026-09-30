@@ -27,7 +27,7 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
-// اللوائح الأصلية بدون لغبطة
+// اللوائح الأصلية كاملة بدون تغيير
 const departmentSyllabus = {
     CS: [
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
@@ -78,7 +78,7 @@ const i18n = {
         savedTitle: "Saved Semesters",
         finalGpa: "Final GPA",
         langBtn: "العربية",
-        header: ["Subject", "Grade", "Hours", "Action"],
+        header: ["SUBJECT", "GRADE", "HOURS", "ACTION"],
         termGpa: "Term:",
         cgpa: "CGPA:",
         improvementBtn: "🚀 Academic Recovery & Simulator",
@@ -258,6 +258,7 @@ function updateUI() {
     populateDatalist();
 }
 
+// عرض اسم المادة والساعات بخط واضح وألوان مظبوطة
 function renderCourses() {
     const coursesList = document.getElementById('courses-list');
     if (!coursesList) return;
@@ -266,9 +267,9 @@ function renderCourses() {
         const row = document.createElement('div');
         row.className = 'course-row'; 
         row.innerHTML = `
-            <div style="flex:1; font-weight:600;">✨ ${course.subject}</div>
-            <div style="flex:1;"><span style="background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 6px; color: #38bdf8; font-weight:bold;">${course.grade}</span></div>
-            <div style="flex:1;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
+            <div style="flex:1; color:#0f172a; font-weight:bold;">✨ ${course.subject}</div>
+            <div style="flex:1;"><span style="background: #0284c7; padding: 4px 10px; border-radius: 6px; color: #ffffff; font-weight:bold;">${course.grade}</span></div>
+            <div style="flex:1; color:#0f172a; font-weight:bold;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
             <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn">✕</button></div>
         `;
         coursesList.appendChild(row);
