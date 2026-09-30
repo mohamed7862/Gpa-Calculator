@@ -10,23 +10,24 @@
 <body>
 
     <div class="container">
-        <!-- الهيدر العلوي النظيف -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <label for="dept-select" style="font-weight: bold; font-size: 13px; color: #333;">القسم / Dept:</label>
-                <select id="dept-select" onchange="changeDepartment(this.value)" style="padding: 6px 10px; border-radius: 6px; background: #2a2a3d; color: #07ffb5; border: 1px solid #00f2fe; font-weight: bold; font-size: 13px; cursor: pointer;">
-                    <option value="CS">💻 CS (علوم حاسب)</option>
-                    <option value="AI">🤖 AI (الذكاء الاصطناعي)</option>
-                    <option value="CYBER">🛡️ CYBER (الأمن السيبراني)</option>
+        <!-- زرار اللغة في الأعلى يمين -->
+        <button onclick="toggleLanguage()" id="lang-btn" style="float: right; padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer; margin-bottom: 15px;">العربية</button>
+        <div style="clear: both;"></div>
+
+        <!-- عنوان التطبيق -->
+        <h1 id="main-title" style="text-align: center; margin-top: 5px; margin-bottom: 20px;">GPA Calculator</h1>
+        
+        <div id="course-form">
+            <!-- اختيار القسم داخل الفورم بنفس تصميم وتناسق الخانات -->
+            <div style="margin-bottom: 15px;">
+                <label for="dept-select" style="font-weight: bold; font-size: 13px; color: #495057; display: block; margin-bottom: 5px;">Department / القسم:</label>
+                <select id="dept-select" onchange="changeDepartment(this.value)" style="width: 100%; padding: 10px; border-radius: 8px; background: #f8f9fa; color: #212529; border: 1px solid #ced4da; font-weight: bold; font-size: 14px; outline: none; cursor: pointer;">
+                    <option value="CS">💻 Computer Science (علوم حاسب)</option>
+                    <option value="AI">🤖 Artificial Intelligence (الذكاء الاصطناعي)</option>
+                    <option value="CYBER">🛡️ Cyber Security (الأمن السيبراني)</option>
                 </select>
             </div>
 
-            <button onclick="toggleLanguage()" id="lang-btn" style="padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
-        </div>
-
-        <h1 id="main-title" style="text-align: center; margin-bottom: 20px;">GPA Calculator</h1>
-        
-        <div id="course-form">
             <div class="form-group">
                 <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
                 <datalist id="subjects-list"></datalist>
