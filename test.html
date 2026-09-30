@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPA Calculator</title>
+    <title>GPA Calculator & Academic Advisor</title>
     <link rel="stylesheet" href="gpa.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
     <div class="container">
-        <!-- زر اللغة -->
+        <!-- زرار اللغة في الأعلى -->
         <div style="text-align: right; margin-bottom: 10px;">
             <button onclick="toggleLanguage()" id="lang-btn" style="width: auto !important; display: inline-block; padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
         </div>
 
         <h1 id="main-title" style="text-align: center; margin-top: 5px; margin-bottom: 15px;">GPA Calculator</h1>
 
-        <!-- اختيار القسم -->
+        <!-- اختيار القسم مترجم ديناميكياً -->
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px;">
-            <label for="dept-select" id="dept-label" style="font-weight: bold; font-size: 13px; color: #495057;">Department / القسم:</label>
+            <label for="dept-select" id="dept-label" style="font-weight: bold; font-size: 13px; color: #495057;">Department:</label>
             <select id="dept-select" onchange="changeDepartment(this.value)" style="width: auto !important; padding: 6px 12px; border-radius: 6px; background: #fff; color: #333; border: 1px solid #ced4da; font-weight: bold; font-size: 13px; cursor: pointer; outline: none;">
-                <option value="CS">💻 CS (علوم حاسب)</option>
-                <option value="AI">🤖 AI (ذكاء اصطناعي)</option>
-                <option value="CYBER">🛡️ CYBER (أمن سيبراني)</option>
+                <option value="CS">Computer Science</option>
+                <option value="AI">Artificial Intelligence</option>
+                <option value="CYBER">Cyber Security</option>
             </select>
         </div>
         
@@ -75,10 +76,10 @@
 
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="improvement-btn" onclick="handleImprovementClick()" style="padding: 10px 20px; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; width: auto !important;">
-                    🚀 خطة التحسين والمحاكاة
+                    🚀 Academic Recovery & Simulator
                 </button>
                 <button id="print-btn" onclick="window.print()" style="padding: 10px 18px; background: #333; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; width: auto !important;">
-                    🖨️ طباعة
+                    🖨️ Print
                 </button>
             </div>
             <div id="improvement-engine-box"></div>
