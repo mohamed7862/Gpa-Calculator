@@ -10,16 +10,16 @@
 <body>
 
     <div class="container">
-        <!-- زرار اللغة يرجع شيك وصغير فوق ع اليمين زي ما كان -->
+        <!-- زر اللغة -->
         <div style="text-align: right; margin-bottom: 10px;">
             <button onclick="toggleLanguage()" id="lang-btn" style="width: auto !important; display: inline-block; padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
         </div>
 
-        <h1 id="main-title" style="text-align: center; margin-top: 0; margin-bottom: 15px;">GPA Calculator</h1>
+        <h1 id="main-title" style="text-align: center; margin-top: 5px; margin-bottom: 15px;">GPA Calculator</h1>
 
-        <!-- شريط اختيار القسم بسيط ومفصول عن الخانات -->
+        <!-- اختيار القسم -->
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px;">
-            <label for="dept-select" style="font-weight: bold; font-size: 13px; color: #495057;">Department / القسم:</label>
+            <label for="dept-select" id="dept-label" style="font-weight: bold; font-size: 13px; color: #495057;">Department / القسم:</label>
             <select id="dept-select" onchange="changeDepartment(this.value)" style="width: auto !important; padding: 6px 12px; border-radius: 6px; background: #fff; color: #333; border: 1px solid #ced4da; font-weight: bold; font-size: 13px; cursor: pointer; outline: none;">
                 <option value="CS">💻 CS (علوم حاسب)</option>
                 <option value="AI">🤖 AI (ذكاء اصطناعي)</option>
@@ -28,7 +28,6 @@
         </div>
         
         <div id="course-form">
-            <!-- الخانات الأساسية رجعت رايقة زي ما كانت -->
             <div class="form-group">
                 <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
                 <datalist id="subjects-list"></datalist>
@@ -74,12 +73,11 @@
                 <canvas id="gpaChart" style="max-height: 180px;"></canvas>
             </div>
 
-            <!-- أزرار خطة التحسين والطباعة مصفوفين شيك تحت -->
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="improvement-btn" onclick="handleImprovementClick()" style="padding: 10px 20px; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; width: auto !important;">
                     🚀 خطة التحسين والمحاكاة
                 </button>
-                <button onclick="window.print()" style="padding: 10px 18px; background: #333; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; width: auto !important;">
+                <button id="print-btn" onclick="window.print()" style="padding: 10px 18px; background: #333; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; width: auto !important;">
                     🖨️ طباعة
                 </button>
             </div>
