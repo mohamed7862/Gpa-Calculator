@@ -11,94 +11,76 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// قائمة المواد وشجرة المتطلبات السابقة (Prerequisites)
-const predefinedCourses = [
-    // === First Level - First Semester ===
-    { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
-    { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
-    { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
-    { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
-    { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
-    { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
+// === لوائح الأقسام الثلاثة (CS / AI / CYBER) ===
+const departmentSyllabus = {
+    CS: [
+        // Level 1
+        { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
+        { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
+        { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
+        { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
+        { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
+        { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
+        { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
+        { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
+        // Level 2
+        { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
+        { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
+        { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "BS 131" },
+        { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" }
+    ],
+    AI: [
+        // Level 1 & 2 AI Syllabus
+        { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
+        { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
+        { en: "Intro to Artificial Intelligence", ar: "مقدمة في الذكاء الاصطناعي", hint: "AI 102", credits: 3, prereq: "AI 101" },
+        { en: "Data Analysis & Visualization", ar: "تحليل ورسم البيانات", hint: "AI 201", credits: 3, prereq: "AI 101" },
+        { en: "Machine Learning Fundamentals", ar: "أساسيات تعلم الآلة", hint: "AI 202", credits: 3, prereq: "BS 105" },
+        { en: "Neural Networks", ar: "الشبكات العصبية", hint: "AI 301", credits: 3, prereq: "AI 202" }
+    ],
+    CYBER: [
+        // Level 1 & 2 Cybersecurity Syllabus
+        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "CY 101", credits: 3, prereq: null },
+        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CY 102", credits: 3, prereq: null },
+        { en: "Network Security & Cryptography", ar: "أمن الشبكات والتشفير", hint: "CY 201", credits: 3, prereq: "CY 101" },
+        { en: "Ethical Hacking & Penetration Testing", ar: "الاختراق الأخلاقي واختبار الاختراق", hint: "CY 202", credits: 3, prereq: "CY 102" },
+        { en: "Operating Systems Security", ar: "أمن نظم التشغيل", hint: "CY 301", credits: 3, prereq: "CY 201" }
+    ]
+};
 
-    // === First Level - Second Semester ===
-    { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
-    { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
-    { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
-    { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
-    { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
-    { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
-
-    // === Second Level - First Semester ===
-    { en: "Work Ethics", ar: "أخلاقيات العمل", hint: "H 201", credits: 2, prereq: null },
-    { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
-    { en: "Operations Research", ar: "بحوث العمليات", hint: "BS 205", credits: 3, prereq: "BS 101" },
-    { en: "Statistics and Probabilities", ar: "إحصاء واحتمالات", hint: "BS 210", credits: 3, prereq: "BS 101" },
-    { en: "File Processing", ar: "معالجة الملفات", hint: "CS 211", credits: 3, prereq: "CS 102" },
-    { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
-
-    // === Second Level - Second Semester ===
-    { en: "Business Administration", ar: "إدارة الأعمال", hint: "H 202", credits: 2, prereq: null },
-    { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
-    { en: "Human Rights", ar: "حقوق الإنسان", hint: "H 204", credits: 2, prereq: null },
-    { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
-    { en: "Computer Networks", ar: "شبكات الحاسب", hint: "CS 250", credits: 3, prereq: "CS 101" },
-    { en: "Web Programming", ar: "برمجة الويب", hint: "CS 206", credits: 3, prereq: "CS 102" },
-
-    // === Third Level - First Semester ===
-    { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
-    { en: "Mobile App Development", ar: "تطوير تطبيقات الموبايل", hint: "CS 309", credits: 3, prereq: "CS 206" },
-    { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 315", credits: 3, prereq: "CS 210" },
-    { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
-    { en: "Intro to Databases", ar: "مقدمة في قواعد البيانات", hint: "CS 323", credits: 3, prereq: "CS 103" },
-
-    // === Third Level - Second Semester ===
-    { en: "Analysis of Algorithms", ar: "تحليل الخوارزميات", hint: "CS 312", credits: 3, prereq: "CS 201" },
-    { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
-    { en: "Computer Graphics", ar: "الرسوميات بالحاسب", hint: "CS 340", credits: 3, prereq: "CS 220" },
-    { en: "Fundamentals of Multimedia", ar: "أساسيات الوسائط المتعددة", hint: "CS 353", credits: 3, prereq: "CS 102" },
-    { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 312" },
-
-    // === Fourth Level - First Semester ===
-    { en: "Computer Security", ar: "أمن الحاسبات", hint: "CS 413", credits: 3, prereq: "CS 250" },
-    { en: "Digital Image processing", ar: "معالجة الصور الرقمية", hint: "CS 443", credits: 3, prereq: "CS 340" },
-    { en: "Senior Project 1", ar: "مشروع تخرج 1", hint: "CS 498", credits: 3, prereq: "CS 315" },
-
-    // === Fourth Level - Second Semester ===
-    { en: "Machine Learning", ar: "تعلم الآلة", hint: "CS 462", credits: 3, prereq: "BS 210" },
-    { en: "Internet of Things (IoT)", ar: "إنترنت الأشياء", hint: "CS 455", credits: 3, prereq: "CS 250" },
-    { en: "Senior Project 2", ar: "مشروع تخرج 2", hint: "CS 499", credits: 3, prereq: "CS 498" }
-];
+// القسم الحالي المختار
+let currentDepartment = localStorage.getItem('selectedDept') || "CS";
+let predefinedCourses = departmentSyllabus[currentDepartment];
 
 const i18n = {
     en: {
-        title: "GPA Calculator",
+        title: "GPA Calculator & Academic Advisor",
         subjectPlaceholder: "Subject Name (Type to search)",
         addBtn: "Add course ➕",
         saveBtn: "Save & Add New Semester",
-        savedTitle: "Saved Semesters",
-        finalGpa: "Final GPA",
+        savedTitle: "Academic History & Saved Semesters",
+        finalGpa: "Final Cumulative GPA",
         langBtn: "العربية",
         header: ["Subject", "Grade", "Hours", "Action"],
         termGpa: "Term:",
         cgpa: "CGPA:",
-        probationWarning: "Academic Probation: CGPA is below 2.00!",
-        mandatoryImprovement: "Mandatory Academic Recovery Roadmap (Target Grade: B):",
+        probationWarning: "Academic Probation Alert: CGPA is below 2.00!",
+        mandatoryImprovement: "Academic Recovery Roadmap (Target Grade: B):",
         optionalImprovement: "Optional Course Improvement Simulator 🚀"
     },
     ar: {
-        title: "حاسبة المعدل التراكمي",
+        title: "حاسبة المعدل التراكمي والمرشد الأكاديمي",
         subjectPlaceholder: "اسم المادة (ابحث أو اكتب)",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
-        savedTitle: "الترمات المحفوظة",
-        finalGpa: "المعدل النهائي",
+        savedTitle: "السجل الأكاديمي والترمات المحفوظة",
+        finalGpa: "المعدل التراكمي النهائي",
         langBtn: "English",
         header: ["المادة", "التقدير", "الساعات", "حذف"],
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        mandatoryImprovement: "خطة التعافي الأكاديمي بأقل عدد مواد (مستهدف B):",
+        mandatoryImprovement: "خطة التعافي الأكاديمي المقترحة لخروج من الإنذار (مستهدف B):",
         optionalImprovement: "مُحاكي تحسين المواد الاختياري 🚀"
     }
 };
@@ -110,6 +92,16 @@ const coursesList = document.getElementById('courses-list');
 const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
+
+// === تغيير القسم بناءً على اختيار القائمة ===
+function changeDepartment(deptKey) {
+    if (!departmentSyllabus[deptKey]) return;
+    currentDepartment = deptKey;
+    localStorage.setItem('selectedDept', deptKey);
+    predefinedCourses = departmentSyllabus[deptKey];
+    populateDatalist();
+    calculateGPA();
+}
 
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
@@ -155,7 +147,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === إضافة مادة جديدة (مع الشرط الصارم للمتطلبات) ===
+// === إضافة مادة جديدة مع فحص المتطلب الصارم ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -175,14 +167,13 @@ if (addCourseBtn) {
             c.hint.toLowerCase() === subject.toLowerCase()
         );
 
-        // === فحص المتطلب الصارم (Prerequisite Strict Check) ===
+        // === فحص المتطلب المسبق الصارم (Prerequisite Check) ===
         if (predefinedCourse && predefinedCourse.prereq) {
             let passedCourseHints = new Set();
 
             const checkPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                // يجب أن تكون الدرجة أعلى من F (ناجح)
-                if (pts > 0) { 
+                if (pts > 0) { // ناجح (أعلى من F)
                     let inputSub = c.subject.trim().toLowerCase();
                     let match = predefinedCourses.find(p => 
                         p.en.trim().toLowerCase() === inputSub || 
@@ -193,13 +184,11 @@ if (addCourseBtn) {
                 }
             };
 
-            // تجميع المواد الناجح فيها من الترمات المحفوظة
             savedSemesters.forEach(sem => {
                 if (sem.isChecked) sem.courseDetails.forEach(checkPassed);
             });
 
             const requiredHint = predefinedCourse.prereq.toUpperCase();
-            // لو لم يتجاوز المتطلب بنجاح (سواء لم يأخذه أو حصل فيه على F)
             if (!passedCourseHints.has(requiredHint)) {
                 let reqCourse = predefinedCourses.find(p => p.hint.toUpperCase() === requiredHint);
                 let reqName = reqCourse ? (currentLang === 'en' ? reqCourse.en : reqCourse.ar) : requiredHint;
@@ -281,7 +270,7 @@ function calculateGPA() {
     };
 }
 
-// === محرك المرشد الأكاديمي للتحسين ===
+// === محرك خوارزمية التعافي الفصلي المستهدفة لتقدير B ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -495,6 +484,7 @@ function saveAndClearSemester() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
+        isLocked: false, // الترم المدخل يدويًا غير مقفول
         courseDetails: [...courses]
     };
 
@@ -512,6 +502,7 @@ function saveAndClearSemester() {
     renderSavedSemesters();
 }
 
+// === عرض الترمات مع القفل الرقمي للمواد المعتمدة من الداتابيز ===
 function renderSavedSemesters() {
     if (!semestersList || !savedSemestersBox) return;
     semestersList.innerHTML = '';
@@ -545,20 +536,27 @@ function renderSavedSemesters() {
             semCGPA = "-";
         }
 
+        // أزرار الحذف والتعديل تظهر فقط إذا لم يكن الترم مقفولًا (isLocked)
+        const actionButtonsHTML = sem.isLocked 
+            ? `<span style="font-size: 12px; color: #00f2fe; background: rgba(0,242,254,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,242,254,0.3);">🔒 سجل أكاديمي معتمد</span>`
+            : `
+                <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                <button onclick="deleteSemester(${index})" class="btn-delete-sem" style="background: #ff4d4d; color: white;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
+              `;
+
         const div = document.createElement('div');
         div.className = 'semester-card';
         div.innerHTML = `
-            <div class="semester-info" style="margin-bottom: 10px;">
-                <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
-                <label for="sem-${sem.id}" style="font-weight: bold; font-size: 16px;">${sem.name}</label>
+            <div class="semester-info" style="margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
+                    <label for="sem-${sem.id}" style="font-weight: bold; font-size: 16px;">${sem.name}</label>
+                </div>
+                <div>${actionButtonsHTML}</div>
             </div>
             <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
                 <span class="semester-gpa" style="font-size: 14px;">${i18n[currentLang].termGpa} <strong>${sem.gpa}</strong></span>
                 <span class="semester-cgpa" style="font-size: 14px; color: #07ffb5; font-weight: bold;">| ${i18n[currentLang].cgpa} ${semCGPA}</span>
-                <div style="margin-left: auto; display: flex; gap: 5px;">
-                    <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
-                    <button onclick="deleteSemester(${index})" class="btn-delete-sem" style="background: #ff4d4d; color: white;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
-                </div>
             </div>
         `;
         semestersList.appendChild(div);
