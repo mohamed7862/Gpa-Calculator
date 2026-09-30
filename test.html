@@ -3,49 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPA Calculator</title>
+    <title>GPA Calculator & Academic Advisor</title>
     <link rel="stylesheet" href="gpa.css">
+    <!-- مكتبة Chart.js الرسم البياني -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="dark-theme">
 
     <div class="container">
-        <!-- زرار اللغة -->
-        <button onclick="toggleLanguage()" id="lang-btn" style="width: auto; float: right; padding: 6px 16px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
-        <div style="clear: both;"></div>
+        <!-- شريط أدوات التحكم العلوي (القسم + اللغة + المود) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;">
+            <button onclick="toggleTheme()" id="theme-btn" style="padding: 6px 12px; background: #333; color: #fff; font-size: 13px; font-weight: bold; border-radius: 20px; border: 1px solid #555; cursor: pointer;">🌙 Mode</button>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="dept-select" style="font-weight: bold; font-size: 13px;">🎓 القسم / Dept:</label>
+                <select id="dept-select" onchange="changeDepartment(this.value)" style="padding: 6px 12px; border-radius: 8px; background: #1e1e2f; color: #07ffb5; border: 1px solid #00f2fe; font-weight: bold; cursor: pointer; outline: none;">
+                    <option value="CS">💻 Computer Science (علوم حاسب)</option>
+                    <option value="AI">🤖 Artificial Intelligence (الذكاء الاصطناعي)</option>
+                    <option value="CYBER">🛡️ Cyber Security (الأمن السيبراني)</option>
+                </select>
+            </div>
 
-        <!-- كارت اختيار القسم المطور والراقي -->
-        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 18px; margin: 15px 0 20px 0; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <label for="dept-select" style="font-weight: 700; font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
-                🎓 <span>Select Department / اختر القسم:</span>
-            </label>
-            <select id="dept-select" onchange="changeDepartment(this.value)" style="padding: 8px 14px; border-radius: 8px; background: #f8fafc; color: #0f172a; border: 1.5px solid #cbd5e1; font-weight: bold; font-size: 13.5px; cursor: pointer; outline: none; transition: all 0.2s;">
-                <option value="CS">💻 Computer Science (علوم حاسب)</option>
-                <option value="AI">🤖 Artificial Intelligence (الذكاء الاصطناعي)</option>
-                <option value="CYBER">🛡️ Cyber Security (الأمن السيبراني)</option>
-            </select>
+            <button onclick="toggleLanguage()" id="lang-btn" style="padding: 6px 14px; background: #212529; color: white; font-size: 13px; font-weight: bold; border-radius: 20px; border: none; cursor: pointer;">العربية</button>
         </div>
 
         <h1 id="main-title" style="text-align: center; margin-bottom: 20px;">GPA Calculator</h1>
         
+        <!-- كروت الإحصائيات السريعة Dashboard Stats -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 120px; background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; padding: 10px; border-radius: 8px; text-align: center;">
+                <span style="font-size: 12px; display: block; opacity: 0.8;">الساعات المجتازة</span>
+                <strong id="stat-hours" style="font-size: 18px; color: #00f2fe;">0</strong>
+            </div>
+            <div style="flex: 1; min-width: 120px; background: rgba(7,255,181,0.1); border: 1px solid #07ffb5; padding: 10px; border-radius: 8px; text-align: center;">
+                <span style="font-size: 12px; display: block; opacity: 0.8;">التقدير العام</span>
+                <strong id="stat-standing" style="font-size: 16px; color: #07ffb5;">-</strong>
+            </div>
+        </div>
+
         <div id="course-form">
             <div class="form-group">
                 <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
-                
                 <datalist id="subjects-list"></datalist>
 
                 <select id="grade">
-                    <option value="A+">A+</option>
-                    <option value="A">A</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B">B</option>
-                    <option value="B-">B-</option>
-                    <option value="C+">C+</option>
-                    <option value="C">C</option>
-                    <option value="C-">C-</option>
-                    <option value="D+">D+</option>
-                    <option value="D">D</option>
-                    <option value="D-">D-</option>
+                    <option value="A+">A+</option><option value="A">A</option><option value="A-">A-</option>
+                    <option value="B+">B+</option><option value="B">B</option><option value="B-">B-</option>
+                    <option value="C+">C+</option><option value="C">C</option><option value="C-">C-</option>
+                    <option value="D+">D+</option><option value="D">D</option><option value="D-">D-</option>
                     <option value="F">F</option>
                 </select>
             </div>
@@ -56,7 +61,6 @@
                 <button id="save-sem-btn" onclick="saveAndClearSemester()" style="background-color: #07ffb5; color: black; font-weight: bold; flex: 2;">
                     Save & Add New Semester
                 </button>
-                
                 <button id="reset-btn" onclick="resetCalculator()" style="background-color: #ff4d4d; color: white; font-weight: bold; flex: 1; border: none; border-radius: 5px; cursor: pointer;">
                     Reset
                 </button>
@@ -70,10 +74,7 @@
 
         <div id="courses-list-container">
             <div class="course-header" id="list-header">
-                <div>Subject</div>
-                <div>Grade</div>
-                <div>Hours</div>
-                <div>Action</div>
+                <div>Subject</div><div>Grade</div><div>Hours</div><div>Action</div>
             </div>
             <div id="courses-list"></div>
         </div>
@@ -82,9 +83,19 @@
             <h2 id="final-gpa-text">Final GPA</h2>
             <span id="gpa-display">0.00</span>
 
-            <div style="margin-top: 15px;">
+            <!-- الرسم البياني لتطور التراكمي -->
+            <div style="margin-top: 25px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px;">
+                <h4 style="margin-top: 0; font-size: 14px; text-align: center; color: #00f2fe;">📊 الرسم البياني لتطور التراكمي عبر الترمات</h4>
+                <canvas id="gpaChart" style="max-height: 200px;"></canvas>
+            </div>
+
+            <!-- أزرار خطة التحسين والطباعة -->
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="improvement-btn" onclick="handleImprovementClick()" style="padding: 10px 20px; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">
                     🚀 خطة التحسين والمحاكاة
+                </button>
+                <button onclick="window.print()" style="padding: 10px 20px; background: #6c757d; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">
+                    🖨️ طباعة السجل والتقرير
                 </button>
             </div>
             <div id="improvement-engine-box"></div>
