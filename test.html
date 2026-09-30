@@ -9,19 +9,21 @@
 <body>
 
     <div class="container">
-        <button onclick="toggleLanguage()" id="lang-btn" style="width: auto; float: right; padding: 5px 15px; background: #333; color: white; font-size: 14px; margin-bottom: 10px;">العربية</button>
-        
-        <!-- قائمة اختيار القسم جديدة ومظبوطة -->
-        <div class="department-container" style="margin-bottom: 15px; clear: both; text-align: center;">
-            <label for="dept-select" style="font-weight: bold; margin-right: 8px; color: #333;">Department / القسم:</label>
-            <select id="dept-select" onchange="changeDepartment(this.value)" style="padding: 8px 12px; border-radius: 6px; background: #2a2a3d; color: #07ffb5; border: 1px solid #00f2fe; font-weight: bold; cursor: pointer;">
-                <option value="CS">Computer Science (علوم حاسب)</option>
-                <option value="AI">Artificial Intelligence (الذكاء الاصطناعي)</option>
-                <option value="CYBER">Cyber Security (الأمن السيبراني)</option>
-            </select>
+        <!-- شريط الخيارات العلوي (القسم + اللغة) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 10px 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e9ecef;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="dept-select" style="font-weight: 600; font-size: 13px; color: #495057;">Department:</label>
+                <select id="dept-select" onchange="changeDepartment(this.value)" style="padding: 6px 10px; border-radius: 6px; background: #ffffff; color: #212529; border: 1px solid #ced4da; font-size: 13px; font-weight: bold; cursor: pointer; outline: none;">
+                    <option value="CS">Computer Science (علوم حاسب)</option>
+                    <option value="AI">Artificial Intelligence (الذكاء الاصطناعي)</option>
+                    <option value="CYBER">Cyber Security (الأمن السيبراني)</option>
+                </select>
+            </div>
+
+            <button onclick="toggleLanguage()" id="lang-btn" style="padding: 6px 14px; background: #212529; color: #ffffff; font-size: 13px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer;">العربية</button>
         </div>
 
-        <h1 id="main-title">GPA Calculator</h1>
+        <h1 id="main-title" style="margin-top: 0; margin-bottom: 20px;">GPA Calculator</h1>
         
         <div id="course-form">
             <div class="form-group">
