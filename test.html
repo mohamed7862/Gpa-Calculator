@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator & Academic Advisor</title>
-    <!-- الاحتفاظ بملف الـ CSS الأساسي -->
     <link rel="stylesheet" href="gpa.css">
-    <!-- Chart.js للرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SweetAlert2 للتنبيهات الشيك -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- التنسيقات الخاصة بصفحة الاختيارات والتجربة الحديثة -->
+    <!-- إصلاح الألوان والتباين بالكامل لإظهار جميع النصوص بوضوح -->
     <style>
         body.dark-test-theme {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%) !important;
-            color: #f8fafc !important;
+            background: #0f172a !important;
+            color: #ffffff !important;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -28,13 +25,11 @@
         .dark-test-theme .container {
             width: 100% !important;
             max-width: 650px !important;
-            background: rgba(30, 41, 59, 0.75) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 24px !important;
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 20px !important;
             padding: 28px !important;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
         }
 
         .dark-test-theme h1 {
@@ -43,6 +38,7 @@
             margin-top: 0 !important;
             margin-bottom: 20px !important;
             font-size: 28px !important;
+            font-weight: bold !important;
         }
 
         .dark-test-theme .dept-container {
@@ -53,16 +49,21 @@
             margin-bottom: 20px !important;
         }
 
+        .dark-test-theme label {
+            color: #f1f5f9 !important;
+            font-weight: 600 !important;
+        }
+
         .dark-test-theme .btn-top-lang {
             width: auto !important;
             display: inline-block !important;
             padding: 6px 18px !important;
             background: #334155 !important;
-            color: #f8fafc !important;
+            color: #ffffff !important;
             font-size: 13px !important;
             font-weight: bold !important;
             border-radius: 20px !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid #475569 !important;
             cursor: pointer !important;
         }
 
@@ -72,44 +73,45 @@
             margin-bottom: 15px !important;
         }
 
+        /* إصلاح خانات الكتابة القوائم لتظهر بالنص الأبيض الواضح */
         .dark-test-theme input[type="text"], 
         .dark-test-theme select {
-            background: rgba(15, 23, 42, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: #f8fafc !important;
+            background: #0f172a !important;
+            border: 1.5px solid #475569 !important;
+            color: #ffffff !important;
             padding: 12px !important;
-            border-radius: 12px !important;
+            border-radius: 10px !important;
             font-size: 14px !important;
+            font-weight: 600 !important;
             outline: none !important;
-            transition: all 0.25s ease !important;
         }
 
-        .dark-test-theme input[type="text"] { flex: 2 !important; }
-        .dark-test-theme select { flex: 1 !important; }
+        .dark-test-theme input[type="text"]::placeholder {
+            color: #94a3b8 !important;
+        }
+
+        .dark-test-theme select option {
+            background: #0f172a !important;
+            color: #ffffff !important;
+        }
 
         .dark-test-theme input[type="text"]:focus, 
         .dark-test-theme select:focus {
             border-color: #38bdf8 !important;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
         }
 
         .dark-test-theme button {
-            border-radius: 12px !important;
+            border-radius: 10px !important;
             padding: 12px 18px !important;
             font-weight: bold !important;
             border: none !important;
             cursor: pointer !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-        }
-
-        .dark-test-theme button:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
         }
 
         .dark-test-theme #add-course-btn {
             width: 100% !important;
-            background: linear-gradient(135deg, #10b981, #059669) !important;
+            background: #10b981 !important;
             color: #ffffff !important;
             font-size: 15px !important;
             margin-bottom: 15px !important;
@@ -121,7 +123,7 @@
         }
 
         .dark-test-theme .btn-save {
-            background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
+            background: #0284c7 !important;
             color: #ffffff !important;
             flex: 2 !important;
         }
@@ -133,11 +135,12 @@
         }
 
         .dark-test-theme .semester-card {
-            background: rgba(15, 23, 42, 0.5) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: #0f172a !important;
+            border: 1px solid #334155 !important;
             border-radius: 12px !important;
             padding: 14px !important;
             margin-bottom: 12px !important;
+            color: #ffffff !important;
         }
 
         .dark-test-theme .course-header {
@@ -145,24 +148,25 @@
             justify-content: space-between !important;
             padding: 10px !important;
             font-weight: bold !important;
-            color: #94a3b8 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #cbd5e1 !important;
+            border-bottom: 1px solid #334155 !important;
         }
 
         .dark-test-theme .course-row {
             display: flex !important;
             justify-content: space-between !important;
             align-items: center !important;
-            background: rgba(15, 23, 42, 0.3) !important;
+            background: #0f172a !important;
             padding: 10px !important;
             border-radius: 8px !important;
             margin-top: 8px !important;
+            border: 1px solid #334155 !important;
+            color: #ffffff !important;
         }
 
         .dark-test-theme .delete-btn {
-            background: rgba(239, 68, 68, 0.2) !important;
-            color: #f87171 !important;
-            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+            background: #ef4444 !important;
+            color: #ffffff !important;
             padding: 4px 10px !important;
             border-radius: 6px !important;
         }
@@ -171,7 +175,11 @@
             text-align: center !important;
             margin-top: 25px !important;
             padding-top: 15px !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-top: 1px solid #334155 !important;
+        }
+
+        .dark-test-theme #final-gpa-text {
+            color: #f1f5f9 !important;
         }
 
         .dark-test-theme #gpa-display {
@@ -182,9 +190,10 @@
 
         .dark-test-theme #chart-container {
             margin-top: 20px !important;
-            background: rgba(15, 23, 42, 0.4) !important;
+            background: #0f172a !important;
             padding: 15px !important;
             border-radius: 14px !important;
+            border: 1px solid #334155 !important;
         }
 
         .dark-test-theme .footer-buttons {
@@ -196,12 +205,12 @@
         }
 
         .dark-test-theme .btn-improvement {
-            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+            background: #6366f1 !important;
             color: #ffffff !important;
         }
 
         .dark-test-theme .btn-print {
-            background: #334155 !important;
+            background: #475569 !important;
             color: #ffffff !important;
         }
     </style>
@@ -253,7 +262,7 @@
         </div>
 
         <div id="saved-semesters-box" style="display: none;">
-            <h3 id="saved-title">Saved Semesters</h3>
+            <h3 id="saved-title" style="color: #f1f5f9;">Saved Semesters</h3>
             <div id="semesters-list"></div>
         </div>
 
