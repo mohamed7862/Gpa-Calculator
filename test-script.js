@@ -14,23 +14,28 @@ const gradePoints = {
 // === لوائح الأقسام الثلاثة (CS / AI / CYBER) ===
 const departmentSyllabus = {
     CS: [
-        // Level 1
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
         { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
         { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
         { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
+        { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
         { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
         { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
-        // Level 2
+        { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
+        { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
+        { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
         { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
-        { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "BS 131" },
-        { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" }
+        { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
+        { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
+        { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
+        { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
+        { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
+        { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 312" }
     ],
     AI: [
-        // Level 1 & 2 AI Syllabus
         { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
         { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
         { en: "Intro to Artificial Intelligence", ar: "مقدمة في الذكاء الاصطناعي", hint: "AI 102", credits: 3, prereq: "AI 101" },
@@ -39,7 +44,6 @@ const departmentSyllabus = {
         { en: "Neural Networks", ar: "الشبكات العصبية", hint: "AI 301", credits: 3, prereq: "AI 202" }
     ],
     CYBER: [
-        // Level 1 & 2 Cybersecurity Syllabus
         { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "CY 101", credits: 3, prereq: null },
         { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CY 102", credits: 3, prereq: null },
         { en: "Network Security & Cryptography", ar: "أمن الشبكات والتشفير", hint: "CY 201", credits: 3, prereq: "CY 101" },
@@ -48,7 +52,7 @@ const departmentSyllabus = {
     ]
 };
 
-// القسم الحالي المختار
+// تحديد القسم الافتراضي أو المحفوظ
 let currentDepartment = localStorage.getItem('selectedDept') || "CS";
 let predefinedCourses = departmentSyllabus[currentDepartment];
 
@@ -80,7 +84,7 @@ const i18n = {
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        mandatoryImprovement: "خطة التعافي الأكاديمي المقترحة لخروج من الإنذار (مستهدف B):",
+        mandatoryImprovement: "خطة التعافي الأكاديمي المقترحة للخروج من الإنذار (مستهدف B):",
         optionalImprovement: "مُحاكي تحسين المواد الاختياري 🚀"
     }
 };
@@ -93,7 +97,7 @@ const gpaDisplay = document.getElementById('gpa-display');
 const savedSemestersBox = document.getElementById('saved-semesters-box');
 const semestersList = document.getElementById('semesters-list');
 
-// === تغيير القسم بناءً على اختيار القائمة ===
+// === دالة تغيير القسم ديناميكياً ===
 function changeDepartment(deptKey) {
     if (!departmentSyllabus[deptKey]) return;
     currentDepartment = deptKey;
@@ -147,7 +151,7 @@ function toggleLanguage() {
     calculateGPA();
 }
 
-// === إضافة مادة جديدة مع فحص المتطلب الصارم ===
+// === إضافة مادة مع الفحص الصارم للمتطلبات ===
 if (addCourseBtn) {
     addCourseBtn.addEventListener('click', () => {
         if (courses.length >= maxCoursesAllowed) {
@@ -167,13 +171,13 @@ if (addCourseBtn) {
             c.hint.toLowerCase() === subject.toLowerCase()
         );
 
-        // === فحص المتطلب المسبق الصارم (Prerequisite Check) ===
+        // التحقق من المتطلب السابق
         if (predefinedCourse && predefinedCourse.prereq) {
             let passedCourseHints = new Set();
 
             const checkPassed = (c) => {
                 let pts = gradePoints[c.grade] || 0;
-                if (pts > 0) { // ناجح (أعلى من F)
+                if (pts > 0) { // ناجح في المادة
                     let inputSub = c.subject.trim().toLowerCase();
                     let match = predefinedCourses.find(p => 
                         p.en.trim().toLowerCase() === inputSub || 
@@ -236,7 +240,7 @@ function renderCourses() {
     });
 }
 
-// === حساب الـ GPA التراكمي وتجميع المواد الفريدة ===
+// === حساب التراكمي وتجميع المواد الفريدة ===
 function calculateGPA() {
     let allCourses = [];
     courses.forEach(c => allCourses.push({ ...c }));
@@ -270,7 +274,7 @@ function calculateGPA() {
     };
 }
 
-// === محرك خوارزمية التعافي الفصلي المستهدفة لتقدير B ===
+// === محرك المرشد الأكاديمي الذكي ===
 function handleImprovementClick() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         alert(currentLang === 'en' ? "Please add courses or semesters first!" : "يرجى إضافة مواد أو ترمات أولاً لحساب الخطة!");
@@ -283,7 +287,6 @@ function handleImprovementClick() {
 
     const isAr = currentLang === 'ar';
 
-    // 1. حالة الإنذار الأكاديمي (أقل من 2.00)
     if (finalCGPA < 2.0) {
         let improvableCourses = uniqueCoursesList
             .filter(c => c.points < 2.0)
@@ -297,6 +300,7 @@ function handleImprovementClick() {
         let currentSimPoints = totalPoints;
         let targetReached = false;
 
+        // استهداف تقدير B والتوقف فور كسر حاجز 2.00
         for (let c of improvableCourses) {
             let targetGrade = 'B';
             let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
@@ -312,6 +316,7 @@ function handleImprovementClick() {
             }
         }
 
+        // إذا لزم الأمر رفع التقدير لـ A
         if (!targetReached) {
             for (let c of improvableCourses) {
                 let oldPts = simCoursesMap[c.subject].targetPoints * c.credits;
@@ -330,6 +335,7 @@ function handleImprovementClick() {
 
         let recommendedPlan = Object.values(simCoursesMap).filter(c => c.targetGrade !== c.grade);
 
+        // تقسيم على 12 ساعة كحد أقصى للإنذار
         const MAX_HOURS_PER_PROBATION_SEM = 12;
         let semestersPlan = [];
         let currentSemCourses = [];
@@ -484,7 +490,7 @@ function saveAndClearSemester() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
-        isLocked: false, // الترم المدخل يدويًا غير مقفول
+        isLocked: false, // الترم المدخل يدويًا متاح للتعديل
         courseDetails: [...courses]
     };
 
@@ -502,7 +508,6 @@ function saveAndClearSemester() {
     renderSavedSemesters();
 }
 
-// === عرض الترمات مع القفل الرقمي للمواد المعتمدة من الداتابيز ===
 function renderSavedSemesters() {
     if (!semestersList || !savedSemestersBox) return;
     semestersList.innerHTML = '';
@@ -536,7 +541,7 @@ function renderSavedSemesters() {
             semCGPA = "-";
         }
 
-        // أزرار الحذف والتعديل تظهر فقط إذا لم يكن الترم مقفولًا (isLocked)
+        // إخفاء أزرار التحكم للمواد المستوردة (isLocked)
         const actionButtonsHTML = sem.isLocked 
             ? `<span style="font-size: 12px; color: #00f2fe; background: rgba(0,242,254,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,242,254,0.3);">🔒 سجل أكاديمي معتمد</span>`
             : `
@@ -611,6 +616,34 @@ function resetCalculator() {
     updateUI();
     renderSavedSemesters();
 }
+
+// === دالة ديناميكية لاستقبال سجل الطالب من داتابيز الجامعة (API Endpoint) ===
+// تستقبل أي عدد من المواد السابقة وتقفلها لمنع التعديل.
+window.loadStudentDataFromUniversity = function(studentData) {
+    if (studentData.department) {
+        changeDepartment(studentData.department);
+        const deptSelect = document.getElementById('dept-select');
+        if (deptSelect) deptSelect.value = studentData.department;
+    }
+    
+    if (studentData.historySemesters && Array.isArray(studentData.historySemesters)) {
+        savedSemesters = studentData.historySemesters.map((sem, index) => ({
+            id: sem.id || `official-${index}`,
+            name: sem.semesterName || `الترم الرسمي ${index + 1}`,
+            isChecked: true,
+            isLocked: true, 
+            courseDetails: sem.courses.map(c => ({
+                subject: c.subject,
+                grade: c.grade,
+                credits: c.credits || 3
+            }))
+        }));
+    }
+
+    saveToLocal();
+    renderSavedSemesters();
+    calculateGPA();
+};
 
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "hidden") saveToLocal();
