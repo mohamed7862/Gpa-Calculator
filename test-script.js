@@ -12,26 +12,21 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
-// === دالة التنبيهات المخصصة عبر SweetAlert2 ===
 function showCustomAlert(title, text, icon = 'error') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: title,
             text: text,
             icon: icon,
-            background: '#1e1e2f',
+            background: '#1e293b',
             color: '#fff',
-            confirmButtonColor: '#00f2fe',
-            customClass: {
-                popup: 'swal2-dark-popup'
-            }
+            confirmButtonColor: '#38bdf8'
         });
     } else {
         alert(`${title}\n${text}`);
     }
 }
 
-// === لوائح الأقسام مقسمة حسب المستويات الأكاديمية (Level 1 to Level 4) ===
 const departmentSyllabus = {
     CS: [
         { level: 1, en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
@@ -78,7 +73,7 @@ let predefinedCourses = departmentSyllabus[currentDepartment];
 const i18n = {
     en: {
         title: "GPA Calculator & Academic Advisor",
-        subjectPlaceholder: "Subject Name (Search Level Available)",
+        subjectPlaceholder: "Subject Name",
         addBtn: "Add course ➕",
         saveBtn: "Save & Add New Semester",
         savedTitle: "Saved Semesters",
@@ -87,17 +82,16 @@ const i18n = {
         header: ["Subject", "Grade", "Hours", "Action"],
         termGpa: "Term:",
         cgpa: "CGPA:",
-        deptLabel: "Department:",
+        deptLabel: "Department / القسم:",
         improvementBtn: "🚀 Academic Recovery & Simulator",
         printBtn: "🖨️ Print",
         resetBtn: "Reset",
         probationWarning: "Academic Probation Alert: CGPA is below 2.00!",
-        mandatoryImprovement: "Academic Recovery Roadmap (Target Minimum Grade per Course):",
         deptOptions: { CS: "Computer Science", AI: "Artificial Intelligence", CYBER: "Cyber Security" }
     },
     ar: {
         title: "حاسبة المعدل التراكمي والمرشد الأكاديمي",
-        subjectPlaceholder: "اسم المادة (البحث متاح حسب مستواك)",
+        subjectPlaceholder: "اسم المادة",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
         savedTitle: "الترمات المحفوظة",
@@ -106,12 +100,11 @@ const i18n = {
         header: ["المادة", "التقدير", "الساعات", "حذف"],
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
-        deptLabel: "القسم:",
+        deptLabel: "القسم / Department:",
         improvementBtn: "🚀 خطة التحسين والمحاكاة",
         printBtn: "🖨️ طباعة",
         resetBtn: "إعادة ضبط",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        mandatoryImprovement: "خطة التعافي الأكاديمي (التقدير الأدنى المطلوب لكل مادة لتجاوز 2.00):",
         deptOptions: { CS: "علوم حاسب", AI: "ذكاء اصطناعي", CYBER: "هندسة سيبرانية" }
     }
 };
@@ -301,12 +294,11 @@ function renderCourses() {
     courses.forEach((course, index) => {
         const row = document.createElement('div');
         row.className = 'course-row'; 
-        row.style.animationDelay = `${index * 0.05}s`;
         row.innerHTML = `
             <div style="flex:1; font-weight:600;">✨ ${course.subject}</div>
-            <div style="flex:1;"><span style="background: rgba(0,242,254,0.15); padding: 3px 8px; border-radius: 6px; color: #00f2fe; font-weight:bold;">${course.grade}</span></div>
+            <div style="flex:1;"><span style="background: rgba(56, 189, 248, 0.15); padding: 3px 8px; border-radius: 6px; color: #38bdf8; font-weight:bold;">${course.grade}</span></div>
             <div style="flex:1;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
-            <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn" style="transition:0.2s;">✕</button></div>
+            <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn">✕</button></div>
         `;
         coursesList.appendChild(row);
     });
@@ -393,8 +385,8 @@ function updateGPAChart() {
             datasets: [{
                 label: 'التراكمي (CGPA)',
                 data: dataPoints,
-                borderColor: '#00f2fe',
-                backgroundColor: 'rgba(0, 242, 254, 0.15)',
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.15)',
                 fill: true,
                 tension: 0.3,
                 borderWidth: 2
@@ -424,46 +416,42 @@ window.handleImprovementClick = function() {
     const isAr = currentLang === 'ar';
 
     if (finalCGPA < 2.0) {
-        const targetCGPA = 2.00;
-        const requiredTotalPoints = totalHours * targetCGPA;
-        let neededGain = requiredTotalPoints - totalPoints;
-
         let planA_Courses = uniqueCoursesList.filter(c => c.points < 2.0).sort((a,b) => a.points - b.points);
         let planA_HTML = planA_Courses.map(c => `
             <tr>
-                <td style="padding:6px; text-align:right;">${c.subject}</td>
-                <td style="padding:6px; text-align:center; color:#ff4d4d;">${c.grade}</td>
-                <td style="padding:6px; text-align:center; color:#07ffb5; font-weight:bold;">B (3.0)</td>
+                <td style="padding:6px; text-align:${isAr ? 'right' : 'left'};">${c.subject}</td>
+                <td style="padding:6px; text-align:center; color:#f87171;">${c.grade}</td>
+                <td style="padding:6px; text-align:center; color:#34d399; font-weight:bold;">B (3.0)</td>
             </tr>
         `).join('');
 
         let planB_Courses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a,b) => a.points - b.points);
         let planB_HTML = planB_Courses.map(c => `
             <tr>
-                <td style="padding:6px; text-align:right;">${c.subject}</td>
-                <td style="padding:6px; text-align:center; color:#ff4d4d;">${c.grade}</td>
-                <td style="padding:6px; text-align:center; color:#00f2fe; font-weight:bold;">B+ / A</td>
+                <td style="padding:6px; text-align:${isAr ? 'right' : 'left'};">${c.subject}</td>
+                <td style="padding:6px; text-align:center; color:#f87171;">${c.grade}</td>
+                <td style="padding:6px; text-align:center; color:#38bdf8; font-weight:bold;">B+ / A</td>
             </tr>
         `).join('');
 
         container.innerHTML = `
-            <div style="background: #1e1e2f; border: 2px solid #ff4d4d; border-radius: 12px; padding: 20px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <h3 style="color: #ff4d4d; margin-top: 0;">🚨 ${i18n[currentLang].probationWarning}</h3>
-                <p style="font-size:13px; opacity:0.9;">اختر الخطة المناسبة لقدراتك الأكاديمية لتجاوز الـ 2.00 بأسرع وقت:</p>
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #ef4444; border-radius: 14px; padding: 20px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
+                <h3 style="color: #ef4444; margin-top: 0;">🚨 ${i18n[currentLang].probationWarning}</h3>
+                <p style="font-size:13px; opacity:0.9;">${isAr ? 'اختر الخطة المناسبة لرفع التراكمي وتجاوز حاجز الـ 2.00:' : 'Choose a recovery path to raise CGPA above 2.00:'}</p>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #07ffb5;">
-                        <h4 style="margin: 0 0 10px 0; color: #07ffb5; font-size:14px;">⚡ المسار 1: التعافي المباشر السريع</h4>
+                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border-top: 3px solid #34d399;">
+                        <h4 style="margin: 0 0 10px 0; color: #34d399; font-size:14px;">⚡ ${isAr ? 'المسار 1: التعافي المباشر السريع' : 'Path 1: Fast Direct Recovery'}</h4>
                         <table style="width: 100%; font-size: 12px;">
-                            <thead><tr><th style="text-align:right;">المادة</th><th>الحالي</th><th>المستهدف</th></tr></thead>
+                            <thead><tr><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
                             <tbody>${planA_HTML}</tbody>
                         </table>
                     </div>
 
-                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border-top: 3px solid #00f2fe;">
-                        <h4 style="margin: 0 0 10px 0; color: #00f2fe; font-size:14px;">🛡️ المسار 2: التوازن والرفع المريح</h4>
+                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border-top: 3px solid #38bdf8;">
+                        <h4 style="margin: 0 0 10px 0; color: #38bdf8; font-size:14px;">🛡️ ${isAr ? 'المسار 2: التوازن والرفع المريح' : 'Path 2: Balanced Improvement'}</h4>
                         <table style="width: 100%; font-size: 12px;">
-                            <thead><tr><th style="text-align:right;">المادة</th><th>الحالي</th><th>المستهدف</th></tr></thead>
+                            <thead><tr><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
                             <tbody>${planB_HTML}</tbody>
                         </table>
                     </div>
@@ -474,7 +462,7 @@ window.handleImprovementClick = function() {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
             container.innerHTML = `
-                <div style="background: #1e1e2f; border: 1px solid #07ffb5; padding: 15px; border-radius: 12px; color: #fff; margin-top: 20px; text-align: center;">
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #34d399; padding: 15px; border-radius: 12px; color: #fff; margin-top: 20px; text-align: center;">
                     🎉 ${isAr ? 'جميع تقديراتك ممتازة ولا توجد مواد بحاجة للتحسين!' : 'All your grades are excellent and no courses need improvement!'}
                 </div>
             `;
@@ -486,16 +474,16 @@ window.handleImprovementClick = function() {
         `).join('');
 
         container.innerHTML = `
-            <div style="background: #1e1e2f; border: 1px solid #07ffb5; padding: 20px; border-radius: 12px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <h4 style="color: #07ffb5; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${i18n[currentLang].optionalImprovement}</h4>
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #38bdf8; padding: 20px; border-radius: 14px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
+                <h4 style="color: #38bdf8; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${isAr ? 'مُحاكي تحسين المواد الاختياري 🚀' : 'Optional Course Improvement Simulator 🚀'}</h4>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <select id="sim-course-select" style="padding: 10px; border-radius: 6px; flex: 1; min-width: 180px; background: #2a2a3d; color: #fff; border: 1px solid #444;">${optionsHTML}</select>
-                    <select id="sim-grade-select" style="padding: 10px; border-radius: 6px; background: #2a2a3d; color: #fff; border: 1px solid #444;">
+                    <select id="sim-course-select" style="padding: 10px; border-radius: 8px; flex: 1; min-width: 180px;">${optionsHTML}</select>
+                    <select id="sim-grade-select" style="padding: 10px; border-radius: 8px;">
                         <option value="A+">A+</option><option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
                     </select>
-                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #07ffb5; color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
+                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #38bdf8; color: #0f172a; border: none; font-weight: bold;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
                 </div>
-                <div id="sim-result" style="margin-top: 12px; font-weight: 500; font-size: 14px; color: #07ffb5;"></div>
+                <div id="sim-result" style="margin-top: 12px; font-weight: 500; font-size: 14px; color: #34d399;"></div>
             </div>
         `;
         window.simCourses = improvableCourses;
@@ -513,8 +501,8 @@ window.runImprovementSimulation = function(totalPoints, totalHours) {
     let simulatedCGPA = ((totalPoints - oldPts + newPts) / totalHours).toFixed(2);
 
     document.getElementById('sim-result').innerHTML = isAr 
-        ? `✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع التراكمي إلى: <span style="color:#07ffb5; font-size:16px;">${simulatedCGPA}</span>`
-        : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#07ffb5; font-size:16px;">${simulatedCGPA}</span>`;
+        ? `✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع التراكمي إلى: <span style="color:#34d399; font-size:16px;">${simulatedCGPA}</span>`
+        : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#34d399; font-size:16px;">${simulatedCGPA}</span>`;
 };
 
 function getNextSemesterNumber() {
@@ -613,25 +601,25 @@ function renderSavedSemesters() {
         }
 
         const actionButtonsHTML = sem.isLocked 
-            ? `<span style="font-size: 12px; color: #00f2fe; background: rgba(0,242,254,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(0,242,254,0.3);">🔒 سجل أكاديمي معتمد</span>`
+            ? `<span style="font-size: 12px; color: #38bdf8; background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل معتمد</span>`
             : `
-                <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
-                <button onclick="deleteSemester(${index})" class="btn-delete-sem" style="background: #ff4d4d; color: white;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
+                <button onclick="editSemester(${index})" style="background:#eab308; color:#000; padding:4px 10px; font-size:12px;">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                <button onclick="deleteSemester(${index})" style="background:#ef4444; color:#fff; padding:4px 10px; font-size:12px;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
               `;
 
         const div = document.createElement('div');
         div.className = 'semester-card';
         div.innerHTML = `
-            <div class="semester-info" style="margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <div>
                     <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
-                    <label for="sem-${sem.id}" style="font-weight: bold; font-size: 16px;">${sem.name}</label>
+                    <label for="sem-${sem.id}" style="font-weight: bold;">${sem.name}</label>
                 </div>
                 <div>${actionButtonsHTML}</div>
             </div>
-            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 15px; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
-                <span class="semester-gpa" style="font-size: 14px;">${i18n[currentLang].termGpa} <strong>${sem.gpa}</strong></span>
-                <span class="semester-cgpa" style="font-size: 14px; color: #07ffb5; font-weight: bold;">| ${i18n[currentLang].cgpa} ${semCGPA}</span>
+            <div style="display:flex; gap:15px; font-size:13px; opacity:0.9;">
+                <span>${i18n[currentLang].termGpa} <strong>${sem.gpa}</strong></span>
+                <span style="color:#38bdf8; font-weight:bold;">| ${i18n[currentLang].cgpa} ${semCGPA}</span>
             </div>
         `;
         semestersList.appendChild(div);
@@ -653,11 +641,10 @@ window.deleteSemester = function(index) {
             text: currentLang === 'en' ? 'Are you sure you want to remove this semester?' : 'هل أنت متأكد من حذف هذا الترم؟',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ff4d4d',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#ef4444',
             confirmButtonText: currentLang === 'en' ? 'Yes, delete' : 'نعم، احذف',
             cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
-            background: '#1e1e2f',
+            background: '#1e293b',
             color: '#fff'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -668,14 +655,6 @@ window.deleteSemester = function(index) {
                 populateDatalist();
             }
         });
-    } else {
-        if (confirm("Delete semester?")) {
-            savedSemesters.splice(index, 1);
-            saveToLocal();
-            renderSavedSemesters();
-            calculateGPA();
-            populateDatalist();
-        }
     }
 };
 
@@ -697,11 +676,10 @@ window.resetCalculator = function() {
             text: currentLang === 'en' ? 'This action will clear all saved semesters!' : 'سيتم حذف جميع الترمات والمواد المسجلة نهائياً!',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ff4d4d',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#ef4444',
             confirmButtonText: currentLang === 'en' ? 'Reset All' : 'مسح الكل',
             cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
-            background: '#1e1e2f',
+            background: '#1e293b',
             color: '#fff'
         }).then((result) => {
             if (result.isConfirmed) {
