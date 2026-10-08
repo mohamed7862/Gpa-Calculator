@@ -137,17 +137,6 @@
             background-color: #2d3436 !important;
             color: #ffffff !important;
         }
-
-        optgroup {
-            font-weight: bold;
-            color: #0984e3;
-            background-color: #f8f9fa;
-        }
-
-        option {
-            color: #2d3436;
-            padding: 5px;
-        }
     </style>
 </head>
 <body>
@@ -169,13 +158,11 @@
             </select>
         </div>
         
-        <!-- نموذج إضافة المادة -->
+        <!-- نموذج إضافة المادة (إرجاع الـ input والـ datalist) -->
         <div id="course-form">
             <div class="form-group">
-                <!-- اختيار المادة بقائمة منسدلة مقسمة بالترمات والمستويات -->
-                <select id="subject" style="flex: 2; font-weight: 600;" required>
-                    <option value="" disabled selected>-- Choose Subject --</option>
-                </select>
+                <input type="text" id="subject" list="subjects-list" placeholder="Subject Name" style="flex: 2; font-weight: 600;" autocomplete="off">
+                <datalist id="subjects-list"></datalist>
 
                 <select id="grade" style="flex: 1;">
                     <!-- ملء التقديرات ديناميكياً -->
