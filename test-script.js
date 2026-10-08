@@ -57,11 +57,14 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
-// === 3. لوائح الأقسام الرسمية (الشروق 2025/2026) مع الكود والمتطلبات ===
+// === 3. لوائح الأقسام الرسمية المعتمدة (CS, AI, CYBER) بالكامل ===
 const departmentSyllabus = {
+    // ----------------------------------------------------
+    // 1. لائحة قسم علوم الحاسب (CS)
+    // ----------------------------------------------------
     CS: [
-        // Level 1
-        { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
+        // Level 1 - Term 1 & 2
+        { en: "English Language (1)", ar: "اللغة الإنجليزية (1)", hint: "H 101", credits: 2, prereq: null },
         { en: "Creative Thinking & Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
         { en: "Intro to Computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
@@ -72,46 +75,79 @@ const departmentSyllabus = {
         { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
         { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
         
-        // Level 2
+        // Level 2 - Term 1 & 2
         { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
         { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
         { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
         { en: "Computer Organization & Assembly", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
         { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
+        { en: "Probability & Statistics", ar: "احتمالات وإحصاء", hint: "BS 201", credits: 3, prereq: "BS 101" },
+        { en: "Database Systems", ar: "أنظمة قواعد البيانات", hint: "CS 211", credits: 3, prereq: "CS 210" },
 
         // Level 3 & 4
         { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
         { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
         { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
         { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 201" },
-        { en: "Algorithms Analysis & Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: "CS 201" }
+        { en: "Algorithms Analysis & Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: "CS 201" },
+        { en: "Software Engineering", ar: "هندسة البرمجيات", hint: "CS 313", credits: 3, prereq: "CS 210" },
+        { en: "Computer Graphics", ar: "رسوم الحاسب", hint: "CS 411", credits: 3, prereq: "CS 201" },
+        { en: "Graduation Project (1)", ar: "مشروع التخرج (1)", hint: "CS 491", credits: 3, prereq: "CS 313" },
+        { en: "Graduation Project (2)", ar: "مشروع التخرج (2)", hint: "CS 492", credits: 3, prereq: "CS 491" }
     ],
+
+    // ----------------------------------------------------
+    // 2. لائحة قسم الذكاء الاصطناعي (AI)
+    // ----------------------------------------------------
     AI: [
-        // Level 1 & 2
+        // Level 1 - Term 1 & 2
+        { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
         { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
+        { en: "Ethics of AI & Law", ar: "أخلاقيات وقوانين الذكاء الاصطناعي", hint: "H 104", credits: 2, prereq: null },
+        { en: "Linear Algebra & Vector Calculus", ar: "الجبر الخطي وحساب المتجهات", hint: "BS 106", credits: 3, prereq: "BS 105" },
         { en: "Object Oriented Programming (Python)", ar: "برمجة كائنية التوجه - بايثون", hint: "AI 201", credits: 3, prereq: "AI 101" },
-        { en: "Data Structures & Algorithms for AI", ar: "هياكل البيانات والخوارزميات للذكاء الاصطناعي", hint: "AI 211", credits: 3, prereq: "AI 201" },
         
+        // Level 2 - Term 1 & 2
+        { en: "Data Structures & Algorithms for AI", ar: "هياكل البيانات والخوارزميات للذكاء الاصطناعي", hint: "AI 211", credits: 3, prereq: "AI 201" },
+        { en: "Probability & Statistics for AI", ar: "الاحتمالات والإحصاء للذكاء الاصطناعي", hint: "BS 205", credits: 3, prereq: "BS 105" },
+        { en: "Database Systems for AI", ar: "أنظمة قواعد البيانات للذكاء الاصطناعي", hint: "AI 212", credits: 3, prereq: "AI 201" },
+        { en: "Data Preprocessing & Visualization", ar: "معالجة البيانات وتصورها", hint: "AI 220", credits: 3, prereq: "AI 101" },
+
         // Level 3 & 4
         { en: "Introduction to Logic", ar: "مقدمة في المنطق", hint: "AI 310", credits: 3, prereq: null },
-        { en: "Fundamentals of Artificial Intelligence", ar: "أساسيات الذكاء الاصطناعي", hint: "AI 312", credits: 3, prereq: "AI 201" },
         { en: "Theoretical Foundations of Machine Learning", ar: "الأسس النظرية لتعلم الآلة", hint: "AI 311", credits: 3, prereq: "BS 105" },
+        { en: "Fundamentals of Artificial Intelligence", ar: "أساسيات الذكاء الاصطناعي", hint: "AI 312", credits: 3, prereq: "AI 201" },
         { en: "Machine Learning", ar: "تعلم الآلة", hint: "AI 320", credits: 3, prereq: "AI 311" },
         { en: "Computer Vision", ar: "الرؤية بالحاسوب", hint: "AI 321", credits: 3, prereq: "AI 312" },
         { en: "Reasoning and Knowledge Representation", ar: "الاستنتاج وتمثيل المعرفة", hint: "AI 322", credits: 3, prereq: "AI 310" },
         { en: "Autonomous Multiagent Systems", ar: "الأنظمة متعددة الوكلاء المستقلة", hint: "AI 323", credits: 3, prereq: "AI 312" },
         { en: "Artificial Intelligence for Cybersecurity", ar: "الذكاء الاصطناعي للأمن السيبراني", hint: "AI 324", credits: 3, prereq: "AI 312" },
         { en: "Deep Learning", ar: "التعلم العميق", hint: "AI 410", credits: 3, prereq: "AI 320" },
-        { en: "Natural Language Processing", ar: "معالجة اللغات الطبيعية", hint: "AI 411", credits: 3, prereq: "AI 320" }
+        { en: "Natural Language Processing", ar: "معالجة اللغات الطبيعية", hint: "AI 411", credits: 3, prereq: "AI 320" },
+        { en: "Reinforcement Learning", ar: "التعلم المعزز", hint: "AI 412", credits: 3, prereq: "AI 320" },
+        { en: "AI Graduation Project (1)", ar: "مشروع تخرج الذكاء الاصطناعي (1)", hint: "AI 491", credits: 3, prereq: "AI 320" },
+        { en: "AI Graduation Project (2)", ar: "مشروع تخرج الذكاء الاصطناعي (2)", hint: "AI 492", credits: 3, prereq: "AI 491" }
     ],
+
+    // ----------------------------------------------------
+    // 3. لائحة قسم الأمن السيبراني (CYBER)
+    // ----------------------------------------------------
     CYBER: [
-        // Level 1 & 2
-        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "IT 221", credits: 3, prereq: null },
-        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CYS 210", credits: 3, prereq: null },
+        // Level 1 - Term 1 & 2
+        { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
+        { en: "Discrete Mathematics for Cybersecurity", ar: "رياضيات متقطعة للأمن السيبراني", hint: "BS 107", credits: 3, prereq: null },
+        { en: "Intro to Cybersecurity & Programming", ar: "مقدمة في الأمن السيبراني والبرمجة", hint: "CYS 101", credits: 3, prereq: null },
         { en: "Number Theory", ar: "نظرية الأعداد", hint: "BS 201", credits: 3, prereq: null },
-        
+        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "IT 221", credits: 3, prereq: null },
+
+        // Level 2 - Term 1 & 2
+        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CYS 210", credits: 3, prereq: null },
+        { en: "Operating Systems Security", ar: "أمن أنظمة التشغيل", hint: "CYS 220", credits: 3, prereq: "IT 221" },
+        { en: "Secure Software Development", ar: "تطوير البرمجيات الآمنة", hint: "CYS 230", credits: 3, prereq: "CYS 101" },
+        { en: "Database Security", ar: "أمن قواعد البيانات", hint: "CYS 240", credits: 3, prereq: "CYS 210" },
+
         // Level 3 & 4
         { en: "Algorithms Analysis and Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: null },
         { en: "Network and Web Programming", ar: "برمجة الشبكات والويب", hint: "CS 313", credits: 3, prereq: "IT 221" },
@@ -121,7 +157,10 @@ const departmentSyllabus = {
         { en: "Computer Security and Privacy", ar: "أمن الحاسوب والخصوصية", hint: "IT 310", credits: 3, prereq: "CYS 312" },
         { en: "Cyber Security for Internet of Things", ar: "الأمن السيبراني لإنترنت الأشياء", hint: "CYS 387", credits: 3, prereq: "CYS 312" },
         { en: "Cloud Computing & Network Virtualization", ar: "الحوسبة السحابية والمحاكاة الافتراضية للشبكات", hint: "CYS 410", credits: 3, prereq: "IT 221" },
-        { en: "Penetration Testing & Ethical Hacking", ar: "اختبار الاختراق والاختراق الأخلاقي", hint: "CYS 411", credits: 3, prereq: "CYS 312" }
+        { en: "Penetration Testing & Ethical Hacking", ar: "اختبار الاختراق والاختراق الأخلاقي", hint: "CYS 411", credits: 3, prereq: "CYS 312" },
+        { en: "Digital Forensics & Incident Response", ar: "التحقيق الجنائي الرقمي والاستجابة للحوادث", hint: "CYS 420", credits: 3, prereq: "CYS 312" },
+        { en: "Cybersecurity Graduation Project (1)", ar: "مشروع تخرج الأمن السيبراني (1)", hint: "CYS 491", credits: 3, prereq: "CYS 411" },
+        { en: "Cybersecurity Graduation Project (2)", ar: "مشروع تخرج الأمن السيبراني (2)", hint: "CYS 492", credits: 3, prereq: "CYS 491" }
     ]
 };
 
