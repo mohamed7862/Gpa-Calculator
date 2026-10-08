@@ -8,7 +8,7 @@ let myChart = null;
 
 let currentDepartment = localStorage.getItem('selectedDept') || "CS";
 
-// === 2. سلالم التقديرات المعتمدة لكل قسم (مطابقة للائحة الوزارة والمعهد) ===
+// === 2. سلالم التقديرات المعتمدة لكل قسم ===
 const departmentGradeScales = {
     CS: {
         'A+': 4.0, 'A': 3.7, 'A-': 3.4,
@@ -170,28 +170,17 @@ const i18n = {
     }
 };
 
-// === 4. المنطق الأكاديمي الديناميكي ===
+// === 4. المنطق الأكاديمي وتصنيف القوائم المنسدلة ===
 
-// تحديد المستوى الأكاديمي الحالي للطالب بناءً على الترمات المعتمدة
-function getCurrentStudentLevel() {
-    let lockedCount = savedSemesters.filter(s => s.isChecked).length;
-    if (lockedCount < 2) return 1;
-    if (lockedCount < 4) return 2;
-    if (lockedCount < 6) return 3;
-    return 4;
-}
-
-// حساب أقصى عدد ساعات مسموح به حسب المعدل التراكمي Current CGPA Rule
 function getMaxAllowedHours() {
     let currentCGPA = window.currentCalculatedData ? window.currentCalculatedData.finalCGPA : 4.0;
     if (savedSemesters.length === 0 && courses.length === 0) return 18;
     
-    if (currentCGPA < 2.00) return 12; // حد أقصى للإنذار الأكاديمي
-    if (currentCGPA >= 3.00) return 21; // الطالب المتميز
-    return 18;                          // الطالب العادي
+    if (currentCGPA < 2.00) return 12; 
+    if (currentCGPA >= 3.00) return 21; 
+    return 18;                          
 }
 
-// تحديث قائمة التقديرات في الـ HTML
 function updateGradeDropdown() {
     const gradeSelect = document.getElementById('grade');
     if (!gradeSelect) return;
@@ -213,7 +202,6 @@ function updateGradeDropdown() {
     }
 }
 
-// تغيير القسم
 window.changeDepartment = function(deptKey) {
     if (!departmentSyllabus[deptKey]) return;
     currentDepartment = deptKey;
@@ -227,46 +215,51 @@ window.changeDepartment = function(deptKey) {
     calculateGPA();
 };
 
-// فلترة قائمة المواد بالـ Datalist
+// تصنيف وترتيب المواد داخل القائمة المنسدلة بحسب Level و Semester (optgroup)
 function populateDatalist() {
-    const datalist = document.getElementById('subjects-list');
-    if (!datalist) return;
-    datalist.innerHTML = '';
+    const subjectSelect = document.getElementById('subject');
+    if (!subjectSelect) return;
 
-    const currentLevel = getCurrentStudentLevel();
+    subjectSelect.innerHTML = `<option value="" disabled selected>${currentLang === 'en' ? '-- Choose Subject --' : '-- اختر المادة --'}</option>`;
 
-    let passedHints = new Set();
-    savedSemesters.forEach(sem => {
-        if (sem.isChecked) {
-            sem.courseDetails.forEach(c => {
-                if ((gradePoints[c.grade] || 0) > 0) {
-                    let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
-                    if (match) passedHints.add(match.hint);
-                }
-            });
-        }
-    });
+    const groupedCourses = {};
 
-    const availableCourses = predefinedCourses.filter(course => {
-        let courseLevel = 1;
+    predefinedCourses.forEach(course => {
+        let level = 1;
+        let sem = 1;
+
         const match = course.hint.match(/\d+/);
         if (match) {
             let num = parseInt(match[0]);
-            if (num >= 100 && num < 200) courseLevel = 1;
-            else if (num >= 200 && num < 300) courseLevel = 2;
-            else if (num >= 300 && num < 400) courseLevel = 3;
-            else if (num >= 400) courseLevel = 4;
+            if (num >= 100 && num < 200) { level = 1; sem = (num % 2 === 1) ? 1 : 2; }
+            else if (num >= 200 && num < 300) { level = 2; sem = (num % 2 === 1) ? 1 : 2; }
+            else if (num >= 300 && num < 400) { level = 3; sem = (num % 2 === 1) ? 1 : 2; }
+            else if (num >= 400) { level = 4; sem = (num % 2 === 1) ? 1 : 2; }
         }
 
-        // إظهار مواد المستوى الحالي أو أقل، أو المواد غير المجتازة
-        return (courseLevel <= currentLevel) || !passedHints.has(course.hint);
+        const groupKey = currentLang === 'en' 
+            ? `Level ${level} - Semester ${sem}` 
+            : `المستوى ${level} - الترم ${sem}`;
+
+        if (!groupedCourses[groupKey]) {
+            groupedCourses[groupKey] = [];
+        }
+        groupedCourses[groupKey].push(course);
     });
 
-    availableCourses.forEach(course => {
-        const option = document.createElement('option');
-        const courseName = currentLang === 'en' ? course.en : course.ar;
-        option.value = courseName;
-        datalist.appendChild(option);
+    Object.keys(groupedCourses).forEach(groupLabel => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = `--- ${groupLabel} ---`;
+
+        groupedCourses[groupLabel].forEach(course => {
+            const option = document.createElement('option');
+            const courseName = currentLang === 'en' ? course.en : course.ar;
+            option.value = courseName;
+            option.text = `${courseName} (${course.hint})`;
+            optgroup.appendChild(option);
+        });
+
+        subjectSelect.appendChild(optgroup);
     });
 }
 
@@ -283,7 +276,6 @@ window.toggleLanguage = function() {
     const lang = i18n[currentLang];
     
     document.getElementById('main-title').innerText = lang.title;
-    document.getElementById('subject').placeholder = lang.subjectPlaceholder;
     document.getElementById('add-course-btn').innerText = lang.addBtn;
     document.getElementById('save-sem-btn').innerText = lang.saveBtn;
     document.getElementById('reset-btn').innerText = lang.resetBtn;
@@ -322,11 +314,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const maxAllowedHours = getMaxAllowedHours();
             let currentSemesterHours = courses.reduce((sum, c) => sum + c.credits, 0);
 
-            const subject = subInput.value.trim();
+            const subject = subInput.value;
             if (!subject) {
                 showCustomAlert(
                     currentLang === 'en' ? 'Missing Input' : 'حقل فارغ',
-                    currentLang === 'en' ? 'Please enter or select a subject name!' : 'يرجى اختيار أو كتابة اسم المادة أولاً!',
+                    currentLang === 'en' ? 'Please select a subject from the list!' : 'يرجى اختيار المادة من القائمة أولاً!',
                     'info'
                 );
                 return;
@@ -334,13 +326,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const predefinedCourse = predefinedCourses.find(c => 
                 c.en.trim().toLowerCase() === subject.toLowerCase() || 
-                c.ar.trim() === subject ||
-                c.hint.toLowerCase() === subject.toLowerCase()
+                c.ar.trim() === subject
             );
 
             let courseCredits = predefinedCourse ? predefinedCourse.credits : 3;
 
-            // فحص حد الساعات الصارم حسب حالة الإنذار الأكاديمي
             if (currentSemesterHours + courseCredits > maxAllowedHours) {
                 showCustomAlert(
                     currentLang === 'en' ? 'Credit Hours Limit Exceeded ⛔' : 'تجاوز حد الساعات المسموح بها ⛔',
@@ -352,7 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // فحص المتطلب المسبق للمادة
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
                 const checkPassed = (c) => {
@@ -387,7 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
             courses.push({ subject, grade: gradeSel.value, credits: courseCredits });
             updateUI();
             subInput.value = '';
-            subInput.focus();
         };
     }
 
@@ -525,7 +513,7 @@ function updateGPAChart() {
     });
 }
 
-// === 5. محرك الإرشاد الأكاديمي وحاسبة الهدف (Target & Priority Simulator) ===
+// === 5. محرك الإرشاد الأكاديمي وحاسبة الهدف ===
 window.handleImprovementClick = function() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         showCustomAlert(
@@ -542,10 +530,9 @@ window.handleImprovementClick = function() {
 
     const isAr = currentLang === 'ar';
 
-    // ترتيب أولوية المواد القابلة للتحسين Priority Recovery Matrix
     let priorityCourses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a, b) => {
-        if (a.credits !== b.credits) return b.credits - a.credits; // الأولوية للساعات الأكثر
-        return a.points - b.points; // ثم للتقدير الأقل
+        if (a.credits !== b.credits) return b.credits - a.credits; 
+        return a.points - b.points; 
     });
 
     let priorityHTML = priorityCourses.map(c => `
@@ -562,7 +549,6 @@ window.handleImprovementClick = function() {
                 ${finalCGPA < 2.0 ? '🚨 ' + i18n[currentLang].probationWarning : '🎯 ' + (isAr ? 'حاسبة المعدل التراكمي المستهدف' : 'Target CGPA Calculator')}
             </h3>
 
-            <!-- حاسبة الهدف الأدنى المطلوب -->
             <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                 <label style="font-weight: bold; font-size: 13px;">${isAr ? 'ادخل المعدل التراكمي المستهدف (Target CGPA):' : 'Enter Target CGPA:'}</label>
                 <div style="display: flex; gap: 10px; margin-top: 8px;">
@@ -572,7 +558,6 @@ window.handleImprovementClick = function() {
                 <div id="target-result-box" style="margin-top: 10px; font-weight: bold; font-size: 13px; color: #2d3436;"></div>
             </div>
 
-            <!-- جدول أولوية تحسين المواد -->
             ${priorityCourses.length > 0 ? `
                 <h4 style="margin: 15px 0 10px 0; color: #2d3436; font-size:14px;">⚡ ${isAr ? 'ترتيب أولويات تحسين المواد لرفع المعدل بأسرع طريقة:' : 'Priority Recovery Courses:'}</h4>
                 <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
@@ -584,7 +569,6 @@ window.handleImprovementClick = function() {
     `;
 };
 
-// حساب المعدل الفصل المطلوب لتحقيق الهدف
 window.calculateRequiredTermGPA = function(totalPoints, totalHours) {
     const targetCGPA = parseFloat(document.getElementById('target-cgpa-input').value);
     const isAr = currentLang === 'ar';
@@ -644,7 +628,7 @@ window.saveAndClearSemester = function() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
-        isFromDatabase: false, // الترم المحفوظ محلياً للتجربة قابل للتعديل
+        isFromDatabase: false, 
         isLocked: false,
         courseDetails: [...courses]
     };
@@ -669,7 +653,6 @@ window.saveAndClearSemester = function() {
     );
 };
 
-// عرض القائمة المعتمدة للترمات وقفل بيانات الداتابيز Read Only
 function renderSavedSemesters() {
     const semestersList = document.getElementById('semesters-list');
     const savedSemestersBox = document.getElementById('saved-semesters-box');
@@ -706,7 +689,6 @@ function renderSavedSemesters() {
             semCGPA = "-";
         }
 
-        // قفل ترمات قاعدة البيانات الرسمية كـ Read Only حقيقي
         const actionButtonsHTML = (sem.isFromDatabase || sem.isLocked)
             ? `<span style="font-size: 11px; color: #0984e3; background: #e3f2fd; padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل داتابيز معتمد (Read Only)</span>`
             : `
@@ -804,7 +786,6 @@ window.resetCalculator = function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 courses = [];
-                // الاحتفاظ ببيانات الداتابيز فقط ومسح المحاكاة المحلية
                 savedSemesters = savedSemesters.filter(s => s.isFromDatabase);
                 currentEditingName = null;
                 editingIndex = null;
