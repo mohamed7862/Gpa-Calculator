@@ -50,9 +50,10 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
-// === 3. لوائح الأقسام الرسمية المعتمدة (CS, AI, CYBER) ===
+// === 3. لوائح الأقسام الرسمية المعتمدة مرتبة أكاديمياً (CS, AI, CYBER) ===
 const departmentSyllabus = {
     CS: [
+        // Level 1
         { en: "English Language (1)", ar: "اللغة الإنجليزية (1)", hint: "H 101", credits: 2, prereq: null },
         { en: "Creative Thinking & Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
@@ -63,6 +64,8 @@ const departmentSyllabus = {
         { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
         { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
         { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
+        
+        // Level 2
         { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
         { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
@@ -71,6 +74,8 @@ const departmentSyllabus = {
         { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
         { en: "Probability & Statistics", ar: "احتمالات وإحصاء", hint: "BS 201", credits: 3, prereq: "BS 101" },
         { en: "Database Systems", ar: "أنظمة قواعد البيانات", hint: "CS 211", credits: 3, prereq: "CS 210" },
+
+        // Level 3 & 4
         { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
         { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
         { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
@@ -82,16 +87,21 @@ const departmentSyllabus = {
         { en: "Graduation Project (2)", ar: "مشروع التخرج (2)", hint: "CS 492", credits: 3, prereq: "CS 491" }
     ],
     AI: [
+        // Level 1
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
         { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
         { en: "Ethics of AI & Law", ar: "أخلاقيات وقوانين الذكاء الاصطناعي", hint: "H 104", credits: 2, prereq: null },
         { en: "Linear Algebra & Vector Calculus", ar: "الجبر الخطي وحساب المتجهات", hint: "BS 106", credits: 3, prereq: "BS 105" },
         { en: "Object Oriented Programming (Python)", ar: "برمجة كائنية التوجه - بايثون", hint: "AI 201", credits: 3, prereq: "AI 101" },
+        
+        // Level 2
         { en: "Data Structures & Algorithms for AI", ar: "هياكل البيانات والخوارزميات للذكاء الاصطناعي", hint: "AI 211", credits: 3, prereq: "AI 201" },
         { en: "Probability & Statistics for AI", ar: "الاحتمالات والإحصاء للذكاء الاصطناعي", hint: "BS 205", credits: 3, prereq: "BS 105" },
         { en: "Database Systems for AI", ar: "أنظمة قواعد البيانات للذكاء الاصطناعي", hint: "AI 212", credits: 3, prereq: "AI 201" },
         { en: "Data Preprocessing & Visualization", ar: "معالجة البيانات وتصورها", hint: "AI 220", credits: 3, prereq: "AI 101" },
+
+        // Level 3 & 4
         { en: "Introduction to Logic", ar: "مقدمة في المنطق", hint: "AI 310", credits: 3, prereq: null },
         { en: "Theoretical Foundations of Machine Learning", ar: "الأسس النظرية لتعلم الآلة", hint: "AI 311", credits: 3, prereq: "BS 105" },
         { en: "Fundamentals of Artificial Intelligence", ar: "أساسيات الذكاء الاصطناعي", hint: "AI 312", credits: 3, prereq: "AI 201" },
@@ -107,15 +117,20 @@ const departmentSyllabus = {
         { en: "AI Graduation Project (2)", ar: "مشروع تخرج الذكاء الاصطناعي (2)", hint: "AI 492", credits: 3, prereq: "AI 491" }
     ],
     CYBER: [
+        // Level 1
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Discrete Mathematics for Cybersecurity", ar: "رياضيات متقطعة للأمن السيبراني", hint: "BS 107", credits: 3, prereq: null },
         { en: "Intro to Cybersecurity & Programming", ar: "مقدمة في الأمن السيبراني والبرمجة", hint: "CYS 101", credits: 3, prereq: null },
         { en: "Number Theory", ar: "نظرية الأعداد", hint: "BS 201", credits: 3, prereq: null },
         { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "IT 221", credits: 3, prereq: null },
+
+        // Level 2
         { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CYS 210", credits: 3, prereq: null },
         { en: "Operating Systems Security", ar: "أمن أنظمة التشغيل", hint: "CYS 220", credits: 3, prereq: "IT 221" },
         { en: "Secure Software Development", ar: "تطوير البرمجيات الآمنة", hint: "CYS 230", credits: 3, prereq: "CYS 101" },
         { en: "Database Security", ar: "أمن قواعد البيانات", hint: "CYS 240", credits: 3, prereq: "CYS 210" },
+
+        // Level 3 & 4
         { en: "Algorithms Analysis and Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: null },
         { en: "Network and Web Programming", ar: "برمجة الشبكات والويب", hint: "CS 313", credits: 3, prereq: "IT 221" },
         { en: "Fundamental of Cyber Security", ar: "أساسيات الأمن السيبراني", hint: "CYS 312", credits: 3, prereq: "CYS 210" },
@@ -170,7 +185,7 @@ const i18n = {
     }
 };
 
-// === 4. المنطق الأكاديمي وتصنيف القوائم المنسدلة ===
+// === 4. المنطق الأكاديمي وتنظيم الاقتراحات للـ Datalist ===
 
 function getMaxAllowedHours() {
     let currentCGPA = window.currentCalculatedData ? window.currentCalculatedData.finalCGPA : 4.0;
@@ -215,51 +230,30 @@ window.changeDepartment = function(deptKey) {
     calculateGPA();
 };
 
-// تصنيف وترتيب المواد داخل القائمة المنسدلة بحسب Level و Semester (optgroup)
+// إرجاع الـ datalist وتنسيق ترتيب المواد تسلسلياً حسب المستوى والأكواد
 function populateDatalist() {
-    const subjectSelect = document.getElementById('subject');
-    if (!subjectSelect) return;
+    const datalist = document.getElementById('subjects-list');
+    if (!datalist) return;
 
-    subjectSelect.innerHTML = `<option value="" disabled selected>${currentLang === 'en' ? '-- Choose Subject --' : '-- اختر المادة --'}</option>`;
-
-    const groupedCourses = {};
+    datalist.innerHTML = '';
 
     predefinedCourses.forEach(course => {
-        let level = 1;
-        let sem = 1;
+        const option = document.createElement('option');
+        const courseName = currentLang === 'en' ? course.en : course.ar;
 
+        let level = 1;
         const match = course.hint.match(/\d+/);
         if (match) {
             let num = parseInt(match[0]);
-            if (num >= 100 && num < 200) { level = 1; sem = (num % 2 === 1) ? 1 : 2; }
-            else if (num >= 200 && num < 300) { level = 2; sem = (num % 2 === 1) ? 1 : 2; }
-            else if (num >= 300 && num < 400) { level = 3; sem = (num % 2 === 1) ? 1 : 2; }
-            else if (num >= 400) { level = 4; sem = (num % 2 === 1) ? 1 : 2; }
+            if (num >= 100 && num < 200) level = 1;
+            else if (num >= 200 && num < 300) level = 2;
+            else if (num >= 300 && num < 400) level = 3;
+            else if (num >= 400) level = 4;
         }
 
-        const groupKey = currentLang === 'en' 
-            ? `Level ${level} - Semester ${sem}` 
-            : `المستوى ${level} - الترم ${sem}`;
-
-        if (!groupedCourses[groupKey]) {
-            groupedCourses[groupKey] = [];
-        }
-        groupedCourses[groupKey].push(course);
-    });
-
-    Object.keys(groupedCourses).forEach(groupLabel => {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = `--- ${groupLabel} ---`;
-
-        groupedCourses[groupLabel].forEach(course => {
-            const option = document.createElement('option');
-            const courseName = currentLang === 'en' ? course.en : course.ar;
-            option.value = courseName;
-            option.text = `${courseName} (${course.hint})`;
-            optgroup.appendChild(option);
-        });
-
-        subjectSelect.appendChild(optgroup);
+        option.value = courseName;
+        option.label = `[Level ${level} - ${course.hint}]`;
+        datalist.appendChild(option);
     });
 }
 
@@ -276,6 +270,7 @@ window.toggleLanguage = function() {
     const lang = i18n[currentLang];
     
     document.getElementById('main-title').innerText = lang.title;
+    document.getElementById('subject').placeholder = lang.subjectPlaceholder;
     document.getElementById('add-course-btn').innerText = lang.addBtn;
     document.getElementById('save-sem-btn').innerText = lang.saveBtn;
     document.getElementById('reset-btn').innerText = lang.resetBtn;
@@ -314,11 +309,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const maxAllowedHours = getMaxAllowedHours();
             let currentSemesterHours = courses.reduce((sum, c) => sum + c.credits, 0);
 
-            const subject = subInput.value;
+            const subject = subInput.value.trim();
             if (!subject) {
                 showCustomAlert(
                     currentLang === 'en' ? 'Missing Input' : 'حقل فارغ',
-                    currentLang === 'en' ? 'Please select a subject from the list!' : 'يرجى اختيار المادة من القائمة أولاً!',
+                    currentLang === 'en' ? 'Please enter or select a subject name!' : 'يرجى كتابة أو اختيار اسم المادة أولاً!',
                     'info'
                 );
                 return;
@@ -326,7 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const predefinedCourse = predefinedCourses.find(c => 
                 c.en.trim().toLowerCase() === subject.toLowerCase() || 
-                c.ar.trim() === subject
+                c.ar.trim() === subject ||
+                c.hint.toLowerCase() === subject.toLowerCase()
             );
 
             let courseCredits = predefinedCourse ? predefinedCourse.credits : 3;
@@ -376,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
             courses.push({ subject, grade: gradeSel.value, credits: courseCredits });
             updateUI();
             subInput.value = '';
+            subInput.focus();
         };
     }
 
