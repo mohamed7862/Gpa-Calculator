@@ -7,11 +7,38 @@ let maxCoursesAllowed = 6;
 let currentLang = 'en';
 let myChart = null;
 
-// سلم التقديرات الموحد المعتمد
-const gradePoints = {
-    'A+': 4.0, 'A': 3.7, 'A-': 3.4, 'B+': 3.2, 'B': 3.0, 'B-': 2.8,
-    'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
+let currentDepartment = localStorage.getItem('selectedDept') || "CS";
+
+// === 2. سلالم التقديرات المعتمدة لكل قسم ===
+const departmentGradeScales = {
+    // سلم قسم علوم الحاسب CS
+    CS: {
+        'A+': 4.0, 'A': 3.7, 'A-': 3.4,
+        'B+': 3.2, 'B': 3.0, 'B-': 2.8,
+        'C+': 2.6, 'C': 2.4, 'C-': 2.2,
+        'D+': 2.0, 'D': 1.5, 'D-': 1.0,
+        'F': 0.0
+    },
+    // سلم الذكاء الاصطناعي AI (مطابق لجدول لائحة وزارة التعليم العالي)
+    AI: {
+        'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+        'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+        'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+        'D+': 1.3, 'D': 1.0,
+        'F': 0.0
+    },
+    // سلم الأمن السيبراني CYBER (مطابق لجدول لائحة وزارة التعليم العالي)
+    CYBER: {
+        'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+        'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+        'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+        'D+': 1.3, 'D': 1.0,
+        'F': 0.0
+    }
 };
+
+// المتغير النشط حالياً لقيم النقاط بناءً على القسم المختار
+let gradePoints = departmentGradeScales[currentDepartment] || departmentGradeScales.CS;
 
 // تنبيهات SweetAlert2 الأنيقة
 function showCustomAlert(title, text, icon = 'error') {
@@ -30,7 +57,7 @@ function showCustomAlert(title, text, icon = 'error') {
     }
 }
 
-// === لوائح الأقسام الرسمية (الشروق 2025/2026) كاملة مع الأكواد والمتطلبات ===
+// === 3. لوائح الأقسام الرسمية (الشروق 2025/2026) مع الكود والمتطلبات ===
 const departmentSyllabus = {
     CS: [
         // Level 1
@@ -98,7 +125,6 @@ const departmentSyllabus = {
     ]
 };
 
-let currentDepartment = localStorage.getItem('selectedDept') || "CS";
 let predefinedCourses = departmentSyllabus[currentDepartment];
 
 const i18n = {
@@ -138,11 +164,41 @@ const i18n = {
     }
 };
 
+// === 4. الدوال الرئيسية والديناميكية ===
+
+// تحديث قائمة التقديرات المتاحة في الـ HTML حسب سلم القسم المحدد
+function updateGradeDropdown() {
+    const gradeSelect = document.getElementById('grade');
+    if (!gradeSelect) return;
+
+    const currentSelectedValue = gradeSelect.value;
+    gradeSelect.innerHTML = '';
+    
+    const currentScale = departmentGradeScales[currentDepartment] || departmentGradeScales.CS;
+
+    Object.keys(currentScale).forEach(gradeKey => {
+        const option = document.createElement('option');
+        option.value = gradeKey;
+        option.text = gradeKey;
+        gradeSelect.appendChild(option);
+    });
+
+    if (currentScale[currentSelectedValue] !== undefined) {
+        gradeSelect.value = currentSelectedValue;
+    }
+}
+
+// تغيير القسم
 window.changeDepartment = function(deptKey) {
     if (!departmentSyllabus[deptKey]) return;
     currentDepartment = deptKey;
     localStorage.setItem('selectedDept', deptKey);
+    
+    // تحديث سلم النقاط والمواد المتاحة
+    gradePoints = departmentGradeScales[deptKey] || departmentGradeScales.CS;
     predefinedCourses = departmentSyllabus[deptKey];
+    
+    updateGradeDropdown();
     populateDatalist();
     calculateGPA();
 };
@@ -280,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         deptSelect.value = currentDepartment;
     }
 
+    updateGradeDropdown();
     populateDatalist();
     renderSavedSemesters();
     calculateGPA();
@@ -482,13 +539,16 @@ window.handleImprovementClick = function() {
             <option value="${i}">${c.subject} (${isAr ? 'الحالي' : 'Current'}: ${c.grade})</option>
         `).join('');
 
+        let currentAvailableGrades = Object.keys(gradePoints).filter(g => g !== 'F');
+        let targetGradeOptions = currentAvailableGrades.map(g => `<option value="${g}">${g}</option>`).join('');
+
         container.innerHTML = `
             <div style="background: #ffffff; border: 1px solid #0984e3; padding: 20px; border-radius: 14px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                 <h4 style="color: #0984e3; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${isAr ? 'مُحاكي تحسين المواد الاختياري 🚀' : 'Optional Course Improvement Simulator 🚀'}</h4>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <select id="sim-course-select" style="padding: 10px; border-radius: 8px; flex: 1; min-width: 180px; border: 1px solid #dfe6e9;">${optionsHTML}</select>
                     <select id="sim-grade-select" style="padding: 10px; border-radius: 8px; border: 1px solid #dfe6e9;">
-                        <option value="A+">A+</option><option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
+                        ${targetGradeOptions}
                     </select>
                     <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #0984e3; color: #ffffff; border: none; font-weight: bold; border-radius:8px; cursor:pointer;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
                 </div>
@@ -506,7 +566,7 @@ window.runImprovementSimulation = function(totalPoints, totalHours) {
     const isAr = currentLang === 'ar';
 
     let oldPts = selectedCourse.points * selectedCourse.credits;
-    let newPts = gradePoints[targetGrade] * selectedCourse.credits;
+    let newPts = (gradePoints[targetGrade] || 0) * selectedCourse.credits;
     let simulatedCGPA = ((totalPoints - oldPts + newPts) / totalHours).toFixed(2);
 
     document.getElementById('sim-result').innerHTML = isAr 
