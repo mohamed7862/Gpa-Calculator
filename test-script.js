@@ -12,57 +12,88 @@ const gradePoints = {
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
 };
 
+// تنبيهات SweetAlert2 الأنيقة
 function showCustomAlert(title, text, icon = 'error') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: title,
             text: text,
             icon: icon,
-            background: '#1e293b',
-            color: '#fff',
-            confirmButtonColor: '#38bdf8'
+            confirmButtonColor: '#0984e3',
+            customClass: {
+                popup: 'swal2-custom-popup'
+            }
         });
     } else {
         alert(`${title}\n${text}`);
     }
 }
 
-// اللوائح الأصلية كاملة بدون تغيير
+// === لوائح الأقسام الرسمية (الشروق 2025/2026) كاملة مع الأكواد والمتطلبات ===
 const departmentSyllabus = {
     CS: [
+        // Level 1
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
-        { en: "Creative Thinking and Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
+        { en: "Creative Thinking & Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
-        { en: "Intro to computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
+        { en: "Intro to Computer Science", ar: "مقدمة في علوم الحاسب", hint: "CS 101", credits: 3, prereq: null },
         { en: "Intro to Information Systems", ar: "مقدمة في نظم المعلومات", hint: "CS 103", credits: 3, prereq: null },
         { en: "Electronics", ar: "إلكترونيات", hint: "BS 131", credits: 3, prereq: null },
         { en: "Technical Report Writing", ar: "كتابة التقارير الفنية", hint: "H 103", credits: 2, prereq: "H 101" },
         { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
         { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
         { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
+        
+        // Level 2
         { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
         { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
         { en: "Data Structure", ar: "هياكل البيانات", hint: "CS 201", credits: 3, prereq: "CS 102" },
-        { en: "Computer Organization & Assembly Language", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
+        { en: "Computer Organization & Assembly", ar: "تنظيم الحاسب ولغة التجميع", hint: "CS 220", credits: 3, prereq: "CS 121" },
         { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
+
+        // Level 3 & 4
         { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
         { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
         { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
-        { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 201" }
+        { en: "Artificial Intelligence", ar: "الذكاء الاصطناعي", hint: "CS 360", credits: 3, prereq: "CS 201" },
+        { en: "Algorithms Analysis & Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: "CS 201" }
     ],
     AI: [
+        // Level 1 & 2
         { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
         { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
-        { en: "Intro to Artificial Intelligence", ar: "مقدمة في الذكاء الاصطناعي", hint: "AI 102", credits: 3, prereq: "AI 101" },
-        { en: "Data Analysis & Visualization", ar: "تحليل ورسم البيانات", hint: "AI 201", credits: 3, prereq: "AI 101" },
-        { en: "Machine Learning Fundamentals", ar: "أساسيات تعلم الآلة", hint: "AI 202", credits: 3, prereq: "BS 105" }
+        { en: "Object Oriented Programming (Python)", ar: "برمجة كائنية التوجه - بايثون", hint: "AI 201", credits: 3, prereq: "AI 101" },
+        { en: "Data Structures & Algorithms for AI", ar: "هياكل البيانات والخوارزميات للذكاء الاصطناعي", hint: "AI 211", credits: 3, prereq: "AI 201" },
+        
+        // Level 3 & 4
+        { en: "Introduction to Logic", ar: "مقدمة في المنطق", hint: "AI 310", credits: 3, prereq: null },
+        { en: "Fundamentals of Artificial Intelligence", ar: "أساسيات الذكاء الاصطناعي", hint: "AI 312", credits: 3, prereq: "AI 201" },
+        { en: "Theoretical Foundations of Machine Learning", ar: "الأسس النظرية لتعلم الآلة", hint: "AI 311", credits: 3, prereq: "BS 105" },
+        { en: "Machine Learning", ar: "تعلم الآلة", hint: "AI 320", credits: 3, prereq: "AI 311" },
+        { en: "Computer Vision", ar: "الرؤية بالحاسوب", hint: "AI 321", credits: 3, prereq: "AI 312" },
+        { en: "Reasoning and Knowledge Representation", ar: "الاستنتاج وتمثيل المعرفة", hint: "AI 322", credits: 3, prereq: "AI 310" },
+        { en: "Autonomous Multiagent Systems", ar: "الأنظمة متعددة الوكلاء المستقلة", hint: "AI 323", credits: 3, prereq: "AI 312" },
+        { en: "Artificial Intelligence for Cybersecurity", ar: "الذكاء الاصطناعي للأمن السيبراني", hint: "AI 324", credits: 3, prereq: "AI 312" },
+        { en: "Deep Learning", ar: "التعلم العميق", hint: "AI 410", credits: 3, prereq: "AI 320" },
+        { en: "Natural Language Processing", ar: "معالجة اللغات الطبيعية", hint: "AI 411", credits: 3, prereq: "AI 320" }
     ],
     CYBER: [
-        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "CY 101", credits: 3, prereq: null },
-        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CY 102", credits: 3, prereq: null },
-        { en: "Network Security & Cryptography", ar: "أمن الشبكات والتشفير", hint: "CY 201", credits: 3, prereq: "CY 101" },
-        { en: "Ethical Hacking & Penetration Testing", ar: "الاختراق الأخلاقي واختبار الاختراق", hint: "CY 202", credits: 3, prereq: "CY 102" }
+        // Level 1 & 2
+        { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "IT 221", credits: 3, prereq: null },
+        { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CYS 210", credits: 3, prereq: null },
+        { en: "Number Theory", ar: "نظرية الأعداد", hint: "BS 201", credits: 3, prereq: null },
+        
+        // Level 3 & 4
+        { en: "Algorithms Analysis and Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: null },
+        { en: "Network and Web Programming", ar: "برمجة الشبكات والويب", hint: "CS 313", credits: 3, prereq: "IT 221" },
+        { en: "Fundamental of Cyber Security", ar: "أساسيات الأمن السيبراني", hint: "CYS 312", credits: 3, prereq: "CYS 210" },
+        { en: "Cryptography", ar: "علم التشفير", hint: "CYS 311", credits: 3, prereq: "BS 201" },
+        { en: "Wireless and Mobile Networks", ar: "الشبكات اللاسلكية والمتنقلة", hint: "CYS 321", credits: 3, prereq: "IT 221" },
+        { en: "Computer Security and Privacy", ar: "أمن الحاسوب والخصوصية", hint: "IT 310", credits: 3, prereq: "CYS 312" },
+        { en: "Cyber Security for Internet of Things", ar: "الأمن السيبراني لإنترنت الأشياء", hint: "CYS 387", credits: 3, prereq: "CYS 312" },
+        { en: "Cloud Computing & Network Virtualization", ar: "الحوسبة السحابية والمحاكاة الافتراضية للشبكات", hint: "CYS 410", credits: 3, prereq: "IT 221" },
+        { en: "Penetration Testing & Ethical Hacking", ar: "اختبار الاختراق والاختراق الأخلاقي", hint: "CYS 411", credits: 3, prereq: "CYS 312" }
     ]
 };
 
@@ -202,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.hint.toLowerCase() === subject.toLowerCase()
             );
 
+            // فحص المتطلب المسبق للمادة من السجلات المحفوظة
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
                 const checkPassed = (c) => {
@@ -258,18 +290,18 @@ function updateUI() {
     populateDatalist();
 }
 
-// عرض اسم المادة والساعات بخط واضح وألوان مظبوطة
+// عرض الصفوف بجودة عالية مع ضبط النص واللون بشكل ممتاز
 function renderCourses() {
     const coursesList = document.getElementById('courses-list');
     if (!coursesList) return;
     coursesList.innerHTML = ''; 
     courses.forEach((course, index) => {
         const row = document.createElement('div');
-        row.className = 'course-row'; 
+        row.className = 'course-row-item'; 
         row.innerHTML = `
-            <div style="flex:1; color:#0f172a; font-weight:bold;">✨ ${course.subject}</div>
-            <div style="flex:1;"><span style="background: #0284c7; padding: 4px 10px; border-radius: 6px; color: #ffffff; font-weight:bold;">${course.grade}</span></div>
-            <div style="flex:1; color:#0f172a; font-weight:bold;">${course.credits} ${currentLang === 'en' ? 'h' : 'ساعة'}</div>
+            <div style="flex:1.2; text-align: ${currentLang === 'ar' ? 'right' : 'left'}; font-weight:700;">✨ ${course.subject}</div>
+            <div style="flex:1;"><span class="grade-badge">${course.grade}</span></div>
+            <div style="flex:1;">${course.credits} ${currentLang === 'en' ? 'hrs' : 'ساعة'}</div>
             <div style="flex:0.5;"><button onclick="deleteCourse(${index})" class="delete-btn">✕</button></div>
         `;
         coursesList.appendChild(row);
@@ -357,8 +389,8 @@ function updateGPAChart() {
             datasets: [{
                 label: 'التراكمي (CGPA)',
                 data: dataPoints,
-                borderColor: '#38bdf8',
-                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                borderColor: '#0984e3',
+                backgroundColor: 'rgba(9, 132, 227, 0.15)',
                 fill: true,
                 tension: 0.3,
                 borderWidth: 2
@@ -390,40 +422,40 @@ window.handleImprovementClick = function() {
     if (finalCGPA < 2.0) {
         let planA_Courses = uniqueCoursesList.filter(c => c.points < 2.0).sort((a,b) => a.points - b.points);
         let planA_HTML = planA_Courses.map(c => `
-            <tr>
-                <td style="padding:6px; text-align:${isAr ? 'right' : 'left'};">${c.subject}</td>
-                <td style="padding:6px; text-align:center; color:#f87171;">${c.grade}</td>
-                <td style="padding:6px; text-align:center; color:#34d399; font-weight:bold;">B (3.0)</td>
+            <tr style="border-bottom: 1px solid #dfe6e9;">
+                <td style="padding:8px; text-align:${isAr ? 'right' : 'left'}; font-weight:600;">${c.subject}</td>
+                <td style="padding:8px; text-align:center; color:#d63031; font-weight:bold;">${c.grade}</td>
+                <td style="padding:8px; text-align:center; color:#00b894; font-weight:bold;">B (3.0)</td>
             </tr>
         `).join('');
 
         let planB_Courses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a,b) => a.points - b.points);
         let planB_HTML = planB_Courses.map(c => `
-            <tr>
-                <td style="padding:6px; text-align:${isAr ? 'right' : 'left'};">${c.subject}</td>
-                <td style="padding:6px; text-align:center; color:#f87171;">${c.grade}</td>
-                <td style="padding:6px; text-align:center; color:#38bdf8; font-weight:bold;">B+ / A</td>
+            <tr style="border-bottom: 1px solid #dfe6e9;">
+                <td style="padding:8px; text-align:${isAr ? 'right' : 'left'}; font-weight:600;">${c.subject}</td>
+                <td style="padding:8px; text-align:center; color:#d63031; font-weight:bold;">${c.grade}</td>
+                <td style="padding:8px; text-align:center; color:#0984e3; font-weight:bold;">B+ / A</td>
             </tr>
         `).join('');
 
         container.innerHTML = `
-            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #ef4444; border-radius: 14px; padding: 20px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <h3 style="color: #ef4444; margin-top: 0;">🚨 ${i18n[currentLang].probationWarning}</h3>
-                <p style="font-size:13px; opacity:0.9;">${isAr ? 'اختر الخطة المناسبة لرفع التراكمي وتجاوز حاجز الـ 2.00:' : 'Choose a recovery path to raise CGPA above 2.00:'}</p>
+            <div style="background: #ffffff; border: 2px solid #d63031; border-radius: 14px; padding: 20px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <h3 style="color: #d63031; margin-top: 0; font-size:16px;">🚨 ${i18n[currentLang].probationWarning}</h3>
+                <p style="font-size:13px; color:#636e72;">${isAr ? 'اختر المسار المناسب لرفع معدلك التراكمي وتجاوز عقبة الـ 2.00 بنجاح:' : 'Select an academic recovery path to cross 2.00 CGPA:'}</p>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border-top: 3px solid #34d399;">
-                        <h4 style="margin: 0 0 10px 0; color: #34d399; font-size:14px;">⚡ ${isAr ? 'المسار 1: التعافي المباشر السريع' : 'Path 1: Fast Direct Recovery'}</h4>
-                        <table style="width: 100%; font-size: 12px;">
-                            <thead><tr><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
+                    <div style="flex: 1; min-width: 220px; background: #f8f9fa; padding: 12px; border-radius: 10px; border-top: 4px solid #00b894;">
+                        <h4 style="margin: 0 0 10px 0; color: #00b894; font-size:14px;">⚡ ${isAr ? 'المسار 1: التعافي السريع (استهداف B)' : 'Path 1: Fast Recovery (Target B)'}</h4>
+                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                            <thead><tr style="color:#636e72;"><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
                             <tbody>${planA_HTML}</tbody>
                         </table>
                     </div>
 
-                    <div style="flex: 1; min-width: 220px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border-top: 3px solid #38bdf8;">
-                        <h4 style="margin: 0 0 10px 0; color: #38bdf8; font-size:14px;">🛡️ ${isAr ? 'المسار 2: التوازن والرفع المريح' : 'Path 2: Balanced Improvement'}</h4>
-                        <table style="width: 100%; font-size: 12px;">
-                            <thead><tr><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
+                    <div style="flex: 1; min-width: 220px; background: #f8f9fa; padding: 12px; border-radius: 10px; border-top: 4px solid #0984e3;">
+                        <h4 style="margin: 0 0 10px 0; color: #0984e3; font-size:14px;">🛡️ ${isAr ? 'المسار 2: التوازن الممتاز (استهداف B+/A)' : 'Path 2: Balanced Improvement (Target B+/A)'}</h4>
+                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                            <thead><tr style="color:#636e72;"><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
                             <tbody>${planB_HTML}</tbody>
                         </table>
                     </div>
@@ -434,7 +466,7 @@ window.handleImprovementClick = function() {
         let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
         if (improvableCourses.length === 0) {
             container.innerHTML = `
-                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #34d399; padding: 15px; border-radius: 12px; color: #fff; margin-top: 20px; text-align: center;">
+                <div style="background: #e8f8f5; border: 1px solid #00b894; padding: 15px; border-radius: 12px; color: #2d3436; margin-top: 20px; text-align: center; font-weight:bold;">
                     🎉 ${isAr ? 'جميع تقديراتك ممتازة ولا توجد مواد بحاجة للتحسين!' : 'All your grades are excellent and no courses need improvement!'}
                 </div>
             `;
@@ -446,16 +478,16 @@ window.handleImprovementClick = function() {
         `).join('');
 
         container.innerHTML = `
-            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #38bdf8; padding: 20px; border-radius: 14px; color: #fff; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'};">
-                <h4 style="color: #38bdf8; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${isAr ? 'مُحاكي تحسين المواد الاختياري 🚀' : 'Optional Course Improvement Simulator 🚀'}</h4>
+            <div style="background: #ffffff; border: 1px solid #0984e3; padding: 20px; border-radius: 14px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <h4 style="color: #0984e3; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${isAr ? 'مُحاكي تحسين المواد الاختياري 🚀' : 'Optional Course Improvement Simulator 🚀'}</h4>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <select id="sim-course-select" style="padding: 10px; border-radius: 8px; flex: 1; min-width: 180px;">${optionsHTML}</select>
-                    <select id="sim-grade-select" style="padding: 10px; border-radius: 8px;">
+                    <select id="sim-course-select" style="padding: 10px; border-radius: 8px; flex: 1; min-width: 180px; border: 1px solid #dfe6e9;">${optionsHTML}</select>
+                    <select id="sim-grade-select" style="padding: 10px; border-radius: 8px; border: 1px solid #dfe6e9;">
                         <option value="A+">A+</option><option value="A">A</option><option value="B+">B+</option><option value="B">B</option>
                     </select>
-                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #38bdf8; color: #0f172a; border: none; font-weight: bold;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
+                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #0984e3; color: #ffffff; border: none; font-weight: bold; border-radius:8px; cursor:pointer;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
                 </div>
-                <div id="sim-result" style="margin-top: 12px; font-weight: 500; font-size: 14px; color: #34d399;"></div>
+                <div id="sim-result" style="margin-top: 12px; font-weight: bold; font-size: 14px; color: #00b894;"></div>
             </div>
         `;
         window.simCourses = improvableCourses;
@@ -473,8 +505,8 @@ window.runImprovementSimulation = function(totalPoints, totalHours) {
     let simulatedCGPA = ((totalPoints - oldPts + newPts) / totalHours).toFixed(2);
 
     document.getElementById('sim-result').innerHTML = isAr 
-        ? `✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع التراكمي إلى: <span style="color:#34d399; font-size:16px;">${simulatedCGPA}</span>`
-        : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#34d399; font-size:16px;">${simulatedCGPA}</span>`;
+        ? `✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع التراكمي إلى: <span style="color:#00b894; font-size:16px;">${simulatedCGPA}</span>`
+        : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#00b894; font-size:16px;">${simulatedCGPA}</span>`;
 };
 
 function getNextSemesterNumber() {
@@ -573,10 +605,10 @@ function renderSavedSemesters() {
         }
 
         const actionButtonsHTML = sem.isLocked 
-            ? `<span style="font-size: 12px; color: #38bdf8; background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل معتمد</span>`
+            ? `<span style="font-size: 12px; color: #0984e3; background: #e3f2fd; padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل معتمد</span>`
             : `
-                <button onclick="editSemester(${index})" style="background:#eab308; color:#000; padding:4px 10px; font-size:12px;">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
-                <button onclick="deleteSemester(${index})" style="background:#ef4444; color:#fff; padding:4px 10px; font-size:12px;">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
+                <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                <button onclick="deleteSemester(${index})" class="btn-delete-sem">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
               `;
 
         const div = document.createElement('div');
@@ -585,13 +617,13 @@ function renderSavedSemesters() {
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <div>
                     <input type="checkbox" id="sem-${sem.id}" ${sem.isChecked ? 'checked' : ''} onchange="toggleSemester(${index})">
-                    <label for="sem-${sem.id}" style="font-weight: bold;">${sem.name}</label>
+                    <label for="sem-${sem.id}" style="font-weight: bold; font-size:16px;">${sem.name}</label>
                 </div>
                 <div>${actionButtonsHTML}</div>
             </div>
-            <div style="display:flex; gap:15px; font-size:13px; opacity:0.9;">
-                <span>${i18n[currentLang].termGpa} <strong>${sem.gpa}</strong></span>
-                <span style="color:#38bdf8; font-weight:bold;">| ${i18n[currentLang].cgpa} ${semCGPA}</span>
+            <div style="display:flex; gap:12px; font-size:14px;">
+                <span class="semester-gpa">${i18n[currentLang].termGpa} ${sem.gpa}</span>
+                <span class="semester-cgpa">${i18n[currentLang].cgpa} ${semCGPA}</span>
             </div>
         `;
         semestersList.appendChild(div);
@@ -613,11 +645,9 @@ window.deleteSemester = function(index) {
             text: currentLang === 'en' ? 'Are you sure you want to remove this semester?' : 'هل أنت متأكد من حذف هذا الترم؟',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444',
+            confirmButtonColor: '#d63031',
             confirmButtonText: currentLang === 'en' ? 'Yes, delete' : 'نعم، احذف',
-            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
-            background: '#1e293b',
-            color: '#fff'
+            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء'
         }).then((result) => {
             if (result.isConfirmed) {
                 savedSemesters.splice(index, 1);
@@ -648,11 +678,9 @@ window.resetCalculator = function() {
             text: currentLang === 'en' ? 'This action will clear all saved semesters!' : 'سيتم حذف جميع الترمات والمواد المسجلة نهائياً!',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444',
+            confirmButtonColor: '#d63031',
             confirmButtonText: currentLang === 'en' ? 'Reset All' : 'مسح الكل',
-            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء',
-            background: '#1e293b',
-            color: '#fff'
+            cancelButtonText: currentLang === 'en' ? 'Cancel' : 'إلغاء'
         }).then((result) => {
             if (result.isConfirmed) {
                 courses = [];
