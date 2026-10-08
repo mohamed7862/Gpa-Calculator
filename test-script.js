@@ -7,6 +7,7 @@ let maxCoursesAllowed = 6;
 let currentLang = 'en';
 let myChart = null;
 
+// سلم التقديرات الموحد المعتمد
 const gradePoints = {
     'A+': 4.0, 'A': 3.7, 'A-': 3.4, 'B+': 3.2, 'B': 3.0, 'B-': 2.8,
     'C+': 2.6, 'C': 2.4, 'C-': 2.2, 'D+': 2.0, 'D': 1.5, 'D-': 1.0, 'F': 0.0
@@ -133,7 +134,7 @@ const i18n = {
         printBtn: "🖨️ طباعة",
         resetBtn: "إعادة ضبط",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
-        deptOptions: { CS: "علوم حاسب", AI: "ذكاء اصطناعي", CYBER: "هندسة سيبرانية" }
+        deptOptions: { CS: "علوم حاسب", AI: "ذكاء اصطناعي", CYBER: "أمن سيبراني" }
     }
 };
 
@@ -274,6 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    const deptSelect = document.getElementById('dept-select');
+    if (deptSelect) {
+        deptSelect.value = currentDepartment;
+    }
+
     populateDatalist();
     renderSavedSemesters();
     calculateGPA();
@@ -290,7 +296,6 @@ function updateUI() {
     populateDatalist();
 }
 
-// عرض الصفوف بجودة عالية مع ضبط النص واللون بشكل ممتاز
 function renderCourses() {
     const coursesList = document.getElementById('courses-list');
     if (!coursesList) return;
@@ -387,7 +392,7 @@ function updateGPAChart() {
         data: {
             labels: labels,
             datasets: [{
-                label: 'التراكمي (CGPA)',
+                label: currentLang === 'ar' ? 'المعدل التراكمي (CGPA)' : 'CGPA Progress',
                 data: dataPoints,
                 borderColor: '#0984e3',
                 backgroundColor: 'rgba(9, 132, 227, 0.15)',
