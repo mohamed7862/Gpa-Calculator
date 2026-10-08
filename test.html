@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator</title>
+    <!-- استدعاء ملف الـ CSS الخاص بك -->
     <link rel="stylesheet" href="gpa.css">
+    <!-- مكتبة Chart.js الرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة SweetAlert2 للتنبيهات الأنيقة -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -82,7 +85,6 @@
             background-color: #d63031 !important;
         }
 
-        /* تعديل ألوان كروت المواد المضافة لضمان وضوح النص 100% */
         .course-row-item {
             display: flex;
             gap: 10px;
@@ -135,17 +137,30 @@
             background-color: #2d3436 !important;
             color: #ffffff !important;
         }
+
+        optgroup {
+            font-weight: bold;
+            color: #0984e3;
+            background-color: #f8f9fa;
+        }
+
+        option {
+            color: #2d3436;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- زر تغيير اللغة بالقمة -->
         <div class="header-top">
             <button onclick="toggleLanguage()" id="lang-btn" class="lang-btn-style">العربية</button>
         </div>
 
         <h1 id="main-title">GPA Calculator</h1>
 
+        <!-- القائمة المنسدلة للقسم -->
         <div class="dept-wrapper">
             <select id="dept-select" onchange="changeDepartment(this.value)">
                 <option value="CS">Computer Science</option>
@@ -154,17 +169,16 @@
             </select>
         </div>
         
+        <!-- نموذج إضافة المادة -->
         <div id="course-form">
             <div class="form-group">
-                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required autocomplete="off">
-                <datalist id="subjects-list"></datalist>
+                <!-- اختيار المادة بقائمة منسدلة مقسمة بالترمات والمستويات -->
+                <select id="subject" style="flex: 2; font-weight: 600;" required>
+                    <option value="" disabled selected>-- Choose Subject --</option>
+                </select>
 
-                <select id="grade">
-                    <option value="A+">A+</option><option value="A">A</option><option value="A-">A-</option>
-                    <option value="B+">B+</option><option value="B">B</option><option value="B-">B-</option>
-                    <option value="C+">C+</option><option value="C">C</option><option value="C-">C-</option>
-                    <option value="D+">D+</option><option value="D">D</option><option value="D-">D-</option>
-                    <option value="F">F</option>
+                <select id="grade" style="flex: 1;">
+                    <!-- ملء التقديرات ديناميكياً -->
                 </select>
             </div>
             
@@ -180,11 +194,13 @@
             </div>
         </div>
 
+        <!-- قائمة الترمات المحفوظة -->
         <div id="saved-semesters-box" style="display: none; margin-top: 25px;">
             <h3 id="saved-title" style="color: #2d3436; font-weight: 800; margin-bottom: 15px;">Saved Semesters</h3>
             <div id="semesters-list"></div>
         </div>
 
+        <!-- جدول قائمة المواد المضافة للترم الحالي -->
         <div id="courses-list-container">
             <div class="course-header" id="list-header">
                 <div>Subject</div><div>Grade</div><div>Hours</div><div>Action</div>
@@ -192,6 +208,7 @@
             <div id="courses-list"></div>
         </div>
 
+        <!-- النتيجة والمعدل التراكمي -->
         <div class="gpa-result">
             <h2 id="final-gpa-text">Final GPA</h2>
             <span id="gpa-display">0.00</span>
@@ -202,7 +219,7 @@
 
             <div class="footer-action-btns">
                 <button id="improvement-btn" onclick="handleImprovementClick()" class="btn-improvement-style">
-                    🚀 Academic Recovery & Simulator
+                    🚀 Academic Recovery & Target Simulator
                 </button>
                 <button id="print-btn" onclick="window.print()" class="btn-print-style">
                     🖨️ Print
