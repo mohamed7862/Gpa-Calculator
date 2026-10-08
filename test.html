@@ -8,19 +8,145 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <style>
+        .header-top {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .lang-btn-style {
+            width: auto !important;
+            padding: 6px 18px !important;
+            background-color: #2d3436 !important;
+            color: #ffffff !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            border-radius: 20px !important;
+            border: none !important;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .dept-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dept-wrapper select {
+            width: 100%;
+            max-width: 320px;
+            padding: 12px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3436;
+            background-color: #ffffff;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .dept-wrapper select:focus {
+            border-color: #0984e3;
+            box-shadow: 0 0 10px rgba(9, 132, 227, 0.2);
+        }
+
+        .action-buttons-flex {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .action-buttons-flex button {
+            margin-top: 0 !important;
+        }
+
+        .btn-save-style {
+            background: linear-gradient(135deg, #00b894, #00cec9) !important;
+            color: #ffffff !important;
+            flex: 2;
+        }
+
+        .btn-reset-style {
+            background-color: #ff7675 !important;
+            color: #ffffff !important;
+            flex: 1;
+        }
+
+        .btn-reset-style:hover {
+            background-color: #d63031 !important;
+        }
+
+        /* تعديل ألوان كروت المواد المضافة لضمان وضوح النص 100% */
+        .course-row-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            background-color: #ffffff;
+            border: 1px solid #dfe6e9;
+            border-radius: 12px;
+            padding: 8px 12px;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .course-row-item > div {
+            flex: 1;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .course-row-item .grade-badge {
+            background-color: #e3f2fd;
+            color: #0984e3;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .footer-action-btns {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-action-btns button {
+            width: auto !important;
+            margin-top: 0 !important;
+            padding: 12px 24px !important;
+        }
+
+        .btn-improvement-style {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-print-style {
+            background-color: #2d3436 !important;
+            color: #ffffff !important;
+        }
+    </style>
 </head>
-<body class="dark-clean-theme">
+<body>
 
     <div class="container">
-        <!-- زر تحويل اللغة -->
-        <div style="text-align: right; margin-bottom: 10px;">
-            <button onclick="toggleLanguage()" id="lang-btn" class="btn-top-lang">العربية</button>
+        <div class="header-top">
+            <button onclick="toggleLanguage()" id="lang-btn" class="lang-btn-style">العربية</button>
         </div>
 
         <h1 id="main-title">GPA Calculator</h1>
 
-        <!-- اختيار القسم فقط بدون أي نص بجانبه -->
-        <div class="dept-container">
+        <div class="dept-wrapper">
             <select id="dept-select" onchange="changeDepartment(this.value)">
                 <option value="CS">Computer Science</option>
                 <option value="AI">Artificial Intelligence</option>
@@ -30,7 +156,7 @@
         
         <div id="course-form">
             <div class="form-group">
-                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required>
+                <input type="text" id="subject" placeholder="Subject Name" list="subjects-list" required autocomplete="off">
                 <datalist id="subjects-list"></datalist>
 
                 <select id="grade">
@@ -44,18 +170,18 @@
             
             <button id="add-course-btn">Add course ➕</button>
             
-            <div class="action-buttons-row">
-                <button id="save-sem-btn" onclick="saveAndClearSemester()" class="btn-save">
+            <div class="action-buttons-flex">
+                <button id="save-sem-btn" onclick="saveAndClearSemester()" class="btn-save-style">
                     Save & Add New Semester
                 </button>
-                <button id="reset-btn" onclick="resetCalculator()" class="btn-reset">
+                <button id="reset-btn" onclick="resetCalculator()" class="btn-reset-style">
                     Reset
                 </button>
             </div>
         </div>
 
-        <div id="saved-semesters-box" style="display: none;">
-            <h3 id="saved-title" style="color: #f1f5f9;">Saved Semesters</h3>
+        <div id="saved-semesters-box" style="display: none; margin-top: 25px;">
+            <h3 id="saved-title" style="color: #2d3436; font-weight: 800; margin-bottom: 15px;">Saved Semesters</h3>
             <div id="semesters-list"></div>
         </div>
 
@@ -70,16 +196,16 @@
             <h2 id="final-gpa-text">Final GPA</h2>
             <span id="gpa-display">0.00</span>
 
-            <div id="chart-container" style="display: none;">
+            <div id="chart-container" style="display: none; margin-top: 20px;">
                 <canvas id="gpaChart"></canvas>
             </div>
 
-            <div class="footer-buttons">
-                <button id="improvement-btn" onclick="handleImprovementClick()" class="btn-improvement">
+            <div class="footer-action-btns">
+                <button id="improvement-btn" onclick="handleImprovementClick()" class="btn-improvement-style">
                     🚀 Academic Recovery & Simulator
                 </button>
-                <button id="print-btn" onclick="window.print()" class="btn-print">
-                    🖨 Print
+                <button id="print-btn" onclick="window.print()" class="btn-print-style">
+                    🖨️ Print
                 </button>
             </div>
             <div id="improvement-engine-box"></div>
