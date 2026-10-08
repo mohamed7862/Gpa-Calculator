@@ -3,15 +3,13 @@ let savedSemesters = JSON.parse(localStorage.getItem('savedSemesters')) || [];
 let courses = []; 
 let currentEditingName = null; 
 let editingIndex = null; 
-let maxCoursesAllowed = 6; 
 let currentLang = 'en';
 let myChart = null;
 
 let currentDepartment = localStorage.getItem('selectedDept') || "CS";
 
-// === 2. سلالم التقديرات المعتمدة لكل قسم ===
+// === 2. سلالم التقديرات المعتمدة لكل قسم (مطابقة للائحة الوزارة والمعهد) ===
 const departmentGradeScales = {
-    // سلم قسم علوم الحاسب CS
     CS: {
         'A+': 4.0, 'A': 3.7, 'A-': 3.4,
         'B+': 3.2, 'B': 3.0, 'B-': 2.8,
@@ -19,7 +17,6 @@ const departmentGradeScales = {
         'D+': 2.0, 'D': 1.5, 'D-': 1.0,
         'F': 0.0
     },
-    // سلم الذكاء الاصطناعي AI (مطابق لجدول لائحة وزارة التعليم العالي)
     AI: {
         'A+': 4.0, 'A': 4.0, 'A-': 3.7,
         'B+': 3.3, 'B': 3.0, 'B-': 2.7,
@@ -27,7 +24,6 @@ const departmentGradeScales = {
         'D+': 1.3, 'D': 1.0,
         'F': 0.0
     },
-    // سلم الأمن السيبراني CYBER (مطابق لجدول لائحة وزارة التعليم العالي)
     CYBER: {
         'A+': 4.0, 'A': 4.0, 'A-': 3.7,
         'B+': 3.3, 'B': 3.0, 'B-': 2.7,
@@ -37,10 +33,9 @@ const departmentGradeScales = {
     }
 };
 
-// المتغير النشط حالياً لقيم النقاط بناءً على القسم المختار
 let gradePoints = departmentGradeScales[currentDepartment] || departmentGradeScales.CS;
 
-// تنبيهات SweetAlert2 الأنيقة
+// تنبيهات SweetAlert2
 function showCustomAlert(title, text, icon = 'error') {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
@@ -48,22 +43,16 @@ function showCustomAlert(title, text, icon = 'error') {
             text: text,
             icon: icon,
             confirmButtonColor: '#0984e3',
-            customClass: {
-                popup: 'swal2-custom-popup'
-            }
+            customClass: { popup: 'swal2-custom-popup' }
         });
     } else {
         alert(`${title}\n${text}`);
     }
 }
 
-// === 3. لوائح الأقسام الرسمية المعتمدة (CS, AI, CYBER) بالكامل ===
+// === 3. لوائح الأقسام الرسمية المعتمدة (CS, AI, CYBER) ===
 const departmentSyllabus = {
-    // ----------------------------------------------------
-    // 1. لائحة قسم علوم الحاسب (CS)
-    // ----------------------------------------------------
     CS: [
-        // Level 1 - Term 1 & 2
         { en: "English Language (1)", ar: "اللغة الإنجليزية (1)", hint: "H 101", credits: 2, prereq: null },
         { en: "Creative Thinking & Communication Skills", ar: "التفكير الإبداعي ومهارات التواصل", hint: "H 102", credits: 2, prereq: null },
         { en: "Calculus", ar: "تفاضل وتكامل", hint: "BS 101", credits: 3, prereq: null },
@@ -74,8 +63,6 @@ const departmentSyllabus = {
         { en: "Physics", ar: "فيزياء", hint: "BS 121", credits: 3, prereq: null },
         { en: "Computer Programming", ar: "برمجة الحاسب", hint: "CS 102", credits: 3, prereq: "CS 101" },
         { en: "Linear Algebra", ar: "الجبر الخطي", hint: "BS 102", credits: 3, prereq: "BS 101" },
-        
-        // Level 2 - Term 1 & 2
         { en: "Discrete Mathematics", ar: "رياضيات متقطعة", hint: "BS 103", credits: 3, prereq: "BS 101" },
         { en: "Logic Design", ar: "التصميم المنطقي", hint: "CS 121", credits: 3, prereq: "BS 131" },
         { en: "Object-Oriented Programming", ar: "البرمجة كائنية التوجه", hint: "CS 203", credits: 3, prereq: "CS 102" },
@@ -84,8 +71,6 @@ const departmentSyllabus = {
         { en: "Systems Analysis and Design", ar: "تحليل وتصميم النظم", hint: "CS 210", credits: 3, prereq: "CS 103" },
         { en: "Probability & Statistics", ar: "احتمالات وإحصاء", hint: "BS 201", credits: 3, prereq: "BS 101" },
         { en: "Database Systems", ar: "أنظمة قواعد البيانات", hint: "CS 211", credits: 3, prereq: "CS 210" },
-
-        // Level 3 & 4
         { en: "Logic Programming", ar: "البرمجة المنطقية", hint: "CS 307", credits: 3, prereq: "CS 102" },
         { en: "Theory of Operating Systems", ar: "نظرية نظم التشغيل", hint: "CS 331", credits: 3, prereq: "CS 220" },
         { en: "Compiler Design & Theory", ar: "تصميم ونظرية المترجمات", hint: "CS 321", credits: 3, prereq: "CS 220" },
@@ -96,26 +81,17 @@ const departmentSyllabus = {
         { en: "Graduation Project (1)", ar: "مشروع التخرج (1)", hint: "CS 491", credits: 3, prereq: "CS 313" },
         { en: "Graduation Project (2)", ar: "مشروع التخرج (2)", hint: "CS 492", credits: 3, prereq: "CS 491" }
     ],
-
-    // ----------------------------------------------------
-    // 2. لائحة قسم الذكاء الاصطناعي (AI)
-    // ----------------------------------------------------
     AI: [
-        // Level 1 - Term 1 & 2
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Mathematics for AI", ar: "رياضيات الذكاء الاصطناعي", hint: "BS 105", credits: 3, prereq: null },
         { en: "Python Programming", ar: "برمجة بايثون", hint: "AI 101", credits: 3, prereq: null },
         { en: "Ethics of AI & Law", ar: "أخلاقيات وقوانين الذكاء الاصطناعي", hint: "H 104", credits: 2, prereq: null },
         { en: "Linear Algebra & Vector Calculus", ar: "الجبر الخطي وحساب المتجهات", hint: "BS 106", credits: 3, prereq: "BS 105" },
         { en: "Object Oriented Programming (Python)", ar: "برمجة كائنية التوجه - بايثون", hint: "AI 201", credits: 3, prereq: "AI 101" },
-        
-        // Level 2 - Term 1 & 2
         { en: "Data Structures & Algorithms for AI", ar: "هياكل البيانات والخوارزميات للذكاء الاصطناعي", hint: "AI 211", credits: 3, prereq: "AI 201" },
         { en: "Probability & Statistics for AI", ar: "الاحتمالات والإحصاء للذكاء الاصطناعي", hint: "BS 205", credits: 3, prereq: "BS 105" },
         { en: "Database Systems for AI", ar: "أنظمة قواعد البيانات للذكاء الاصطناعي", hint: "AI 212", credits: 3, prereq: "AI 201" },
         { en: "Data Preprocessing & Visualization", ar: "معالجة البيانات وتصورها", hint: "AI 220", credits: 3, prereq: "AI 101" },
-
-        // Level 3 & 4
         { en: "Introduction to Logic", ar: "مقدمة في المنطق", hint: "AI 310", credits: 3, prereq: null },
         { en: "Theoretical Foundations of Machine Learning", ar: "الأسس النظرية لتعلم الآلة", hint: "AI 311", credits: 3, prereq: "BS 105" },
         { en: "Fundamentals of Artificial Intelligence", ar: "أساسيات الذكاء الاصطناعي", hint: "AI 312", credits: 3, prereq: "AI 201" },
@@ -130,25 +106,16 @@ const departmentSyllabus = {
         { en: "AI Graduation Project (1)", ar: "مشروع تخرج الذكاء الاصطناعي (1)", hint: "AI 491", credits: 3, prereq: "AI 320" },
         { en: "AI Graduation Project (2)", ar: "مشروع تخرج الذكاء الاصطناعي (2)", hint: "AI 492", credits: 3, prereq: "AI 491" }
     ],
-
-    // ----------------------------------------------------
-    // 3. لائحة قسم الأمن السيبراني (CYBER)
-    // ----------------------------------------------------
     CYBER: [
-        // Level 1 - Term 1 & 2
         { en: "English Language", ar: "اللغة الإنجليزية", hint: "H 101", credits: 2, prereq: null },
         { en: "Discrete Mathematics for Cybersecurity", ar: "رياضيات متقطعة للأمن السيبراني", hint: "BS 107", credits: 3, prereq: null },
         { en: "Intro to Cybersecurity & Programming", ar: "مقدمة في الأمن السيبراني والبرمجة", hint: "CYS 101", credits: 3, prereq: null },
         { en: "Number Theory", ar: "نظرية الأعداد", hint: "BS 201", credits: 3, prereq: null },
         { en: "Computer Networks Fundamentals", ar: "أساسيات شبكات الحاسب", hint: "IT 221", credits: 3, prereq: null },
-
-        // Level 2 - Term 1 & 2
         { en: "Information Security Principles", ar: "مبادئ أمن المعلومات", hint: "CYS 210", credits: 3, prereq: null },
         { en: "Operating Systems Security", ar: "أمن أنظمة التشغيل", hint: "CYS 220", credits: 3, prereq: "IT 221" },
         { en: "Secure Software Development", ar: "تطوير البرمجيات الآمنة", hint: "CYS 230", credits: 3, prereq: "CYS 101" },
         { en: "Database Security", ar: "أمن قواعد البيانات", hint: "CYS 240", credits: 3, prereq: "CYS 210" },
-
-        // Level 3 & 4
         { en: "Algorithms Analysis and Design", ar: "تحليل وتصميم الخوارزميات", hint: "CS 312", credits: 3, prereq: null },
         { en: "Network and Web Programming", ar: "برمجة الشبكات والويب", hint: "CS 313", credits: 3, prereq: "IT 221" },
         { en: "Fundamental of Cyber Security", ar: "أساسيات الأمن السيبراني", hint: "CYS 312", credits: 3, prereq: "CYS 210" },
@@ -168,7 +135,7 @@ let predefinedCourses = departmentSyllabus[currentDepartment];
 
 const i18n = {
     en: {
-        title: "GPA Calculator",
+        title: "GPA Calculator & Academic Advisor",
         subjectPlaceholder: "Subject Name",
         addBtn: "Add course ➕",
         saveBtn: "Save & Add New Semester",
@@ -178,14 +145,14 @@ const i18n = {
         header: ["SUBJECT", "GRADE", "HOURS", "ACTION"],
         termGpa: "Term:",
         cgpa: "CGPA:",
-        improvementBtn: "🚀 Academic Recovery & Simulator",
+        improvementBtn: "🚀 Academic Recovery & Target Simulator",
         printBtn: "🖨️ Print",
         resetBtn: "Reset",
         probationWarning: "Academic Probation Alert: CGPA is below 2.00!",
         deptOptions: { CS: "Computer Science", AI: "Artificial Intelligence", CYBER: "Cyber Security" }
     },
     ar: {
-        title: "حاسبة المعدل التراكمي",
+        title: "حاسبة المعدل والتوجيه الأكاديمي",
         subjectPlaceholder: "اسم المادة",
         addBtn: "إضافة مادة ➕",
         saveBtn: "حفظ وتحديث الترم",
@@ -195,7 +162,7 @@ const i18n = {
         header: ["المادة", "التقدير", "الساعات", "حذف"],
         termGpa: "فصلي:",
         cgpa: "تراكمي:",
-        improvementBtn: "🚀 خطة التحسين والمحاكاة",
+        improvementBtn: "🚀 خطة التحسين والمحاكاة الذكية",
         printBtn: "🖨️ طباعة",
         resetBtn: "إعادة ضبط",
         probationWarning: "إنذار أكاديمي: المعدل التراكمي أقل من 2.00!",
@@ -203,9 +170,28 @@ const i18n = {
     }
 };
 
-// === 4. الدوال الرئيسية والديناميكية ===
+// === 4. المنطق الأكاديمي الديناميكي ===
 
-// تحديث قائمة التقديرات المتاحة في الـ HTML حسب سلم القسم المحدد
+// تحديد المستوى الأكاديمي الحالي للطالب بناءً على الترمات المعتمدة
+function getCurrentStudentLevel() {
+    let lockedCount = savedSemesters.filter(s => s.isChecked).length;
+    if (lockedCount < 2) return 1;
+    if (lockedCount < 4) return 2;
+    if (lockedCount < 6) return 3;
+    return 4;
+}
+
+// حساب أقصى عدد ساعات مسموح به حسب المعدل التراكمي Current CGPA Rule
+function getMaxAllowedHours() {
+    let currentCGPA = window.currentCalculatedData ? window.currentCalculatedData.finalCGPA : 4.0;
+    if (savedSemesters.length === 0 && courses.length === 0) return 18;
+    
+    if (currentCGPA < 2.00) return 12; // حد أقصى للإنذار الأكاديمي
+    if (currentCGPA >= 3.00) return 21; // الطالب المتميز
+    return 18;                          // الطالب العادي
+}
+
+// تحديث قائمة التقديرات في الـ HTML
 function updateGradeDropdown() {
     const gradeSelect = document.getElementById('grade');
     if (!gradeSelect) return;
@@ -233,7 +219,6 @@ window.changeDepartment = function(deptKey) {
     currentDepartment = deptKey;
     localStorage.setItem('selectedDept', deptKey);
     
-    // تحديث سلم النقاط والمواد المتاحة
     gradePoints = departmentGradeScales[deptKey] || departmentGradeScales.CS;
     predefinedCourses = departmentSyllabus[deptKey];
     
@@ -242,12 +227,42 @@ window.changeDepartment = function(deptKey) {
     calculateGPA();
 };
 
+// فلترة قائمة المواد بالـ Datalist
 function populateDatalist() {
     const datalist = document.getElementById('subjects-list');
     if (!datalist) return;
     datalist.innerHTML = '';
 
-    predefinedCourses.forEach(course => {
+    const currentLevel = getCurrentStudentLevel();
+
+    let passedHints = new Set();
+    savedSemesters.forEach(sem => {
+        if (sem.isChecked) {
+            sem.courseDetails.forEach(c => {
+                if ((gradePoints[c.grade] || 0) > 0) {
+                    let match = predefinedCourses.find(p => p.en.toLowerCase() === c.subject.trim().toLowerCase() || p.ar === c.subject.trim());
+                    if (match) passedHints.add(match.hint);
+                }
+            });
+        }
+    });
+
+    const availableCourses = predefinedCourses.filter(course => {
+        let courseLevel = 1;
+        const match = course.hint.match(/\d+/);
+        if (match) {
+            let num = parseInt(match[0]);
+            if (num >= 100 && num < 200) courseLevel = 1;
+            else if (num >= 200 && num < 300) courseLevel = 2;
+            else if (num >= 300 && num < 400) courseLevel = 3;
+            else if (num >= 400) courseLevel = 4;
+        }
+
+        // إظهار مواد المستوى الحالي أو أقل، أو المواد غير المجتازة
+        return (courseLevel <= currentLevel) || !passedHints.has(course.hint);
+    });
+
+    availableCourses.forEach(course => {
         const option = document.createElement('option');
         const courseName = currentLang === 'en' ? course.en : course.ar;
         option.value = courseName;
@@ -304,14 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (addBtn) {
         addBtn.onclick = function() {
-            if (courses.length >= maxCoursesAllowed) {
-                showCustomAlert(
-                    currentLang === 'en' ? 'Course Limit Reached' : 'تجاوز عدد المواد',
-                    currentLang === 'en' ? `Max limit is ${maxCoursesAllowed} courses per semester.` : `الحد الأقصى المسموح به هو ${maxCoursesAllowed} مواد في الترم.`,
-                    'warning'
-                );
-                return;
-            }
+            const maxAllowedHours = getMaxAllowedHours();
+            let currentSemesterHours = courses.reduce((sum, c) => sum + c.credits, 0);
 
             const subject = subInput.value.trim();
             if (!subject) {
@@ -329,7 +338,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 c.hint.toLowerCase() === subject.toLowerCase()
             );
 
-            // فحص المتطلب المسبق للمادة من السجلات المحفوظة
+            let courseCredits = predefinedCourse ? predefinedCourse.credits : 3;
+
+            // فحص حد الساعات الصارم حسب حالة الإنذار الأكاديمي
+            if (currentSemesterHours + courseCredits > maxAllowedHours) {
+                showCustomAlert(
+                    currentLang === 'en' ? 'Credit Hours Limit Exceeded ⛔' : 'تجاوز حد الساعات المسموح بها ⛔',
+                    currentLang === 'en' 
+                        ? `Maximum allowed credit load is ${maxAllowedHours} hours for your academic status.` 
+                        : `الحد الأقصى المسموح به لتسجيل الساعات هو ${maxAllowedHours} ساعة معتمدة بناءً على حالتك الأكاديمية.`,
+                    'warning'
+                );
+                return;
+            }
+
+            // فحص المتطلب المسبق للمادة
             if (predefinedCourse && predefinedCourse.prereq) {
                 let passedCourseHints = new Set();
                 const checkPassed = (c) => {
@@ -360,8 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
             }
-
-            let courseCredits = predefinedCourse ? predefinedCourse.credits : 3;
 
             courses.push({ subject, grade: gradeSel.value, credits: courseCredits });
             updateUI();
@@ -504,6 +525,7 @@ function updateGPAChart() {
     });
 }
 
+// === 5. محرك الإرشاد الأكاديمي وحاسبة الهدف (Target & Priority Simulator) ===
 window.handleImprovementClick = function() {
     if (!window.currentCalculatedData || window.currentCalculatedData.totalHours === 0) {
         showCustomAlert(
@@ -520,97 +542,72 @@ window.handleImprovementClick = function() {
 
     const isAr = currentLang === 'ar';
 
-    if (finalCGPA < 2.0) {
-        let planA_Courses = uniqueCoursesList.filter(c => c.points < 2.0).sort((a,b) => a.points - b.points);
-        let planA_HTML = planA_Courses.map(c => `
-            <tr style="border-bottom: 1px solid #dfe6e9;">
-                <td style="padding:8px; text-align:${isAr ? 'right' : 'left'}; font-weight:600;">${c.subject}</td>
-                <td style="padding:8px; text-align:center; color:#d63031; font-weight:bold;">${c.grade}</td>
-                <td style="padding:8px; text-align:center; color:#00b894; font-weight:bold;">B (3.0)</td>
-            </tr>
-        `).join('');
+    // ترتيب أولوية المواد القابلة للتحسين Priority Recovery Matrix
+    let priorityCourses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a, b) => {
+        if (a.credits !== b.credits) return b.credits - a.credits; // الأولوية للساعات الأكثر
+        return a.points - b.points; // ثم للتقدير الأقل
+    });
 
-        let planB_Courses = uniqueCoursesList.filter(c => c.points < 2.4).sort((a,b) => a.points - b.points);
-        let planB_HTML = planB_Courses.map(c => `
-            <tr style="border-bottom: 1px solid #dfe6e9;">
-                <td style="padding:8px; text-align:${isAr ? 'right' : 'left'}; font-weight:600;">${c.subject}</td>
-                <td style="padding:8px; text-align:center; color:#d63031; font-weight:bold;">${c.grade}</td>
-                <td style="padding:8px; text-align:center; color:#0984e3; font-weight:bold;">B+ / A</td>
-            </tr>
-        `).join('');
+    let priorityHTML = priorityCourses.map(c => `
+        <tr style="border-bottom: 1px solid #dfe6e9;">
+            <td style="padding:8px; text-align:${isAr ? 'right' : 'left'}; font-weight:600;">${c.subject} (${c.credits}h)</td>
+            <td style="padding:8px; text-align:center; color:#d63031; font-weight:bold;">${c.grade}</td>
+            <td style="padding:8px; text-align:center; color:#00b894; font-weight:bold;">High Priority 🔥</td>
+        </tr>
+    `).join('');
 
-        container.innerHTML = `
-            <div style="background: #ffffff; border: 2px solid #d63031; border-radius: 14px; padding: 20px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <h3 style="color: #d63031; margin-top: 0; font-size:16px;">🚨 ${i18n[currentLang].probationWarning}</h3>
-                <p style="font-size:13px; color:#636e72;">${isAr ? 'اختر المسار المناسب لرفع معدلك التراكمي وتجاوز عقبة الـ 2.00 بنجاح:' : 'Select an academic recovery path to cross 2.00 CGPA:'}</p>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                    <div style="flex: 1; min-width: 220px; background: #f8f9fa; padding: 12px; border-radius: 10px; border-top: 4px solid #00b894;">
-                        <h4 style="margin: 0 0 10px 0; color: #00b894; font-size:14px;">⚡ ${isAr ? 'المسار 1: التعافي السريع (استهداف B)' : 'Path 1: Fast Recovery (Target B)'}</h4>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <thead><tr style="color:#636e72;"><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
-                            <tbody>${planA_HTML}</tbody>
-                        </table>
-                    </div>
+    container.innerHTML = `
+        <div style="background: #ffffff; border: 2px solid ${finalCGPA < 2.0 ? '#d63031' : '#0984e3'}; border-radius: 14px; padding: 20px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h3 style="color: ${finalCGPA < 2.0 ? '#d63031' : '#0984e3'}; margin-top: 0; font-size:16px;">
+                ${finalCGPA < 2.0 ? '🚨 ' + i18n[currentLang].probationWarning : '🎯 ' + (isAr ? 'حاسبة المعدل التراكمي المستهدف' : 'Target CGPA Calculator')}
+            </h3>
 
-                    <div style="flex: 1; min-width: 220px; background: #f8f9fa; padding: 12px; border-radius: 10px; border-top: 4px solid #0984e3;">
-                        <h4 style="margin: 0 0 10px 0; color: #0984e3; font-size:14px;">🛡️ ${isAr ? 'المسار 2: التوازن الممتاز (استهداف B+/A)' : 'Path 2: Balanced Improvement (Target B+/A)'}</h4>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <thead><tr style="color:#636e72;"><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'المستهدف' : 'Target'}</th></tr></thead>
-                            <tbody>${planB_HTML}</tbody>
-                        </table>
-                    </div>
+            <!-- حاسبة الهدف الأدنى المطلوب -->
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <label style="font-weight: bold; font-size: 13px;">${isAr ? 'ادخل المعدل التراكمي المستهدف (Target CGPA):' : 'Enter Target CGPA:'}</label>
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <input type="number" id="target-cgpa-input" step="0.01" min="2.00" max="4.00" value="2.01" style="padding: 8px; border-radius: 8px; border: 1px solid #dfe6e9; width: 100px;">
+                    <button onclick="calculateRequiredTermGPA(${totalPoints}, ${totalHours})" style="padding: 8px 15px; background: #00b894; color: #fff; border: none; font-weight: bold; border-radius: 8px; cursor: pointer;">${isAr ? 'احسب المطلوب' : 'Calculate Required'}</button>
                 </div>
+                <div id="target-result-box" style="margin-top: 10px; font-weight: bold; font-size: 13px; color: #2d3436;"></div>
             </div>
-        `;
-    } else {
-        let improvableCourses = uniqueCoursesList.filter(c => c.points < 3.2);
-        if (improvableCourses.length === 0) {
-            container.innerHTML = `
-                <div style="background: #e8f8f5; border: 1px solid #00b894; padding: 15px; border-radius: 12px; color: #2d3436; margin-top: 20px; text-align: center; font-weight:bold;">
-                    🎉 ${isAr ? 'جميع تقديراتك ممتازة ولا توجد مواد بحاجة للتحسين!' : 'All your grades are excellent and no courses need improvement!'}
-                </div>
-            `;
-            return;
-        }
 
-        let optionsHTML = improvableCourses.map((c, i) => `
-            <option value="${i}">${c.subject} (${isAr ? 'الحالي' : 'Current'}: ${c.grade})</option>
-        `).join('');
-
-        let currentAvailableGrades = Object.keys(gradePoints).filter(g => g !== 'F');
-        let targetGradeOptions = currentAvailableGrades.map(g => `<option value="${g}">${g}</option>`).join('');
-
-        container.innerHTML = `
-            <div style="background: #ffffff; border: 1px solid #0984e3; padding: 20px; border-radius: 14px; color: #2d3436; margin-top: 20px; text-align: ${isAr ? 'right' : 'left'}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <h4 style="color: #0984e3; margin-top: 0; margin-bottom: 15px; font-size: 16px;">${isAr ? 'مُحاكي تحسين المواد الاختياري 🚀' : 'Optional Course Improvement Simulator 🚀'}</h4>
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <select id="sim-course-select" style="padding: 10px; border-radius: 8px; flex: 1; min-width: 180px; border: 1px solid #dfe6e9;">${optionsHTML}</select>
-                    <select id="sim-grade-select" style="padding: 10px; border-radius: 8px; border: 1px solid #dfe6e9;">
-                        ${targetGradeOptions}
-                    </select>
-                    <button onclick="runImprovementSimulation(${totalPoints}, ${totalHours})" style="padding: 10px 18px; background: #0984e3; color: #ffffff; border: none; font-weight: bold; border-radius:8px; cursor:pointer;">${isAr ? 'تجربة التحسين' : 'Simulate'}</button>
-                </div>
-                <div id="sim-result" style="margin-top: 12px; font-weight: bold; font-size: 14px; color: #00b894;"></div>
-            </div>
-        `;
-        window.simCourses = improvableCourses;
-    }
+            <!-- جدول أولوية تحسين المواد -->
+            ${priorityCourses.length > 0 ? `
+                <h4 style="margin: 15px 0 10px 0; color: #2d3436; font-size:14px;">⚡ ${isAr ? 'ترتيب أولويات تحسين المواد لرفع المعدل بأسرع طريقة:' : 'Priority Recovery Courses:'}</h4>
+                <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+                    <thead><tr style="color:#636e72;"><th style="text-align:${isAr ? 'right' : 'left'};">${isAr ? 'المادة' : 'Subject'}</th><th>${isAr ? 'الحالي' : 'Current'}</th><th>${isAr ? 'الأولوية' : 'Priority'}</th></tr></thead>
+                    <tbody>${priorityHTML}</tbody>
+                </table>
+            ` : ''}
+        </div>
+    `;
 };
 
-window.runImprovementSimulation = function(totalPoints, totalHours) {
-    const courseIdx = document.getElementById('sim-course-select').value;
-    const targetGrade = document.getElementById('sim-grade-select').value;
-    const selectedCourse = window.simCourses[courseIdx];
+// حساب المعدل الفصل المطلوب لتحقيق الهدف
+window.calculateRequiredTermGPA = function(totalPoints, totalHours) {
+    const targetCGPA = parseFloat(document.getElementById('target-cgpa-input').value);
     const isAr = currentLang === 'ar';
+    const currentTermHours = courses.reduce((sum, c) => sum + c.credits, 0);
 
-    let oldPts = selectedCourse.points * selectedCourse.credits;
-    let newPts = (gradePoints[targetGrade] || 0) * selectedCourse.credits;
-    let simulatedCGPA = ((totalPoints - oldPts + newPts) / totalHours).toFixed(2);
+    if (currentTermHours === 0) {
+        document.getElementById('target-result-box').innerHTML = `<span style="color:#d63031;">⚠️ ${isAr ? 'يرجى إضافة مواد الترم الحالي أولاً لمعرفة الساعات المتاحة!' : 'Please add current term courses first to get credit hours!'}</span>`;
+        return;
+    }
 
-    document.getElementById('sim-result').innerHTML = isAr 
-        ? `✨ إذا حسنت مادة <strong>[${selectedCourse.subject}]</strong> إلى <strong>${targetGrade}</strong>، سيرتفع التراكمي إلى: <span style="color:#00b894; font-size:16px;">${simulatedCGPA}</span>`
-        : `✨ Improving <strong>[${selectedCourse.subject}]</strong> to <strong>${targetGrade}</strong> raises CGPA to: <span style="color:#00b894; font-size:16px;">${simulatedCGPA}</span>`;
+    const newTotalHours = totalHours + currentTermHours;
+    const requiredTotalPoints = targetCGPA * newTotalHours;
+    const requiredTermPoints = requiredTotalPoints - totalPoints;
+    const requiredTermGPA = requiredTermPoints / currentTermHours;
+
+    const resultBox = document.getElementById('target-result-box');
+    if (requiredTermGPA > 4.0) {
+        resultBox.innerHTML = `<span style="color:#d63031;">❌ ${isAr ? `مستحيل الوصول لـ (${targetCGPA}) في هذا الترم وحده! تحتاج لـ Term GPA قدره (${requiredTermGPA.toFixed(2)}) وهو أعلى من 4.00.` : `Impossible in a single semester! Required Term GPA is (${requiredTermGPA.toFixed(2)}).`}</span>`;
+    } else if (requiredTermGPA <= 0) {
+        resultBox.innerHTML = `<span style="color:#00b894;">🎉 ${isAr ? `أنت بالفعل تتجاوز المعدل المستهدف!` : `You already exceed target CGPA!`}</span>`;
+    } else {
+        resultBox.innerHTML = `<span style="color:#00b894;">✨ ${isAr ? `لتصل إلى تراكمي (${targetCGPA})، محتاج تجيب GPA لا يقل عن:` : `To reach (${targetCGPA}), you need Term GPA at least:`} <strong style="font-size: 16px;">${requiredTermGPA.toFixed(2)}</strong> ${isAr ? 'في هذا الترم.' : 'in current term.'}</span>`;
+    }
 };
 
 function getNextSemesterNumber() {
@@ -639,7 +636,6 @@ window.saveAndClearSemester = function() {
     });
 
     const semGPA = (semPoints / semHours).toFixed(2);
-    maxCoursesAllowed = parseFloat(semGPA) >= 3.0 ? 7 : 6;
 
     const semesterData = {
         id: editingIndex !== null ? savedSemesters[editingIndex].id : Date.now(),
@@ -648,6 +644,7 @@ window.saveAndClearSemester = function() {
         totalHours: semHours,
         gpa: semGPA,
         isChecked: true,
+        isFromDatabase: false, // الترم المحفوظ محلياً للتجربة قابل للتعديل
         isLocked: false,
         courseDetails: [...courses]
     };
@@ -672,6 +669,7 @@ window.saveAndClearSemester = function() {
     );
 };
 
+// عرض القائمة المعتمدة للترمات وقفل بيانات الداتابيز Read Only
 function renderSavedSemesters() {
     const semestersList = document.getElementById('semesters-list');
     const savedSemestersBox = document.getElementById('saved-semesters-box');
@@ -708,8 +706,9 @@ function renderSavedSemesters() {
             semCGPA = "-";
         }
 
-        const actionButtonsHTML = sem.isLocked 
-            ? `<span style="font-size: 12px; color: #0984e3; background: #e3f2fd; padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل معتمد</span>`
+        // قفل ترمات قاعدة البيانات الرسمية كـ Read Only حقيقي
+        const actionButtonsHTML = (sem.isFromDatabase || sem.isLocked)
+            ? `<span style="font-size: 11px; color: #0984e3; background: #e3f2fd; padding: 4px 10px; border-radius: 6px; font-weight: bold;">🔒 سجل داتابيز معتمد (Read Only)</span>`
             : `
                 <button onclick="editSemester(${index})" class="btn-edit-sem">${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
                 <button onclick="deleteSemester(${index})" class="btn-delete-sem">${currentLang === 'en' ? 'Delete' : 'حذف'}</button>
@@ -743,10 +742,19 @@ window.toggleSemester = function(index) {
 };
 
 window.deleteSemester = function(index) {
+    if (savedSemesters[index].isFromDatabase) {
+        showCustomAlert(
+            currentLang === 'en' ? 'Protected Record 🔒' : 'سجل محمي 🔒',
+            currentLang === 'en' ? 'Official database semesters cannot be deleted.' : 'لا يمكن حذف الترمات الرسمية المستوردة من قاعدة البيانات.',
+            'error'
+        );
+        return;
+    }
+
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: currentLang === 'en' ? 'Delete Semester?' : 'حذف الترم؟',
-            text: currentLang === 'en' ? 'Are you sure you want to remove this semester?' : 'هل أنت متأكد من حذف هذا الترم؟',
+            text: currentLang === 'en' ? 'Are you sure you want to remove this simulation semester?' : 'هل أنت متأكد من حذف هذا الترم التجريبي؟',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d63031',
@@ -765,11 +773,19 @@ window.deleteSemester = function(index) {
 };
 
 window.editSemester = function(index) {
+    if (savedSemesters[index].isFromDatabase) {
+        showCustomAlert(
+            currentLang === 'en' ? 'Protected Record 🔒' : 'سجل محمي 🔒',
+            currentLang === 'en' ? 'Official database semesters cannot be edited.' : 'لا يمكن تعديل الترمات الرسمية المستوردة من قاعدة البيانات.',
+            'error'
+        );
+        return;
+    }
+
     const sem = savedSemesters[index];
     courses = [...sem.courseDetails];
     currentEditingName = sem.name; 
     editingIndex = index; 
-    maxCoursesAllowed = courses.length > 6 ? 7 : 6;
 
     updateUI();
     renderSavedSemesters();
@@ -778,8 +794,8 @@ window.editSemester = function(index) {
 window.resetCalculator = function() {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: currentLang === 'en' ? 'Reset All Data?' : 'مسح كافة البيانات؟',
-            text: currentLang === 'en' ? 'This action will clear all saved semesters!' : 'سيتم حذف جميع الترمات والمواد المسجلة نهائياً!',
+            title: currentLang === 'en' ? 'Reset Simulator?' : 'مسح المحاكاة؟',
+            text: currentLang === 'en' ? 'This will clear your local simulations.' : 'سيتم حذف الترمات والمواد التجريبية المسجلة محلياً!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d63031',
@@ -788,10 +804,10 @@ window.resetCalculator = function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 courses = [];
-                savedSemesters = [];
+                // الاحتفاظ ببيانات الداتابيز فقط ومسح المحاكاة المحلية
+                savedSemesters = savedSemesters.filter(s => s.isFromDatabase);
                 currentEditingName = null;
                 editingIndex = null;
-                maxCoursesAllowed = 6;
                 saveToLocal();
                 updateUI();
                 renderSavedSemesters();
