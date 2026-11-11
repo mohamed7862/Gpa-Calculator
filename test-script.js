@@ -2,7 +2,7 @@
 // 1. CONFIGURATION & ACADEMIC DATA STRUCTURES
 // ==========================================
 
-// سلم التقديرات الخاص بالمعهد (بناءً على لائحة أكاديمية الشروق)
+// سلم النقاط والتقديرات الخاص بأكاديمية الشروق
 const GRADE_POINTS = {
     'A+': 4.0,
     'A': 3.7,
@@ -19,38 +19,149 @@ const GRADE_POINTS = {
     'F': 0.0
 };
 
-// قائمة المواد المقترحة حسب القسم (Datalist Courses)
+// اللائحة الرسمية المعتمدة للأقسام الثلاثة (CS, AI, CYBER)
 const DEPARTMENT_COURSES = {
     CS: [
-        { name: "Structured Programming", hours: 3 },
-        { name: "Object Oriented Programming (OOP)", hours: 3 },
-        { name: "Data Structures", hours: 3 },
-        { name: "Algorithms Analysis", hours: 3 },
-        { name: "Operating Systems", hours: 3 },
-        { name: "Database Systems", hours: 3 },
-        { name: "Computer Graphics", hours: 3 },
-        { name: "Web Development", hours: 3 }
+        // Level 1
+        { code: "H 101", name: "English Language", hours: 2 },
+        { code: "H 102", name: "Creative Thinking and Communication Skills", hours: 2 },
+        { code: "BS 101", name: "Calculus", hours: 3 },
+        { code: "CS 101", name: "Intro to computer Science", hours: 3 },
+        { code: "CS 103", name: "Intro to Information Systems", hours: 3 },
+        { code: "BS 131", name: "Electronics", hours: 3 },
+        { code: "H 103", name: "Technical Report Writing", hours: 2 },
+        { code: "BS 121", name: "Physics", hours: 3 },
+        { code: "CS 102", name: "Computer Programming", hours: 3 },
+        { code: "BS 102", name: "Linear Algebra", hours: 3 },
+        { code: "BS 103", name: "Discrete Mathematics", hours: 3 },
+        { code: "CS 121", name: "Logic Design", hours: 3 },
+        // Level 2
+        { code: "H 201", name: "Work Ethics", hours: 2 },
+        { code: "CS 203", name: "Object-Oriented Programming", hours: 3 },
+        { code: "BS 205", name: "Operations Research", hours: 3 },
+        { code: "BS 210", name: "Statistics and Probabilities", hours: 3 },
+        { code: "CS 211", name: "File Processing", hours: 3 },
+        { code: "CS 220", name: "Computer Organization & Assembly Language", hours: 3 },
+        { code: "H 202", name: "Business Administration", hours: 2 },
+        { code: "CS 201", name: "Data Structure", hours: 3 },
+        { code: "H 204", name: "Human Rights", hours: 2 },
+        { code: "CS 210", name: "Systems Analysis and Design", hours: 3 },
+        { code: "CS 250", name: "Computer Networks", hours: 3 },
+        { code: "CS 206", name: "Web Programming", hours: 3 },
+        // Level 3
+        { code: "CS 307", name: "Logic Programming", hours: 3 },
+        { code: "CS 309", name: "Mobile App Development", hours: 3 },
+        { code: "CS 315", name: "Software Engineering", hours: 3 },
+        { code: "CS 331", name: "Theory of Operating Systems", hours: 3 },
+        { code: "CS 323", name: "Intro to Databases", hours: 3 },
+        { code: "CS 312", name: "Analysis of Algorithms", hours: 3 },
+        { code: "CS 321", name: "Compiler Design & Theory", hours: 3 },
+        { code: "CS 340", name: "Computer Graphics", hours: 3 },
+        { code: "CS 353", name: "Fundamentals of Multimedia", hours: 3 },
+        { code: "CS 360", name: "Artificial Intelligence", hours: 3 },
+        // Level 4
+        { code: "CS 413", name: "Computer Security", hours: 3 },
+        { code: "CS 443", name: "Digital Image processing", hours: 3 },
+        { code: "CS 498", name: "Senior Project 1", hours: 3 },
+        { code: "CS 462", name: "Machine Learning", hours: 3 },
+        { code: "CS 455", name: "Internet of Things (IoT)", hours: 3 },
+        { code: "CS 499", name: "Senior Project 2", hours: 3 }
     ],
     AI: [
-        { name: "Introduction to AI", hours: 3 },
-        { name: "Machine Learning", hours: 3 },
-        { name: "Deep Learning", hours: 3 },
-        { name: "Python Programming", hours: 3 },
-        { name: "Data Science Fundamentals", hours: 3 },
-        { name: "Computer Vision", hours: 3 },
-        { name: "Natural Language Processing", hours: 3 }
+        // Level 1
+        { code: "H 101", name: "English Language", hours: 2 },
+        { code: "H 102", name: "Creative Thinking and Communication Skills", hours: 2 },
+        { code: "BS 101", name: "Calculus", hours: 3 },
+        { code: "BS 103", name: "Discrete Mathematics", hours: 3 },
+        { code: "BS 131", name: "Electronics", hours: 3 },
+        { code: "CS 101", name: "Intro to Computer Science", hours: 3 },
+        { code: "H 103", name: "Technical Report Writing", hours: 2 },
+        { code: "H 104", name: "Business Administration", hours: 2 },
+        { code: "BS 102", name: "Linear Algebra", hours: 3 },
+        { code: "BS 121", name: "Statistics and Probabilities (1)", hours: 3 },
+        { code: "CS 102", name: "Computer Programming", hours: 3 },
+        { code: "CS 121", name: "Logic Design", hours: 3 },
+        // Level 2
+        { code: "H 201", name: "Work Ethics", hours: 2 },
+        { code: "BS 210", name: "Statistics and Probabilities (2)", hours: 3 },
+        { code: "CS 203", name: "Object-Oriented Programming", hours: 3 },
+        { code: "CS 211", name: "Introduction to Databases", hours: 3 },
+        { code: "CS 220", name: "Computer Organization & Assembly Language", hours: 3 },
+        { code: "CS 250", name: "Computer Networks", hours: 3 },
+        { code: "BS 205", name: "Numerical Methods", hours: 3 },
+        { code: "H 203", name: "Societal Issues", hours: 2 },
+        { code: "CS 201", name: "Data Structure", hours: 3 },
+        { code: "CS 206", name: "Web Programming", hours: 3 },
+        { code: "CS 260", name: "Software Engineering", hours: 3 },
+        { code: "CS 331", name: "Operating Systems", hours: 3 },
+        // Level 3
+        { code: "AI 310", name: "Introduction to Logic", hours: 3 },
+        { code: "CS 312", name: "Algorithms Analysis and Design", hours: 3 },
+        { code: "AI 311", name: "Theoretical Foundations of Machine Learning", hours: 3 },
+        { code: "AI 312", name: "Fundamentals of Artificial Intelligence", hours: 3 },
+        { code: "AI 313", name: "Digital Image Processing", hours: 3 },
+        { code: "AI 320", name: "Machine Learning", hours: 3 },
+        { code: "AI 321", name: "Computer Vision", hours: 3 },
+        { code: "AI 322", name: "Reasoning and Knowledge Representation", hours: 3 },
+        { code: "AI 323", name: "Autonomous Multiagent Systems", hours: 3 },
+        { code: "AI 324", name: "Artificial Intelligence for Cyber Security", hours: 3 },
+        // Level 4
+        { code: "AI 410", name: "Neural Network", hours: 3 },
+        { code: "AI 411", name: "Business Intelligence: Strategies, Tools & Techniques", hours: 3 },
+        { code: "AI 422", name: "Senior Project 1", hours: 3 },
+        { code: "AI 420", name: "Intelligent Autonomous Robotics", hours: 3 },
+        { code: "AI 421", name: "Processing of Formal and Natural Languages", hours: 3 },
+        { code: "AI 425", name: "Senior Project 2", hours: 3 }
     ],
     CYBER: [
-        { name: "Cybersecurity Fundamentals", hours: 3 },
-        { name: "Network Security", hours: 3 },
-        { name: "Ethical Hacking", hours: 3 },
-        { name: "Cryptography", hours: 3 },
-        { name: "Digital Forensics", hours: 3 },
-        { name: "Information Assurance", hours: 3 }
+        // Level 1
+        { code: "H 101", name: "English Language", hours: 2 },
+        { code: "H 102", name: "Creative Thinking and Communication Skills", hours: 2 },
+        { code: "CS 101", name: "Intro to computer Science", hours: 3 },
+        { code: "BS 101", name: "Calculus", hours: 3 },
+        { code: "BS 103", name: "Discrete Mathematics", hours: 3 },
+        { code: "BS 131", name: "Electronics", hours: 3 },
+        { code: "H 103", name: "Technical Report Writing", hours: 2 },
+        { code: "H 104", name: "Business Administration", hours: 2 },
+        { code: "CS 102", name: "Computer Programming", hours: 3 },
+        { code: "CS 121", name: "Logic Design", hours: 3 },
+        { code: "BS 102", name: "Linear Algebra", hours: 3 },
+        { code: "BS 121", name: "Statistics and Probabilities(1)", hours: 3 },
+        // Level 2
+        { code: "H 201", name: "Work Ethics", hours: 2 },
+        { code: "CS 203", name: "Object-Oriented Programming", hours: 3 },
+        { code: "CS 211", name: "Intro to Databases", hours: 3 },
+        { code: "CS 220", name: "Computer Organization & Assembly Language", hours: 3 },
+        { code: "IT 230", name: "Data Communication", hours: 3 },
+        { code: "BS 210", name: "Statistics and Probabilities(2)", hours: 3 },
+        { code: "H 203", name: "Societal Issues", hours: 2 },
+        { code: "CS 201", name: "Data Structure", hours: 3 },
+        { code: "CS 206", name: "Web Programming", hours: 3 },
+        { code: "CS 260", name: "Software Engineering", hours: 3 },
+        { code: "CS 250", name: "Computer Networks", hours: 3 },
+        { code: "BS 201", name: "Number Theory", hours: 3 },
+        // Level 3
+        { code: "CS 312", name: "Algorithms Analysis and Design", hours: 3 },
+        { code: "CS 331", name: "Theory of Operating Systems", hours: 3 },
+        { code: "CS 313", name: "Network and Web programming", hours: 3 },
+        { code: "CYS 312", name: "Fundamental of Cyber Security", hours: 3 },
+        { code: "IT 322", name: "Digital Signal Processing", hours: 3 },
+        { code: "AI 320", name: "Artificial Intelligence for Cyber security", hours: 3 },
+        { code: "IT 310", name: "Cryptography", hours: 3 },
+        { code: "CYS 321", name: "Computer Security and Privacy", hours: 3 },
+        { code: "CYS 311", name: "Wireless and Mobile Networks", hours: 3 },
+        { code: "CYS 387", name: "Cyber Security for Internet of Things", hours: 3 },
+        // Level 4
+        { code: "CYS 410", name: "Cloud Computing & Network Virtualization", hours: 3 },
+        { code: "CYS 411", name: "Ethical Hacking", hours: 3 },
+        { code: "CYS 498", name: "Senior Project 1", hours: 3 },
+        { code: "CYS 420", name: "Digital Forensics", hours: 3 },
+        { code: "CYS 421", name: "Computer Network Defense", hours: 3 },
+        { code: "CYS 499", name: "Senior Project 2", hours: 3 }
     ]
 };
 
-// قاموس الترجمة الداخلي (i18n)
+// الترجمات والنصوص البرمجية (i18n)
 const TRANSLATIONS = {
     en: {
         title: "GPA Calculator",
@@ -68,7 +179,7 @@ const TRANSLATIONS = {
         printBtn: "🖨️ Print",
         deleteBtn: "Delete",
         semLabel: "Semester",
-        selectGradeAlert: "Please fill subject name and grade correctly!",
+        selectGradeAlert: "Please select subject name and grade correctly!",
         confirmReset: "Are you sure you want to reset all data?",
         recoveryTitle: "Academic Recovery & Simulator",
         warningLowGpa: "Academic Warning: Your GPA is under 2.0! Target repeat courses (D-, C-) to raise your cumulative GPA.",
@@ -92,7 +203,7 @@ const TRANSLATIONS = {
         printBtn: "🖨️ طباعة",
         deleteBtn: "حذف",
         semLabel: "الترم",
-        selectGradeAlert: "برجاء إدخال اسم المادة واختيار التقدير بشكل صحيح!",
+        selectGradeAlert: "برجاء اختيار اسم المادة والتقدير بشكل صحيح!",
         confirmReset: "هل أنت تأكد من مسح جميع البيانات والإعادة للضبط الأصلي؟",
         recoveryTitle: "محاكي الإرشاد والتحسين الأكاديمي",
         warningLowGpa: "تنبيه إرشاد أكاديمي: المعدل التراكمي أقل من 2.0! يفضل تحسين مواد (D- و C-) لرفع المعدل.",
@@ -117,13 +228,15 @@ let gpaChart = null;
 document.addEventListener("DOMContentLoaded", () => {
     loadFromLocalStorage();
     populateGradeDropdown();
-    populateSubjectsDatalist(currentDepartment);
+    populateSubjectsDropdown(currentDepartment);
     renderCoursesList();
     renderSavedSemesters();
     calculateCumulativeGPA();
 
-    // Event listener for adding course
-    document.getElementById("add-course-btn").addEventListener("click", addCourse);
+    const addBtn = document.getElementById("add-course-btn");
+    if (addBtn) {
+        addBtn.addEventListener("click", addCourse);
+    }
 });
 
 // ==========================================
@@ -132,6 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function populateGradeDropdown() {
     const gradeSelect = document.getElementById("grade");
+    if (!gradeSelect) return;
+
     gradeSelect.innerHTML = `<option value="" disabled selected>Grade</option>`;
     
     Object.keys(GRADE_POINTS).forEach(grade => {
@@ -142,32 +257,37 @@ function populateGradeDropdown() {
     });
 }
 
-function populateSubjectsDatalist(deptKey) {
-    const dataList = document.getElementById("subjects-list");
-    dataList.innerHTML = "";
+function populateSubjectsDropdown(deptKey) {
+    const subjectSelect = document.getElementById("subject");
+    if (!subjectSelect) return;
+
+    subjectSelect.innerHTML = `<option value="" disabled selected>Subject Name</option>`;
     
-    const courses = DEPARTMENT_COURSES[deptKey] || [];
+    const courses = DEPARTMENT_COURSES[deptKey] || DEPARTMENT_COURSES['CS'];
     courses.forEach(c => {
         const opt = document.createElement("option");
-        opt.value = c.name;
+        opt.value = `${c.code} - ${c.name}`;
+        opt.textContent = `${c.code} - ${c.name}`;
         opt.dataset.hours = c.hours;
-        dataList.appendChild(opt);
+        subjectSelect.appendChild(opt);
     });
 }
 
 function changeDepartment(deptKey) {
     currentDepartment = deptKey;
-    populateSubjectsDatalist(deptKey);
+    populateSubjectsDropdown(deptKey);
 }
 
 function addCourse() {
-    const subjectInput = document.getElementById("subject");
+    const subjectSelect = document.getElementById("subject");
     const gradeSelect = document.getElementById("grade");
     
-    const subjectName = subjectInput.value.trim();
+    if (!subjectSelect || !gradeSelect) return;
+
+    const subjectValue = subjectSelect.value;
     const selectedGrade = gradeSelect.value;
     
-    if (!subjectName || !selectedGrade) {
+    if (!subjectValue || subjectSelect.selectedIndex === 0 || !selectedGrade) {
         Swal.fire({
             icon: 'warning',
             title: 'Notice',
@@ -176,18 +296,12 @@ function addCourse() {
         return;
     }
 
-    // التثبت من عدد ساعات المادة من القائمة أو تعيين افتراضي (3 ساعات)
-    let hours = 3;
-    const datalistOptions = document.querySelectorAll("#subjects-list option");
-    datalistOptions.forEach(opt => {
-        if (opt.value.toLowerCase() === subjectName.toLowerCase()) {
-            hours = parseInt(opt.dataset.hours) || 3;
-        }
-    });
+    const selectedOption = subjectSelect.options[subjectSelect.selectedIndex];
+    const hours = parseInt(selectedOption.dataset.hours) || 3;
 
     const newCourse = {
         id: Date.now(),
-        name: subjectName,
+        name: subjectValue,
         grade: selectedGrade,
         points: GRADE_POINTS[selectedGrade],
         hours: hours
@@ -195,8 +309,7 @@ function addCourse() {
 
     currentSemesterCourses.push(newCourse);
     
-    // Clear inputs
-    subjectInput.value = "";
+    subjectSelect.selectedIndex = 0;
     gradeSelect.selectedIndex = 0;
 
     renderCoursesList();
@@ -213,6 +326,8 @@ function removeCourse(id) {
 
 function renderCoursesList() {
     const listContainer = document.getElementById("courses-list");
+    if (!listContainer) return;
+    
     listContainer.innerHTML = "";
 
     currentSemesterCourses.forEach(course => {
@@ -250,6 +365,7 @@ function saveAndClearSemester() {
 function renderSavedSemesters() {
     const container = document.getElementById("saved-semesters-box");
     const list = document.getElementById("semesters-list");
+    if (!container || !list) return;
     
     if (savedSemesters.length === 0) {
         container.style.display = "none";
@@ -313,7 +429,10 @@ function calculateCumulativeGPA() {
     const cumulativeGpa = totalHours > 0 ? (totalPoints / totalHours) : 0.00;
     const formattedGPA = cumulativeGpa.toFixed(2);
 
-    document.getElementById("gpa-display").textContent = formattedGPA;
+    const display = document.getElementById("gpa-display");
+    if (display) {
+        display.textContent = formattedGPA;
+    }
 
     updateGpaChart();
     return parseFloat(formattedGPA);
@@ -321,6 +440,8 @@ function calculateCumulativeGPA() {
 
 function updateGpaChart() {
     const chartContainer = document.getElementById("chart-container");
+    if (!chartContainer) return;
+
     if (savedSemesters.length === 0 && currentSemesterCourses.length === 0) {
         chartContainer.style.display = "none";
         return;
@@ -355,8 +476,10 @@ function updateGpaChart() {
         dataPoints.push((tempPoints / tempHours).toFixed(2));
     }
 
-    const ctx = document.getElementById('gpaChart').getContext('2d');
-    
+    const canvas = document.getElementById('gpaChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
     if (gpaChart) {
         gpaChart.destroy();
     }
@@ -405,7 +528,7 @@ function handleImprovementClick() {
         return;
     }
 
-    // مواد الأولوية (P2) التي حصل فيها الطالب على D- أو C- أو D
+    // فلترة المواد ذات التقدير المنخفض (P2: D-, D, C-)
     const recoverableCourses = allCourses.filter(c => c.points <= 2.2);
 
     let alertNotice = "";
@@ -472,14 +595,17 @@ function handleImprovementClick() {
 }
 
 function addCustomSimulationCourse() {
-    const name = document.getElementById("custom-course-name").value || "Custom Course";
-    const hours = parseInt(document.getElementById("custom-course-hours").value) || 3;
-    const points = parseFloat(document.getElementById("custom-course-grade").value);
+    const nameInput = document.getElementById("custom-course-name");
+    const hoursInput = document.getElementById("custom-course-hours");
+    const gradeSelect = document.getElementById("custom-course-grade");
+
+    const name = nameInput ? nameInput.value || "Custom Course" : "Custom Course";
+    const hours = hoursInput ? parseInt(hoursInput.value) || 3 : 3;
+    const points = gradeSelect ? parseFloat(gradeSelect.value) : 4.0;
 
     window.customSimCourses.push({ name, hours, points });
     
-    // Clear input
-    document.getElementById("custom-course-name").value = "";
+    if (nameInput) nameInput.value = "";
     
     renderCustomSimList();
     recalculateSimulation();
@@ -487,6 +613,8 @@ function addCustomSimulationCourse() {
 
 function renderCustomSimList() {
     const list = document.getElementById("custom-courses-sim-list");
+    if (!list) return;
+
     list.innerHTML = window.customSimCourses.map((c, idx) => `
         <div style="display:flex; justify-content:space-between; background:#e3f2fd; padding:6px 12px; border-radius:6px; margin-bottom:5px;">
             <span>🔒 [Custom] ${c.name} (${c.hours} hrs)</span>
@@ -506,24 +634,20 @@ function recalculateSimulation() {
     let basePoints = 0;
     let baseHours = 0;
 
-    // حساب النقاط الإجمالية الحالية
     allCourses.forEach(c => {
         basePoints += c.points * c.hours;
         baseHours += c.hours;
     });
 
-    // تطبيق تعديلات الإعادة (Retakes)
     const retakeSelects = document.querySelectorAll(".sim-retake-grade");
     retakeSelects.forEach(select => {
         const oldPoints = parseFloat(select.dataset.oldPoints);
         const newPoints = parseFloat(select.value);
         const hours = parseInt(select.dataset.hours);
 
-        // استبدال الفرق بين النقاط
         basePoints += (newPoints - oldPoints) * hours;
     });
 
-    // إضافة المواد التجريبية (Custom Playground Courses)
     if (window.customSimCourses) {
         window.customSimCourses.forEach(c => {
             basePoints += c.points * c.hours;
@@ -557,7 +681,6 @@ function toggleLanguage() {
     document.getElementById("improvement-btn").textContent = TRANSLATIONS[currentLang].improvementBtn;
     document.getElementById("print-btn").textContent = TRANSLATIONS[currentLang].printBtn;
 
-    // Update List Headers
     const headers = document.querySelectorAll("#list-header div");
     if (headers.length === 4) {
         headers[0].textContent = TRANSLATIONS[currentLang].subjectHeader;
@@ -588,7 +711,8 @@ function resetCalculator() {
             renderCoursesList();
             renderSavedSemesters();
             calculateCumulativeGPA();
-            document.getElementById("improvement-engine-box").innerHTML = "";
+            const recBox = document.getElementById("improvement-engine-box");
+            if (recBox) recBox.innerHTML = "";
         }
     });
 }
