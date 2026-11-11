@@ -362,7 +362,7 @@ function saveAndClearSemester() {
     saveToLocalStorage();
 }
 
-// تعديل الترتيب وتنسيق زر الحذف في الترمات المحفوظة
+// التنسيق الأصلي الدقيق لكروت الترمات المحفوظة
 function renderSavedSemesters() {
     const container = document.getElementById("saved-semesters-box");
     const list = document.getElementById("semesters-list");
@@ -376,26 +376,69 @@ function renderSavedSemesters() {
     container.style.display = "block";
     list.innerHTML = "";
 
+    let runningPoints = 0;
+    let runningHours = 0;
+
     savedSemesters.forEach((sem, idx) => {
         let semPoints = 0;
         let semHours = 0;
+
         sem.courses.forEach(c => {
             semPoints += c.points * c.hours;
             semHours += c.hours;
+            runningPoints += c.points * c.hours;
+            runningHours += c.hours;
         });
-        const semGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
+
+        const termGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
+        const cumulativeGPA = runningHours > 0 ? (runningPoints / runningHours).toFixed(2) : "0.00";
 
         const semBox = document.createElement("div");
-        semBox.style.cssText = "background:#ffffff; border:1px solid #dfe6e9; border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);";
+        semBox.style.cssText = "background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;";
+        
         semBox.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; gap:10px;">
-                <span style="white-space:nowrap;">${TRANSLATIONS[currentLang].semLabel} #${idx + 1} (${sem.courses.length} courses)</span>
-                <span style="color:#0984e3; white-space:nowrap;">GPA: ${semGPA}</span>
-                <button onclick="deleteSemester(${sem.id})" style="width:30px !important; height:30px !important; min-width:30px !important; padding:0 !important; background:#ff7675 !important; color:#fff !important; border:none !important; border-radius:8px !important; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px !important; margin:0 !important;">✕</button>
+            <div style="text-align: center; margin-bottom: 12px;">
+                <label style="font-weight: 800; color: #2d3436; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" checked style="accent-color: #0984e3; width: 16px; height: 16px;">
+                    ${TRANSLATIONS[currentLang].semLabel} ${idx + 1}
+                </label>
+            </div>
+            
+            <div style="background: #e9ecef; border-radius: 12px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span style="background: #00cec9; color: #ffffff; padding: 6px 14px; border-radius: 10px; font-weight: 800; font-size: 14px;">
+                        Term: ${termGPA}
+                    </span>
+                    <span style="background: #0984e3; color: #ffffff; padding: 6px 14px; border-radius: 10px; font-weight: 800; font-size: 14px;">
+                        | CGPA: ${cumulativeGPA}
+                    </span>
+                </div>
+                
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button onclick="editSemester(${sem.id})" style="width: auto !important; padding: 6px 16px !important; background-color: #00b894 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; font-size: 13px !important; cursor: pointer; margin: 0 !important;">
+                        Edit
+                    </button>
+                    <button onclick="deleteSemester(${sem.id})" style="width: auto !important; padding: 6px 16px !important; background-color: #ff7675 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; font-size: 13px !important; cursor: pointer; margin: 0 !important;">
+                        Delete
+                    </button>
+                </div>
             </div>
         `;
         list.appendChild(semBox);
     });
+}
+
+function editSemester(id) {
+    const semToEdit = savedSemesters.find(s => s.id === id);
+    if (!semToEdit) return;
+
+    currentSemesterCourses = [...semToEdit.courses];
+    savedSemesters = savedSemesters.filter(s => s.id !== id);
+    
+    renderCoursesList();
+    renderSavedSemesters();
+    calculateCumulativeGPA();
+    saveToLocalStorage();
 }
 
 function deleteSemester(id) {
@@ -515,7 +558,6 @@ function updateGpaChart() {
 // 6. DYNAMIC ACADEMIC RECOVERY SIMULATOR
 // ==========================================
 
-// تعديل الدالة لاستبعاد المحاولات القديمة والاعتماد على أحدث نتيجة لكل مادة
 function handleImprovementClick() {
     const currentGPA = calculateCumulativeGPA();
     const allCourses = getAllCoursesFlat();
@@ -530,7 +572,7 @@ function handleImprovementClick() {
         return;
     }
 
-    // تجميع أحدث محاولة للمادة فقط بالاعتماد على الاسم
+    // تجميع أحدث محاولة للمادة فقط بالاعتماد على اسمها/كودها
     const latestCoursesMap = new Map();
     allCourses.forEach(course => {
         latestCoursesMap.set(course.name, course);
@@ -538,7 +580,7 @@ function handleImprovementClick() {
 
     const latestCoursesList = Array.from(latestCoursesMap.values());
 
-    // فلترة أحدث محاولات المواد ذات التقدير المنخفض (D-, D, C- أو الفشل)
+    // فلترة أحدث المحاولات فقط ذات التقدير المنخفض (D-, D, C- أو F)
     const recoverableCourses = latestCoursesList.filter(c => c.points <= 2.2);
 
     let alertNotice = "";
