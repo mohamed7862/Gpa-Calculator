@@ -2,7 +2,7 @@
 // 1. CONFIGURATION & ACADEMIC DATA STRUCTURES
 // ==========================================
 
-// سلم النقاط والتقديرات الخاص بأكاديمية الشروق
+// سلم النقاط الخاص بأكاديمية الشروق
 const GRADE_POINTS = {
     'A+': 4.0,
     'A': 3.7,
@@ -161,7 +161,7 @@ const DEPARTMENT_COURSES = {
     ]
 };
 
-// الترجمات والنصوص البرمجية (i18n)
+// قاموس الترجمة
 const TRANSLATIONS = {
     en: {
         title: "GPA Calculator",
@@ -226,9 +226,9 @@ let gpaChart = null;
 // 3. INITIALIZATION & EVENT LISTENERS
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    loadFromLocalStorage();
     populateGradeDropdown();
     populateSubjectsDropdown(currentDepartment);
+    loadFromLocalStorage();
     renderCoursesList();
     renderSavedSemesters();
     calculateCumulativeGPA();
@@ -362,6 +362,7 @@ function saveAndClearSemester() {
     saveToLocalStorage();
 }
 
+// تعديل الترتيب وتنسيق زر الحذف في الترمات المحفوظة
 function renderSavedSemesters() {
     const container = document.getElementById("saved-semesters-box");
     const list = document.getElementById("semesters-list");
@@ -385,12 +386,12 @@ function renderSavedSemesters() {
         const semGPA = semHours > 0 ? (semPoints / semHours).toFixed(2) : "0.00";
 
         const semBox = document.createElement("div");
-        semBox.style.cssText = "background:#f1f2f6; border-radius:10px; padding:10px; margin-bottom:10px;";
+        semBox.style.cssText = "background:#ffffff; border:1px solid #dfe6e9; border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);";
         semBox.innerHTML = `
-            <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                <span>${TRANSLATIONS[currentLang].semLabel} #${idx + 1} (${sem.courses.length} courses)</span>
-                <span>GPA: ${semGPA}</span>
-                <button onclick="deleteSemester(${sem.id})" style="background:#d63031; color:#fff; border:none; border-radius:5px; padding:2px 8px; cursor:pointer;">✕</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; gap:10px;">
+                <span style="white-space:nowrap;">${TRANSLATIONS[currentLang].semLabel} #${idx + 1} (${sem.courses.length} courses)</span>
+                <span style="color:#0984e3; white-space:nowrap;">GPA: ${semGPA}</span>
+                <button onclick="deleteSemester(${sem.id})" style="width:30px !important; height:30px !important; min-width:30px !important; padding:0 !important; background:#ff7675 !important; color:#fff !important; border:none !important; border-radius:8px !important; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px !important; margin:0 !important;">✕</button>
             </div>
         `;
         list.appendChild(semBox);
@@ -514,6 +515,7 @@ function updateGpaChart() {
 // 6. DYNAMIC ACADEMIC RECOVERY SIMULATOR
 // ==========================================
 
+// تعديل الدالة لاستبعاد المحاولات القديمة والاعتماد على أحدث نتيجة لكل مادة
 function handleImprovementClick() {
     const currentGPA = calculateCumulativeGPA();
     const allCourses = getAllCoursesFlat();
@@ -528,8 +530,16 @@ function handleImprovementClick() {
         return;
     }
 
-    // فلترة المواد ذات التقدير المنخفض (P2: D-, D, C-)
-    const recoverableCourses = allCourses.filter(c => c.points <= 2.2);
+    // تجميع أحدث محاولة للمادة فقط بالاعتماد على الاسم
+    const latestCoursesMap = new Map();
+    allCourses.forEach(course => {
+        latestCoursesMap.set(course.name, course);
+    });
+
+    const latestCoursesList = Array.from(latestCoursesMap.values());
+
+    // فلترة أحدث محاولات المواد ذات التقدير المنخفض (D-, D, C- أو الفشل)
+    const recoverableCourses = latestCoursesList.filter(c => c.points <= 2.2);
 
     let alertNotice = "";
     if (currentGPA < 1.5) {
