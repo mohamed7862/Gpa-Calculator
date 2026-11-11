@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator</title>
-    <!-- استدعاء ملف الـ CSS الخاص بك -->
+    <!-- استدعاء ملف الـ CSS -->
     <link rel="stylesheet" href="gpa.css">
-    <!-- مكتبة Chart.js الرسم البياني -->
+    <!-- مكتبة Chart.js للرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- مكتبة SweetAlert2 للتنبيهات الأنيقة -->
+    <!-- مكتبة SweetAlert2 للتنبيهات -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -158,14 +158,14 @@
             </select>
         </div>
         
-        <!-- نموذج إضافة المادة (إرجاع الـ input والـ datalist) -->
+        <!-- نموذج إضافة المادة -->
         <div id="course-form">
             <div class="form-group">
                 <input type="text" id="subject" list="subjects-list" placeholder="Subject Name" style="flex: 2; font-weight: 600;" autocomplete="off">
                 <datalist id="subjects-list"></datalist>
 
                 <select id="grade" style="flex: 1;">
-                    <!-- ملء التقديرات ديناميكياً -->
+                    <!-- ملء التقديرات ديناميكياً من السكريبت -->
                 </select>
             </div>
             
@@ -216,6 +216,7 @@
         </div>
     </div>
 
+    <!-- استدعاء ملف الـ JavaScript -->
     <script src="test-script.js"></script>
 </body>
 </html>
